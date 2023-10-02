@@ -1,0 +1,12 @@
+{
+    "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+        "Palette1": {
+            "imageUp": "Palette 1",
+            "imageDown": "Palette 1"
+        },
+        "Palette2": {
+            "imageUp": "Palette 2",
+            "imageDown": "Palette 2"
+        }
+    }
+}
