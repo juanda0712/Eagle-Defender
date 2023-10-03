@@ -67,14 +67,6 @@ public class LoginScreen implements Screen {
         Label infoLabel = new Label("Please enter your personal info", skin);
         infoLabel.setColor(Color.BLACK);
 
-        /*TextButton btnFacialRecognition = new TextButton("> Facial Recognition <", style2);
-        btnFacialRecognition.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
-                fileChooser.selected();
-            }
-        });*/
         TextButton btnFacialRecognition = new TextButton("> Facial Recognition <", style2);
         btnFacialRecognition.addListener(new ClickListener() {
             @Override
@@ -92,10 +84,7 @@ public class LoginScreen implements Screen {
                     }
                 });
 
-                // Agregar el FileChooser al Stage
                 stage.addActor(fileChooser.fadeIn());
-
-                // Asegúrate de que el FileChooser sea visible
                 fileChooser.setVisible(true);
             }
         });
@@ -118,6 +107,14 @@ public class LoginScreen implements Screen {
         });
 
         TextButton btnLogin = new TextButton("Login", skin);
+        btnLogin.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("LOGIN");
+                //game.changeScreen(new GameScreen(game, user2Manager));
+                //dispose();
+            }
+        });
 
         // Agregar elementos a la tabla
         Table table = new Table();

@@ -23,6 +23,11 @@ import com.mygdx.models.User2;
 import com.mygdx.utils.ImageComparator;
 import com.mygdx.utils.JSONDataManager;
 import com.sun.jndi.toolkit.dir.SearchFilter;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,8 +47,8 @@ public class FormManagement implements Screen {
     private Array<String> questionsArray;
     private final QuestionsForm questionsForm;
     private boolean validPassword;
-
     private boolean isValidDate = false;
+    private FileHandle selectedFile;
 
     public FormManagement(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -177,10 +182,9 @@ public class FormManagement implements Screen {
                     @Override
                     public void selected(Array<FileHandle> file) {
                         // Se ejecuta cuando el usuario selecciona un archivo
-                        FileHandle selectedFile = file.first();
+                        selectedFile = file.first();
                         String filePath = selectedFile.path();
-
-                        System.out.println("RESULT: " + ImageComparator.comparator(filePath, filePath));
+                        //System.out.println("RESULT: " + ImageComparator.comparator(filePath, filePath));
                     }
                 });
 
@@ -222,7 +226,7 @@ public class FormManagement implements Screen {
                     String selectedColorPalette = "paleta";
                     String animation = choiceBoxAnimation.getSelected();
                     String texture = choiceBoxTexture.getSelected();
-                    String image = "ruta";
+                    String image = selectedFile.name();
                     String petName = questionsArray.get(0);
                     String favTeacher = questionsArray.get(1);
                     String favTeam = questionsArray.get(2);
@@ -250,6 +254,20 @@ public class FormManagement implements Screen {
                     newUser.setFavPlace(favPlace);
 
                     user2Manager.create(newUser);
+
+                    if (selectedFile != null) {
+                        // Ruta donde deseas guardar la imagen en tu directorio de assets
+                        String destinoPath = "data/imgs/" + selectedFile.name();
+
+                        // Copiar el archivo seleccionado al directorio de assets
+                        selectedFile.copyTo(Gdx.files.local(destinoPath));
+
+                        // Notificar al usuario que la imagen se ha guardado
+                        System.out.println("Imagen guardada en " + destinoPath);
+                    } else {
+                        System.out.println("No se ha seleccionado ninguna imagen.");
+                    }
+                    
 
                     Array<User2> users = user2Manager.read();
                     for (User2 user : users) {
@@ -342,6 +360,7 @@ public class FormManagement implements Screen {
         this.validPassword = true;
 
     }
+
     private void isValidDateFormat(String date, String s) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setLenient(false); // Deshabilitar el modo permisivo para un análisis estricto
