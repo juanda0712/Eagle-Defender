@@ -2,27 +2,30 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextField;
-import com.mygdx.models.User;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
+import com.mygdx.utils.ImageComparator;
 import com.mygdx.utils.JSONDataManager;
 import com.sun.jndi.toolkit.dir.SearchFilter;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class FormManagement implements Screen {
@@ -39,6 +42,8 @@ public class FormManagement implements Screen {
     private Array<String> questionsArray;
     private final QuestionsForm questionsForm;
     private boolean validPassword;
+
+    private boolean isValidDate = false;
 
     public FormManagement(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -164,17 +169,42 @@ public class FormManagement implements Screen {
 
         TextButton btnUpload = new TextButton("Upload", skin);
         btnUpload.addListener(new ClickListener() {
+            @Override
             public void clicked(InputEvent event, float x, float y) {
-                //loadImage();
+                FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
+                fileChooser.setSelectionMode(FileChooser.SelectionMode.FILES);
+                fileChooser.setListener(new FileChooserAdapter() {
+                    @Override
+                    public void selected(Array<FileHandle> file) {
+                        // Se ejecuta cuando el usuario selecciona un archivo
+                        FileHandle selectedFile = file.first();
+                        String filePath = selectedFile.path();
+
+                        System.out.println("RESULT: " + ImageComparator.comparator(filePath, filePath));
+                    }
+                });
+
+                // Agregar el FileChooser al Stage
+                stage.addActor(fileChooser.fadeIn());
+
+                // Asegúrate de que el FileChooser sea visible
+                fileChooser.setVisible(true);
             }
         });
-
         TextButton btnCreateAccount = new TextButton("Create account", skin);
         btnCreateAccount.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
 
+                passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
+                isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
+                if (isValidDate) {
+                    // La fecha es válida, puedes realizar acciones adicionales aquí
+                    System.out.println("hola");
+                } else {
+                    // La fecha no es válida, puedes indicar esto al usuario
+                    System.out.println("not valid");
+                }
                 if (!nameField.isEmpty() && !usernameField.isEmpty()) {
                     getQuestions();
                     for (String question : questionsArray) {
@@ -237,7 +267,6 @@ public class FormManagement implements Screen {
         float screenHeight = Gdx.graphics.getHeight();
         float padBottomValue = screenHeight * 0.05f;
 
-        // Agregar los elementos a la tabla de contenido
         contentTable.add(infoLabel).padBottom(padBottomValue).row();
         contentTable.add(nameField).left().padBottom(padBottomValue).row();
         contentTable.add(usernameField).left().padBottom(padBottomValue).row();
@@ -256,11 +285,11 @@ public class FormManagement implements Screen {
         contentTable.add(choiceBoxAnimation).left().padBottom(padBottomValue).row();
         contentTable.add(selectTexture).left().padBottom(padBottomValue).row();
         contentTable.add(choiceBoxTexture).left().padBottom(padBottomValue).row();
-        contentTable.add(paymentMethods).left().padBottom(5).row();
-        contentTable.add(btnPaymentMethods).left().padBottom(5).row();
+        contentTable.add(paymentMethods).left().padBottom(padBottomValue).row();
+        contentTable.add(btnPaymentMethods).left().padBottom(padBottomValue).row();
         contentTable.add(uploadPfp).left().padBottom(padBottomValue).row();
         contentTable.add(btnUpload).left().padBottom(padBottomValue).row();
-        contentTable.add(questionsLabel).right().padBottom(padBottomValue).row();
+        contentTable.add(questionsLabel).left().padBottom(padBottomValue).row();
         contentTable.add(btnQuestions).left().padBottom(padBottomValue).row();
         contentTable.add(btnCreateAccount).padBottom(padBottomValue * 2).row();
 
@@ -312,6 +341,20 @@ public class FormManagement implements Screen {
         }
         this.validPassword = true;
 
+    }
+    private void isValidDateFormat(String date, String s) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        sdf.setLenient(false); // Deshabilitar el modo permisivo para un análisis estricto
+
+        try {
+            Date parsedDate = sdf.parse(date);
+            String formattedDate = sdf.format(parsedDate);
+
+            // Comprobar si la fecha analizada coincide exactamente con la fecha original
+            isValidDate = formattedDate.equals(date);
+        } catch (ParseException e) {
+            isValidDate = false;
+        }
     }
 
 
