@@ -23,8 +23,10 @@ public class GameScreen implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
     private JSONDataManager<User2> user2Manager;
-    private Label label1;
+    //private Label label1;
     private User2 user;
+    private Label usernameLabel;
+    private Label fullNameLabel;
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user) {
         this.game = game;
@@ -48,42 +50,64 @@ public class GameScreen implements Screen {
                 game.setScreen(new LoginScreen(game, user2Manager));
             }
         });
-        label1 = new Label("unknown", skin);
+        fullNameLabel = new Label(user.getFullName(), skin);
+        fullNameLabel.setColor(Color.BLACK);
+        fullNameLabel.setPosition(400, 300);
+        usernameLabel = new Label(user.getUsername(), skin);
+        usernameLabel.setColor(Color.BLACK);
+        usernameLabel.setPosition(400, 280);
+        Label label1 = new Label("User information:", skin);
         label1.setColor(Color.BLACK);
-        label1.setPosition(120, 950);
-        Label label2 = new Label("unknown", skin);
+        label1.setPosition(300, 320);
+        Label label2 = new Label("unknown player 2", skin);
         label2.setColor(Color.BLACK);
         label2.setPosition(1500, 950);
+        Label label3 = new Label("Defender", skin);
+        label3.setColor(Color.BLACK);
+        label3.setPosition(1200, 550);
+        Label label4 = new Label("Attacker", skin);
+        label4.setColor(Color.BLACK);
+        label4.setPosition(1200, 200);
+        Label label5 = new Label("Fullname: ", skin);
+        label5.setColor(Color.BLACK);
+        label5.setPosition(300, 300);
+        Label label6 = new Label("Username: ", skin);
+        label6.setColor(Color.BLACK);
+        label6.setPosition(300, 280);
         Texture eagle = new Texture(Gdx.files.internal("assets/aguilagod.png"));
         Texture goblin = new Texture(Gdx.files.internal("assets/duendegod.png"));
         Texture userImage = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
         Image image1 = new Image(eagle);
-        image1.setPosition(0, 400);
+        image1.setPosition(1000, 600);
         Image image2 = new Image(goblin);
-        image2.setPosition(1000, 400);
+        image2.setPosition(1000, 200);
         Image user = new Image(userImage);
-        user.setPosition(400, 0);
+        user.setPosition(200, 500);
         stage.addActor(backButton);
         stage.addActor(label1);
         stage.addActor(label2);
+        stage.addActor(label3);
+        stage.addActor(label4);
+        stage.addActor(label5);
+        stage.addActor(label6);
         stage.addActor(image1);
         stage.addActor(image2);
+        stage.addActor(fullNameLabel);
+        stage.addActor(usernameLabel);
         stage.addActor(user);
     }
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(1, 2, 1, 2);
+        Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
+        ScreenUtils.clear(backgroundColor);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         Array<User2> users = user2Manager.read();
-        if (!users.isEmpty()) {
-            User2 firstUser = users.get(0);
-            String username = firstUser.getUsername();
-            label1.setText(username);
-            stage.draw();
-        }
+        usernameLabel.setText(user.getUsername());
+        fullNameLabel.setText(user.getFullName());
+        stage.draw();
     }
 
     @Override
