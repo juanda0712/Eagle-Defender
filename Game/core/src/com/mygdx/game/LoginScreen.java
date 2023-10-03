@@ -32,10 +32,12 @@ public class LoginScreen implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
     private final JSONDataManager<User2> user2Manager;
+    private final Array<User2> data;
 
     public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
+        data = user2Manager.read();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 900, 800);
@@ -67,14 +69,6 @@ public class LoginScreen implements Screen {
         Label infoLabel = new Label("Please enter your personal info", skin);
         infoLabel.setColor(Color.BLACK);
 
-        /*TextButton btnFacialRecognition = new TextButton("> Facial Recognition <", style2);
-        btnFacialRecognition.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
-                fileChooser.selected();
-            }
-        });*/
         TextButton btnFacialRecognition = new TextButton("> Facial Recognition <", style2);
         btnFacialRecognition.addListener(new ClickListener() {
             @Override
@@ -87,15 +81,27 @@ public class LoginScreen implements Screen {
                         // Se ejecuta cuando el usuario selecciona un archivo
                         FileHandle selectedFile = file.first();
                         String filePath = selectedFile.path();
+                        boolean usuarioValido = false;
+                        double result;
 
-                        System.out.println("RESULT: " + ImageComparator.comparator(filePath, filePath));
+                        for (User2 user : data) {
+                            result = ImageComparator.comparator(filePath, user.getImage());
+                            if (result > 0.8) {
+                                usuarioValido = true;
+                                game.changeScreen(new GameScreen(game, user2Manager, user));
+                                dispose();
+                                break;
+                            }
+                        }
+                        if (!usuarioValido) {
+                            System.out.println("USUARIO NO VALIDO");
+                        }
+
+
                     }
                 });
 
-                // Agregar el FileChooser al Stage
                 stage.addActor(fileChooser.fadeIn());
-
-                // Asegúrate de que el FileChooser sea visible
                 fileChooser.setVisible(true);
             }
         });
@@ -118,6 +124,29 @@ public class LoginScreen implements Screen {
         });
 
         TextButton btnLogin = new TextButton("Login", skin);
+        btnLogin.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("LOGIN");
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                boolean usuarioValido = false;
+
+                for (User2 user : data) {
+                    if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+                        usuarioValido = true;
+                        game.changeScreen(new GameScreen(game, user2Manager, user));
+                        dispose();
+                        break;
+                    }
+                }
+
+                if (!usuarioValido) {
+                    System.out.println("USUARIO NO VALIDO");
+                }
+            }
+        });
+
 
         // Agregar elementos a la tabla
         Table table = new Table();

@@ -1,5 +1,6 @@
 package com.mygdx.utils;
 
+import com.badlogic.gdx.Gdx;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
@@ -10,7 +11,9 @@ public class ImageComparator {
 
     public static double comparator(String loadedImagePath, String referencePath) {
         Mat loadedMat = opencv_imgcodecs.imread(loadedImagePath);
-        Mat referenceMat = opencv_imgcodecs.imread(referencePath);
+        String filePath = Gdx.files.local("data/imgs/" + referencePath).path();
+        Mat referenceMat = opencv_imgcodecs.imread(filePath);
+
         Mat grayLoadedMat = new Mat();
         Mat grayReferenceMat = new Mat();
 
