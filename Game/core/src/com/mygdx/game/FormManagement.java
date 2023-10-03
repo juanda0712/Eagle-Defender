@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,14 +21,9 @@ import com.kotcrab.vis.ui.widget.VisTextField;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
-import com.mygdx.utils.ImageComparator;
 import com.mygdx.utils.JSONDataManager;
 import com.sun.jndi.toolkit.dir.SearchFilter;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,14 +42,14 @@ public class FormManagement implements Screen {
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
     private final QuestionsForm questionsForm;
-    private boolean validPassword;
+    private boolean validPassword = false;
     private boolean isValidDate = false;
+    private boolean btnTouched = false;
     private FileHandle selectedFile;
 
     public FormManagement(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
-        this.validPassword = false;
 
         questionsForm = new QuestionsForm();
         final CardDataForm cardDataForm = new CardDataForm();
@@ -181,17 +177,10 @@ public class FormManagement implements Screen {
                 fileChooser.setListener(new FileChooserAdapter() {
                     @Override
                     public void selected(Array<FileHandle> file) {
-                        // Se ejecuta cuando el usuario selecciona un archivo
                         selectedFile = file.first();
-                        String filePath = selectedFile.path();
-                        //System.out.println("RESULT: " + ImageComparator.comparator(filePath, filePath));
                     }
                 });
-
-                // Agregar el FileChooser al Stage
                 stage.addActor(fileChooser.fadeIn());
-
-                // Asegúrate de que el FileChooser sea visible
                 fileChooser.setVisible(true);
             }
         });
@@ -200,86 +189,76 @@ public class FormManagement implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
+                btnTouched = true;
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
                 isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
-                if (isValidDate) {
-                    // La fecha es válida, puedes realizar acciones adicionales aquí
-                    System.out.println("hola");
+                if (isValidDate && validPassword) {
+                    if (!nameField.isEmpty() && !usernameField.isEmpty() && !birthDateField.isEmpty() && !emailField.isEmpty() && !passwordField.isEmpty() && !confirmPasswordField.isEmpty()) {
+                        getQuestions();
+                        for (String question : questionsArray) {
+                            System.out.println(question);
+                        }
+
+                        String fullName = nameField.getText();
+                        String username = usernameField.getText();
+                        String password = passwordField.getText();
+                        String email = emailField.getText();
+                        String birthDate = birthDateField.getText();
+                        String song1 = searchField1.getText();
+                        String song2 = searchField2.getText();
+                        String song3 = searchField3.getText();
+                        String selectedColorPalette = "paleta";
+                        String animation = choiceBoxAnimation.getSelected();
+                        String texture = choiceBoxTexture.getSelected();
+                        String image = selectedFile.name();
+                        String petName = questionsArray.get(0);
+                        String favTeacher = questionsArray.get(1);
+                        String favTeam = questionsArray.get(2);
+                        String childhoodNickname = questionsArray.get(3);
+                        String favPlace = questionsArray.get(4);
+
+
+                        User2 newUser = new User2();
+                        newUser.setFullName(fullName);
+                        newUser.setUsername(username);
+                        newUser.setPassword(password);
+                        newUser.setEmail(email);
+                        newUser.setBirthDate(birthDate);
+                        newUser.setSong1(song1);
+                        newUser.setSong2(song2);
+                        newUser.setSong3(song3);
+                        newUser.setSelectedColorPalette(selectedColorPalette);
+                        newUser.setAnimation(animation);
+                        newUser.setTexture(texture);
+                        newUser.setImage(image);
+                        newUser.setPetName(petName);
+                        newUser.setFavTeacherLastnamne(favTeacher);
+                        newUser.setFavTeam(favTeam);
+                        newUser.setChildhoodNickName(childhoodNickname);
+                        newUser.setFavPlace(favPlace);
+
+                        user2Manager.create(newUser);
+
+                        if (selectedFile != null) {
+                            String destinoPath = "data/imgs/" + selectedFile.name();
+                            selectedFile.copyTo(Gdx.files.local(destinoPath));
+                            System.out.println("Imagen guardada en " + destinoPath);
+                        } else {
+                            System.out.println("No se ha seleccionado ninguna imagen.");
+                        }
+
+                        Array<User2> users = user2Manager.read();
+                        for (User2 user : users) {
+                            System.out.println(user);
+                        }
+                        game.changeScreen(new GameScreen(game, user2Manager, newUser));
+                        dispose();
+                    }
                 } else {
-                    // La fecha no es válida, puedes indicar esto al usuario
                     System.out.println("not valid");
                 }
-                if (!nameField.isEmpty() && !usernameField.isEmpty()) {
-                    getQuestions();
-                    for (String question : questionsArray) {
-                        System.out.println(question);
-                    }
-
-                    String fullName = nameField.getText();
-                    String username = usernameField.getText();
-                    String password = passwordField.getText();
-                    String email = emailField.getText();
-                    String birthDate = birthDateField.getText();
-                    String song1 = searchField1.getText();
-                    String song2 = searchField2.getText();
-                    String song3 = searchField3.getText();
-                    String selectedColorPalette = "paleta";
-                    String animation = choiceBoxAnimation.getSelected();
-                    String texture = choiceBoxTexture.getSelected();
-                    String image = selectedFile.name();
-                    String petName = questionsArray.get(0);
-                    String favTeacher = questionsArray.get(1);
-                    String favTeam = questionsArray.get(2);
-                    String childhoodNickname = questionsArray.get(3);
-                    String favPlace = questionsArray.get(4);
-
-
-                    User2 newUser = new User2();
-                    newUser.setFullName(fullName);
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-                    newUser.setEmail(email);
-                    newUser.setBirthDate(birthDate);
-                    newUser.setSong1(song1);
-                    newUser.setSong2(song2);
-                    newUser.setSong3(song3);
-                    newUser.setSelectedColorPalette(selectedColorPalette);
-                    newUser.setAnimation(animation);
-                    newUser.setTexture(texture);
-                    newUser.setImage(image);
-                    newUser.setPetName(petName);
-                    newUser.setFavTeacherLastnamne(favTeacher);
-                    newUser.setFavTeam(favTeam);
-                    newUser.setChildhoodNickName(childhoodNickname);
-                    newUser.setFavPlace(favPlace);
-
-                    user2Manager.create(newUser);
-
-                    if (selectedFile != null) {
-                        // Ruta donde deseas guardar la imagen en tu directorio de assets
-                        String destinoPath = "data/imgs/" + selectedFile.name();
-
-                        // Copiar el archivo seleccionado al directorio de assets
-                        selectedFile.copyTo(Gdx.files.local(destinoPath));
-
-                        // Notificar al usuario que la imagen se ha guardado
-                        System.out.println("Imagen guardada en " + destinoPath);
-                    } else {
-                        System.out.println("No se ha seleccionado ninguna imagen.");
-                    }
-                    
-
-                    Array<User2> users = user2Manager.read();
-                    for (User2 user : users) {
-                        System.out.println(user);
-
-                    }
-                }
-
-
             }
         });
-
 
         Table contentTable = new Table();
         float screenHeight = Gdx.graphics.getHeight();
@@ -336,29 +315,24 @@ public class FormManagement implements Screen {
         if (!passwordhere.equals(confirmhere)) {
             this.validPassword = false;
             System.out.println("Password and confirm password does not match");
-        }
-        if (passwordhere.length() < 8) {
+        } else if (passwordhere.length() < 8) {
             this.validPassword = false;
             System.out.println("Password length must have at least 8 characters");
-        }
-        if (!specailCharPatten.matcher(passwordhere).find()) {
+        } else if (!specailCharPatten.matcher(passwordhere).find()) {
             this.validPassword = false;
             System.out.println("Password must have at least one special character");
-        }
-        if (!UpperCasePatten.matcher(passwordhere).find()) {
+        } else if (!UpperCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
             System.out.println("Password must have at least one uppercase character");
-        }
-        if (!lowerCasePatten.matcher(passwordhere).find()) {
+        } else if (!lowerCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
             System.out.println("Password must have at least one lowercase character");
-        }
-        if (!digitCasePatten.matcher(passwordhere).find()) {
+        } else if (!digitCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
             System.out.println("Password must have at least one digit character");
+        } else {
+            this.validPassword = true;
         }
-        this.validPassword = true;
-
     }
 
     private void isValidDateFormat(String date, String s) {
@@ -376,7 +350,6 @@ public class FormManagement implements Screen {
         }
     }
 
-
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1, 2, 1, 2);
@@ -386,7 +359,9 @@ public class FormManagement implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
+
     }
+
 
     @Override
     public void resize(int width, int height) {

@@ -81,8 +81,23 @@ public class LoginScreen implements Screen {
                         // Se ejecuta cuando el usuario selecciona un archivo
                         FileHandle selectedFile = file.first();
                         String filePath = selectedFile.path();
+                        boolean usuarioValido = false;
+                        double result;
 
-                        System.out.println("RESULT: " + ImageComparator.comparator(filePath, filePath));
+                        for (User2 user : data) {
+                            result = ImageComparator.comparator(filePath, user.getImage());
+                            if (result > 0.8) {
+                                usuarioValido = true;
+                                game.changeScreen(new GameScreen(game, user2Manager, user));
+                                dispose();
+                                break;
+                            }
+                        }
+                        if (!usuarioValido) {
+                            System.out.println("USUARIO NO VALIDO");
+                        }
+
+
                     }
                 });
 
@@ -115,7 +130,7 @@ public class LoginScreen implements Screen {
                 System.out.println("LOGIN");
                 String username = usernameField.getText();
                 String password = passwordField.getText();
-                boolean usuarioValido = false; // Variable para rastrear si se encontró un usuario válido
+                boolean usuarioValido = false;
 
                 for (User2 user : data) {
                     if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
