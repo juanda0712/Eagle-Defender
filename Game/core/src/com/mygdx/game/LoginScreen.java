@@ -32,10 +32,12 @@ public class LoginScreen implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
     private final JSONDataManager<User2> user2Manager;
+    private final Array<User2> data;
 
     public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
+        data = user2Manager.read();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 900, 800);
@@ -111,10 +113,25 @@ public class LoginScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("LOGIN");
-                //game.changeScreen(new GameScreen(game, user2Manager));
-                //dispose();
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                boolean usuarioValido = false; // Variable para rastrear si se encontró un usuario válido
+
+                for (User2 user : data) {
+                    if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+                        usuarioValido = true;
+                        game.changeScreen(new GameScreen(game, user2Manager, user));
+                        dispose();
+                        break;
+                    }
+                }
+
+                if (!usuarioValido) {
+                    System.out.println("USUARIO NO VALIDO");
+                }
             }
         });
+
 
         // Agregar elementos a la tabla
         Table table = new Table();
