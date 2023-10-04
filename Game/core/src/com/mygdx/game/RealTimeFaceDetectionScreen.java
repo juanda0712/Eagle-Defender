@@ -17,7 +17,6 @@ import org.bytedeco.opencv.opencv_objdetect.CascadeClassifier;
 import org.bytedeco.opencv.opencv_videoio.VideoCapture;
 import org.bytedeco.opencv.global.opencv_videoio;
 
-
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 

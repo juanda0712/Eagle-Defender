@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.mygdx.interfaces.IDataManager;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.models.User;
 
 public class JSONDataManager<T> implements IDataManager<T> {
     private final Json json = new Json();
