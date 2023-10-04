@@ -17,8 +17,9 @@ import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextField;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
-import com.mygdx.models.User;
 import com.mygdx.models.User2;
+import com.mygdx.utils.CustomStyle;
+import com.mygdx.utils.GraphicElements;
 import com.mygdx.utils.JSONDataManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
@@ -38,13 +39,9 @@ public class LoginScreen implements Screen {
         this.game = game;
         this.user2Manager = user2Manager;
         data = user2Manager.read();
-
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 900, 800);
-
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-
         setupUIElements();
     }
 
@@ -53,24 +50,18 @@ public class LoginScreen implements Screen {
         BitmapFont font = new BitmapFont();
         TextureRegionDrawable underlineDrawable = new TextureRegionDrawable(new Texture("underline2.png"));
 
-        VisTextField.VisTextFieldStyle style = new VisTextField.VisTextFieldStyle();
-        style.font = font;
-        style.fontColor = Color.ORANGE;
-        style.background = underlineDrawable;
+        // Create styles
+        VisTextField.VisTextFieldStyle textFieldStyle = CustomStyle.createTextFieldStyle(font, Color.ORANGE, underlineDrawable);
+        VisCheckBox.VisCheckBoxStyle checkBoxStyle = CustomStyle.createCheckBoxStyle(font, Color.BLUE, Color.BLACK);
 
-        VisCheckBox.VisCheckBoxStyle style2 = new VisCheckBox.VisCheckBoxStyle();
-        style2.font = font;
-        style2.fontColor = Color.BLUE;
-        style2.overFontColor = Color.BLACK;
+        //GRAPHIC ELEMENTS
+        Label welcomeLabel = GraphicElements.createLabel("Eagle Defender", skin, Color.BLACK);
+        Label infoLabel = GraphicElements.createLabel("Please enter your personal info", skin, Color.BLACK);
 
-        Label welcomeLabel = new Label("Eagle Defender", skin);
-        welcomeLabel.setColor(Color.BLACK);
+        final VisTextField usernameField = GraphicElements.createTextField("Username", textFieldStyle);
+        final VisTextField passwordField = GraphicElements.createTextField("Password", textFieldStyle);
 
-        Label infoLabel = new Label("Please enter your personal info", skin);
-        infoLabel.setColor(Color.BLACK);
-
-        TextButton btnFacialRecognition = new TextButton("> Facial Recognition <", style2);
-        btnFacialRecognition.addListener(new ClickListener() {
+        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> Facial Recognition <", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
@@ -78,7 +69,6 @@ public class LoginScreen implements Screen {
                 fileChooser.setListener(new FileChooserAdapter() {
                     @Override
                     public void selected(Array<FileHandle> file) {
-                        // Se ejecuta cuando el usuario selecciona un archivo
                         FileHandle selectedFile = file.first();
                         String filePath = selectedFile.path();
                         boolean usuarioValido = false;
@@ -96,8 +86,6 @@ public class LoginScreen implements Screen {
                         if (!usuarioValido) {
                             System.out.println("USUARIO NO VALIDO");
                         }
-
-
                     }
                 });
 
@@ -105,50 +93,25 @@ public class LoginScreen implements Screen {
                 fileChooser.setVisible(true);
             }
         });
-
-
-        final VisTextField usernameField = new VisTextField("", style);
-        usernameField.setMessageText("Username");
-
-        final VisTextField passwordField = new VisTextField("", style);
-        passwordField.setMessageText("Password");
-
-        TextButton btnRegister = new TextButton("Create Account", style2);
-        btnRegister.addListener(new ClickListener() {
+        TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("REGISTER");
                 game.changeScreen(new FormManagement(game, user2Manager));
                 dispose();
             }
         });
-
-        TextButton btnLogin = new TextButton("Login", skin);
-        btnLogin.addListener(new ClickListener() {
+        TextButton btnLogin = GraphicElements.createButton("Login", skin, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("LOGIN");
                 String username = usernameField.getText();
                 String password = passwordField.getText();
-                boolean usuarioValido = false;
-
-                for (User2 user : data) {
-                    if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
-                        usuarioValido = true;
-                        game.changeScreen(new GameScreen(game, user2Manager, user));
-                        dispose();
-                        break;
-                    }
-                }
-
-                if (!usuarioValido) {
-                    System.out.println("USUARIO NO VALIDO");
+                if (!loginValidation(username, password)) {
+                    System.out.println("Usuario invalido");
                 }
             }
         });
 
-
-        // Agregar elementos a la tabla
+        // TABLE TO ADD ALL THE GRAPHIC ELEMENTS
         Table table = new Table();
         table.setFillParent(true);
         float screenHeight = Gdx.graphics.getHeight();
@@ -163,6 +126,19 @@ public class LoginScreen implements Screen {
         table.add(btnLogin).padBottom(padBottomValue).row();
 
         stage.addActor(table);
+    }
+
+    private boolean loginValidation(String username, String password) {
+        boolean validUser = false;
+        for (User2 user : data) {
+            if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+                validUser = true;
+                game.changeScreen(new GameScreen(game, user2Manager, user));
+                dispose();
+                break;
+            }
+        }
+        return validUser;
     }
 
     @Override
