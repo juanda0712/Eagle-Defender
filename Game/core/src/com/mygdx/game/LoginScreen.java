@@ -154,7 +154,6 @@ public class LoginScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        // Actualiza la vista de la cámara
     }
 
     @Override
