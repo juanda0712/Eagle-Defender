@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -22,7 +22,7 @@ import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
-import com.sun.jndi.toolkit.dir.SearchFilter;
+
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,32 +32,58 @@ import java.util.regex.Pattern;
 public class FormManagement implements Screen {
     final MainController game;
     private final Stage stage;
-
-    private SearchFilter searchBarSongs;
-
     private final OrthographicCamera camera;
+    private Label welcomeLabel;
+    private Label infoLabel;
+    private VisTextField nameField;
+    private VisTextField usernameField;
+    private Label questionsLabel;
+    private Button btnQuestions;
+
+    private VisTextField birthDateField;
+    private VisTextField emailField;
+    private VisTextField passwordField;
+    private VisTextField confirmPasswordField;
+    private Label searchSongs;
+    private VisTextField searchField1;
+    private VisTextField searchField2;
+    private VisTextField searchField3;
+    private Label selectPreferedPalette;
+    private ImageButton btnPalette1;
+    private ImageButton btnPalette2;
+    private Label selectAnimation;
+    private SelectBox<String> choiceBoxAnimation;
+    private Label selectTexture;
+    private SelectBox<String> choiceBoxTexture;
+    private Label paymentMethods;
+    private TextButton btnPaymentMethods;
     String[] animations = {"Explosions", "Shock", "Transparency"};
     String[] textures = {"Smooth", "Bricked", "Rocky"};
 
+    private Label uploadPfp;
+    private TextButton btnUpload;
+    private TextButton btnCreateAccount;
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
-    private final QuestionsForm questionsForm;
+    private QuestionsForm questionsForm;
     private boolean validPassword = false;
     private boolean isValidDate = false;
-    private boolean btnTouched = false;
     private FileHandle selectedFile;
 
     public FormManagement(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
 
-        questionsForm = new QuestionsForm();
-        final CardDataForm cardDataForm = new CardDataForm();
-
         camera = new OrthographicCamera();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+        createGUIElements();
+        setUPGUIElements();
+    }
 
+    private void createGUIElements (){
+        questionsForm = new QuestionsForm();
+        final CardDataForm cardDataForm = new CardDataForm();
         Skin skin = VisUI.getSkin();
         BitmapFont font = new BitmapFont();
         TextureRegionDrawable underlineDrawable = new TextureRegionDrawable(new Texture("underline2.png"));
@@ -67,23 +93,22 @@ public class FormManagement implements Screen {
         style.fontColor = Color.BLACK;
         style.background = underlineDrawable;
 
-        Label welcomeLabel = new Label("Welcome!", skin);
+        welcomeLabel = new Label("Welcome!", skin);
         welcomeLabel.setColor(Color.BLACK);
 
-        Label infoLabel = new Label("Create your account by entering your personal info", skin);
+        infoLabel = new Label("Create your account by entering your personal info", skin);
         infoLabel.setColor(Color.BLACK);
 
-        final VisTextField nameField = new VisTextField("", style);
+        nameField = new VisTextField("", style);
         nameField.setMessageText("Name");
 
-        final VisTextField usernameField = new VisTextField("", style);
+        usernameField = new VisTextField("", style);
         usernameField.setMessageText("Username");
 
-        Label questionsLabel = new Label("Please answer these questions", skin);
+        questionsLabel = new Label("Please answer these questions", skin);
         questionsLabel.setColor(Color.BLACK);
 
-        Button btnQuestions = new TextButton("Go to questions", skin);
-
+        btnQuestions = new TextButton("Go to questions", skin);
         btnQuestions.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -94,33 +119,39 @@ public class FormManagement implements Screen {
 
             }
         });
-
-        final VisTextField birthDateField = new VisTextField("", style);
+        birthDateField = new VisTextField("", style);
         birthDateField.setMessageText("Birth Date");
 
-        final VisTextField emailField = new VisTextField("", style);
+        emailField = new VisTextField("", style);
         emailField.setMessageText("Email");
 
-        final VisTextField passwordField = new VisTextField("", style);
+        passwordField = new VisTextField("", style);
         passwordField.setMessageText("Password");
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
 
-
-        final VisTextField confirmPasswordField = new VisTextField("", style);
+        confirmPasswordField = new VisTextField("", style);
         confirmPasswordField.setMessageText("Confirm password");
+        confirmPasswordField.setPasswordMode(true);
+        confirmPasswordField.setPasswordCharacter('*');
 
 
-        final Label searchSongs = new Label("Write 3 favorite songs", skin);
+        searchSongs = new Label("Write 3 favorite songs", skin);
         searchSongs.setColor(Color.BLACK);
 
-        final VisTextField searchField1 = new VisTextField("song1", style);
-        final VisTextField searchField2 = new VisTextField("song2", style);
-        final VisTextField searchField3 = new VisTextField("song3", style);
+        searchField1 = new VisTextField("", style);
+        searchField1.setMessageText("Song 1");
 
+        searchField2 = new VisTextField("", style);
+        searchField2.setMessageText("Song 2");
 
-        Label selectPreferedPalette = new Label("Select your preferred color palette", skin);
+        searchField3 = new VisTextField("", style);
+        searchField3.setMessageText("Song 3");
+
+        selectPreferedPalette = new Label("Select your preferred color palette", skin);
         selectPreferedPalette.setColor(Color.BLACK);
 
-        ImageButton btnPalette1 = new ImageButton(skin);
+        btnPalette1 = new ImageButton(skin);
         Texture texture = new Texture(Gdx.files.internal("Palette 1.png"));
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
@@ -130,7 +161,7 @@ public class FormManagement implements Screen {
 
         btnPalette1.getStyle().imageUp = new TextureRegionDrawable(imageRegion);
 
-        ImageButton btnPalette2 = new ImageButton(skin);
+        btnPalette2 = new ImageButton(skin);
         Texture texture2 = new Texture(Gdx.files.internal("Palette 2.png"));
         texture2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
@@ -138,23 +169,22 @@ public class FormManagement implements Screen {
         imageRegion2.setRegionWidth(93);
         imageRegion2.setRegionHeight(22);
 
-
-        Label selectAnimation = new Label("Select one animation", skin);
+        selectAnimation = new Label("Select one animation", skin);
         selectAnimation.setColor(Color.BLACK);
 
-        final SelectBox<String> choiceBoxAnimation = new SelectBox<>(skin);
+        choiceBoxAnimation = new SelectBox<>(skin);
         choiceBoxAnimation.setItems(animations);
 
-        Label selectTexture = new Label("Select one wall texture", skin);
+        selectTexture = new Label("Select one wall texture", skin);
         selectTexture.setColor(Color.BLACK);
 
-        final SelectBox<String> choiceBoxTexture = new SelectBox<>(skin);
+        choiceBoxTexture = new SelectBox<>(skin);
         choiceBoxTexture.setItems(textures);
 
-        Label paymentMethods = new Label("Payment options", skin);
+        paymentMethods = new Label("Payment options", skin);
         paymentMethods.setColor(Color.BLACK);
 
-        TextButton btnPaymentMethods = new TextButton("Go to payment methods", skin);
+        btnPaymentMethods = new TextButton("Go to payment methods", skin);
         btnPaymentMethods.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -165,10 +195,10 @@ public class FormManagement implements Screen {
             }
         });
 
-        Label uploadPfp = new Label("Please upload your profile picture", skin);
+        uploadPfp = new Label("Please upload your profile picture", skin);
         uploadPfp.setColor(Color.BLACK);
 
-        TextButton btnUpload = new TextButton("Upload", skin);
+        btnUpload = new TextButton("Upload", skin);
         btnUpload.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -184,12 +214,11 @@ public class FormManagement implements Screen {
                 fileChooser.setVisible(true);
             }
         });
-        TextButton btnCreateAccount = new TextButton("Create account", skin);
+        btnCreateAccount = new TextButton("Create account", skin);
         btnCreateAccount.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                btnTouched = true;
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
                 isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
                 if (isValidDate && validPassword) {
@@ -259,36 +288,35 @@ public class FormManagement implements Screen {
                 }
             }
         });
-
+    }
+    private void setUPGUIElements (){
         Table contentTable = new Table();
         float screenHeight = Gdx.graphics.getHeight();
         float padBottomValue = screenHeight * 0.05f;
-
-        contentTable.add(infoLabel).padBottom(padBottomValue).row();
-        contentTable.add(nameField).left().padBottom(padBottomValue).row();
-        contentTable.add(usernameField).left().padBottom(padBottomValue).row();
-        contentTable.add(birthDateField).left().padBottom(padBottomValue).row();
-        contentTable.add(emailField).left().padBottom(padBottomValue).row();
-        contentTable.add(passwordField).left().padBottom(padBottomValue).row();
-        contentTable.add(confirmPasswordField).left().padBottom(padBottomValue).row();
-        contentTable.add(searchSongs).left().padBottom(padBottomValue).row();
-        contentTable.add(searchField1).left().padBottom(padBottomValue).row();
-        contentTable.add(searchField2).left().padBottom(padBottomValue).row();
-        contentTable.add(searchField3).left().padBottom(padBottomValue).row();
-        contentTable.add(selectPreferedPalette).left().padBottom(padBottomValue).row();
-        contentTable.add(btnPalette1).left().padBottom(padBottomValue).row();
-        contentTable.add(btnPalette2).left().padBottom(padBottomValue).row();
-        contentTable.add(selectAnimation).left().padBottom(padBottomValue).row();
-        contentTable.add(choiceBoxAnimation).left().padBottom(padBottomValue).row();
-        contentTable.add(selectTexture).left().padBottom(padBottomValue).row();
-        contentTable.add(choiceBoxTexture).left().padBottom(padBottomValue).row();
-        contentTable.add(paymentMethods).left().padBottom(padBottomValue).row();
-        contentTable.add(btnPaymentMethods).left().padBottom(padBottomValue).row();
-        contentTable.add(uploadPfp).left().padBottom(padBottomValue).row();
-        contentTable.add(btnUpload).left().padBottom(padBottomValue).row();
-        contentTable.add(questionsLabel).left().padBottom(padBottomValue).row();
-        contentTable.add(btnQuestions).left().padBottom(padBottomValue).row();
-        contentTable.add(btnCreateAccount).padBottom(padBottomValue * 2).row();
+        Array<Actor> GUIElements = new Array<>();
+        GUIElements.addAll(
+                welcomeLabel,
+                infoLabel,
+                nameField,
+                usernameField,
+                birthDateField,
+                emailField,
+                passwordField,
+                confirmPasswordField,
+                searchSongs,
+                searchField1, searchField2, searchField3,
+                selectPreferedPalette, btnPalette1, btnPalette2,
+                selectAnimation, choiceBoxAnimation,
+                selectTexture, choiceBoxTexture,
+                paymentMethods, btnPaymentMethods,
+                uploadPfp, btnUpload,questionsLabel,
+                btnQuestions,
+                btnCreateAccount
+        );
+        for (Actor element: GUIElements){
+            contentTable.add(element).left().padBottom(padBottomValue).row();
+        }
+        contentTable.padBottom(padBottomValue * 2);
 
 
         ScrollPane scrollPane = new ScrollPane(contentTable);
@@ -296,29 +324,39 @@ public class FormManagement implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        table.add(welcomeLabel).padBottom(10).row();
         table.add(scrollPane).expandX().fillX().pad(padBottomValue).row();
 
         stage.addActor(table);
+
     }
+
 
     private void getQuestions() {
         questionsArray = questionsForm.getQuestions();
     }
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
-
-        Pattern specailCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Skin skin = VisUI.getSkin();
+        Pattern specialCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
         Pattern UpperCasePatten = Pattern.compile("[A-Z ]");
         Pattern lowerCasePatten = Pattern.compile("[a-z ]");
         Pattern digitCasePatten = Pattern.compile("[0-9 ]");
         if (!passwordhere.equals(confirmhere)) {
             this.validPassword = false;
-            System.out.println("Password and confirm password does not match");
+            final Dialog dialog = new Dialog("Password confirmation does not match",skin);
+            dialog.show(stage);
+            dialog.setSize(280,60);
+            dialog.button("Ok", new ClickListener(){
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog.remove();
+
+                }
+            });
+
         } else if (passwordhere.length() < 8) {
             this.validPassword = false;
             System.out.println("Password length must have at least 8 characters");
-        } else if (!specailCharPatten.matcher(passwordhere).find()) {
+        } else if (!specialCharPatten.matcher(passwordhere).find()) {
             this.validPassword = false;
             System.out.println("Password must have at least one special character");
         } else if (!UpperCasePatten.matcher(passwordhere).find()) {
@@ -387,3 +425,4 @@ public class FormManagement implements Screen {
     public void dispose() {
     }
 }
+
