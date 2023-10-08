@@ -17,7 +17,6 @@ import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextField;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
-import com.mygdx.models.User;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
 import com.badlogic.gdx.files.FileHandle;
@@ -33,11 +32,13 @@ public class LoginScreen implements Screen {
     private final OrthographicCamera camera;
     private final JSONDataManager<User2> user2Manager;
     private final Array<User2> data;
+    private Recognizer recognizer;
 
     public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
         data = user2Manager.read();
+        recognizer = new Recognizer(user2Manager);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 900, 800);

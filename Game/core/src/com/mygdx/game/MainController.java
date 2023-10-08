@@ -11,22 +11,24 @@ import com.mygdx.utils.JSONDataManager;
 public class MainController extends Game {
 
     private LoginScreen login;
-    //private FormManagement register;
     public SpriteBatch batch;
-    public JSONDataManager<User> userManager;
     public JSONDataManager<User2> user2Manager;
+    private Recognizer recognizer;
+    private RealTimeFaceDetectionScreen faceScreen;
 
     @Override
     public void create() {
+        user2Manager = new JSONDataManager<>("data/users2.json", User2.class);
+        /*recognizer = new Recognizer(user2Manager);
+        User2 user = recognizer.Predict();
+        System.out.println(user);*/
         VisUI.load();
         batch = new SpriteBatch();
-        user2Manager = new JSONDataManager<>("data/users2.json", User2.class);
-        //register = new FormManagement(this, userManager);
-        login = new LoginScreen(this, user2Manager);
-        this.setScreen(login);
+        //login = new LoginScreen(this, user2Manager);
+        faceScreen = new RealTimeFaceDetectionScreen(this, user2Manager);
+        this.setScreen(faceScreen);
     }
 
-    // Método para cambiar de pantalla
     public void changeScreen(Screen newScreen) {
         setScreen(newScreen);
     }
@@ -39,6 +41,5 @@ public class MainController extends Game {
     @Override
     public void dispose() {
         login.dispose();
-        //register.dispose();
     }
 }
