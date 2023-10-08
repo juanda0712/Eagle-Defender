@@ -31,21 +31,24 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
     private CascadeClassifier faceCascade;
 
     private Recognizer recognizer;
-    private final JSONDataManager<User2> user2Manager;
+    //private final JSONDataManager<User2> user2Manager;
 
     public RealTimeFaceDetectionScreen(final MainController game, JSONDataManager<User2> user2Manager) {
-        this.user2Manager = user2Manager;
-        recognizer = new Recognizer(user2Manager);
-
         this.game = game;
+        // Especifica las dimensiones deseadas para la cámara
+        int desiredWidth = 640; // Ancho deseado
+        int desiredHeight = 480; // Altura deseada
         capture = new VideoCapture(0);
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera = new OrthographicCamera(desiredWidth, desiredHeight);
         spriteBatch = new SpriteBatch();
-        cameraTexture = new Texture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Pixmap.Format.RGB888);
+        cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
 
-        faceCascade = new CascadeClassifier();
+        /*this.user2Manager = user2Manager;
+        recognizer = new Recognizer(user2Manager);*/
+
+        /*faceCascade = new CascadeClassifier();
         String cascadeFilePath = "assets/haarcascades/haarcascade_frontalface_default.xml";
-        faceCascade.load(cascadeFilePath);
+        faceCascade.load(cascadeFilePath);*/
     }
 
     @Override
@@ -57,11 +60,11 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
             } else {
                 System.out.println("ENTRO A LA CAMARA");
             }
-            capture.set(opencv_videoio.CAP_PROP_ORIENTATION_AUTO, 90);
-            //capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT, -720);
+            //capture.set(opencv_videoio.CAP_PROP_ORIENTATION_AUTO, 90);
+            capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT,90);
 
-            int desiredWidth = Gdx.graphics.getWidth();
-            int desiredHeight = Gdx.graphics.getHeight();
+            int desiredWidth = 640;
+            int desiredHeight = 480;
 
             capture.set(opencv_videoio.CAP_PROP_FRAME_WIDTH, desiredWidth);
             capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT, desiredHeight);
@@ -77,12 +80,16 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Mat frame = new Mat();
-        capture.read(frame);
-        Mat grayFrame = new Mat();
-        opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgcodecs.IMREAD_GRAYSCALE);
+        if (capture.read(frame)) {
+            Mat grayFrame = new Mat();
+            //opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgcodecs.IMREAD_GRAYSCALE);
+            opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGB2GRAY);
+            opencv_imgproc.equalizeHist(grayFrame, grayFrame);
+        }
 
-        Size newSize = new Size(450, 450);
-        opencv_imgproc.resize(grayFrame, grayFrame, newSize);
+
+        //Size newSize = new Size(450, 450);
+        //opencv_imgproc.resize(grayFrame, grayFrame, newSize);
 
         //User2 user = recognizer.Predict(grayFrame);
         //System.out.println(user);
@@ -99,9 +106,9 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         spriteBatch.draw(cameraTexture, cameraX, cameraY);
         spriteBatch.end();
     }
-
     @Override
     public void resize(int width, int height) {
+        camera.setToOrtho(false, width, height);
     }
 
     @Override
