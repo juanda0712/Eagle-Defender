@@ -6,8 +6,10 @@ import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
 import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_core.MatVector;
+import org.bytedeco.opencv.opencv_core.Size;
 import org.bytedeco.opencv.opencv_face.FaceRecognizer;
 
 import org.bytedeco.javacpp.IntPointer;
@@ -47,6 +49,8 @@ public class Recognizer {
             FileHandle fileHandle = Gdx.files.internal(directoryPath + user.getImage());
             String filePath = fileHandle.file().getAbsolutePath();
             Mat img = opencv_imgcodecs.imread(filePath, opencv_imgcodecs.IMREAD_GRAYSCALE);
+            Size newSize = new Size(450, 450);
+            opencv_imgproc.resize(img, img, newSize);
             images.push_back(img);
         }
 
@@ -57,7 +61,8 @@ public class Recognizer {
     }
 
     public User2 Predict(Mat newImg) {
-        //String filePath3 = Gdx.files.local("data/imgs/Palette 2.png").path();
+        //public User2 Predict() {
+        //String filePath3 = Gdx.files.local("data/imgs/test1.png").path();
         //Mat newImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
 
         IntPointer label = new IntPointer(1);

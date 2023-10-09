@@ -2,12 +2,26 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.VisCheckBox;
+import com.kotcrab.vis.ui.widget.VisTextField;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
+import com.mygdx.utils.ImageComparator;
 import com.mygdx.utils.JSONDataManager;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
@@ -31,25 +45,58 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
     private CascadeClassifier faceCascade;
 
     private Recognizer recognizer;
-    //private final JSONDataManager<User2> user2Manager;
+    private final JSONDataManager<User2> user2Manager;
+    private boolean detectFaces = false;
+    private final Stage stage;
+    Mat frame;
+    Mat grayFrame;
 
     public RealTimeFaceDetectionScreen(final MainController game, JSONDataManager<User2> user2Manager) {
         this.game = game;
-        // Especifica las dimensiones deseadas para la cámara
-        int desiredWidth = 640; // Ancho deseado
-        int desiredHeight = 480; // Altura deseada
+        this.user2Manager = user2Manager;
+        int desiredWidth = 640;
+        int desiredHeight = 480;
         capture = new VideoCapture(0);
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
         spriteBatch = new SpriteBatch();
         cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
 
-        /*this.user2Manager = user2Manager;
-        recognizer = new Recognizer(user2Manager);*/
-
-        /*faceCascade = new CascadeClassifier();
+        faceCascade = new CascadeClassifier();
         String cascadeFilePath = "assets/haarcascades/haarcascade_frontalface_default.xml";
-        faceCascade.load(cascadeFilePath);*/
+        faceCascade.load(cascadeFilePath);
+
+        recognizer = new Recognizer(user2Manager);
+
+        stage = new Stage();
+        Gdx.input.setInputProcessor(stage);
+
+        frame = new Mat();
+        grayFrame = new Mat();
+
+        setupUIElements();
     }
+
+    private void setupUIElements() {
+        Skin skin = VisUI.getSkin();
+
+        TextButton btnLogin = new TextButton("Aceptar", skin);
+        btnLogin.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                detectFaces = true;
+            }
+        });
+        // Agregar elementos a la tabla
+        Table table = new Table();
+        table.setFillParent(true);
+        float screenHeight = Gdx.graphics.getHeight();
+        float padBottomValue = screenHeight * 0.05f;
+
+        table.add(btnLogin).row();
+
+        stage.addActor(table);
+    }
+
 
     @Override
     public void show() {
@@ -61,7 +108,7 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
                 System.out.println("ENTRO A LA CAMARA");
             }
             //capture.set(opencv_videoio.CAP_PROP_ORIENTATION_AUTO, 90);
-            capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT,90);
+            capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT, 90);
 
             int desiredWidth = 640;
             int desiredHeight = 480;
@@ -79,20 +126,25 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        Mat frame = new Mat();
-        if (capture.read(frame)) {
-            Mat grayFrame = new Mat();
-            //opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgcodecs.IMREAD_GRAYSCALE);
-            opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGB2GRAY);
-            opencv_imgproc.equalizeHist(grayFrame, grayFrame);
+        capture.read(frame);
+
+        if (detectFaces) {
+            opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
+            //opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGB2GRAY);
+            //opencv_imgproc.equalizeHist(grayFrame, grayFrame);
+
+            Size newSize = new Size(450, 450);
+            opencv_imgproc.resize(grayFrame, grayFrame, newSize);
+
+            //String filePath3 = Gdx.files.local("data/imgs/test1.png").path();
+            //Mat newImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
+
+            System.out.println(grayFrame);
+            User2 user = recognizer.Predict(grayFrame);
+            //User2 user = recognizer.Predict();
+            detectFaces = false;
+            System.out.println(user);
         }
-
-
-        //Size newSize = new Size(450, 450);
-        //opencv_imgproc.resize(grayFrame, grayFrame, newSize);
-
-        //User2 user = recognizer.Predict(grayFrame);
-        //System.out.println(user);
 
         Frame processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(frame));
         cameraTexture.draw(toPixmap(processedFrame), 0, 0);
@@ -105,7 +157,11 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         spriteBatch.begin();
         spriteBatch.draw(cameraTexture, cameraX, cameraY);
         spriteBatch.end();
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
+
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, width, height);
