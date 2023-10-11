@@ -23,12 +23,17 @@ public class GameScreen implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
     private JSONDataManager<User2> user2Manager;
-    //private Label label1;
+    private ColorPalette palette1;
     private User2 user;
     private Label usernameLabel;
     private Label fullNameLabel;
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user) {
+        palette1 = new ColorPalette(
+                Color.BLUE,
+                Color.ORANGE
+        );
+
         this.game = game;
         this.user2Manager = user2Manager;
         this.user = user;
@@ -95,6 +100,20 @@ public class GameScreen implements Screen {
         stage.addActor(fullNameLabel);
         stage.addActor(usernameLabel);
         stage.addActor(user);
+        setColorPalette();
+    }
+
+    private void setColorPalette() {
+        if (user.getSelectedColorPalette().isEmpty()) {
+            System.out.println("hola");
+        } else if (user.getSelectedColorPalette().equals("Palette 1")) {
+            applyColorPalette(); // Apply palette1 to your GUI elements
+        } else if (user.getSelectedColorPalette().equals("Palette 2")) {
+            //applyColorPalette(palette2); // Apply palette2 to your GUI elements
+        }
+    }
+    private void applyColorPalette (){
+        fullNameLabel.setColor(Color.BLUE);
     }
 
     @Override

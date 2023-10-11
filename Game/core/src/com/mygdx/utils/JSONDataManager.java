@@ -8,24 +8,34 @@ import com.badlogic.gdx.utils.Array;
 
 public class JSONDataManager<T> implements IDataManager<T> {
     private final Json json = new Json();
-    private final Array<T> data;
+    private Array<T> data = null;
     private String filePath;
     private FileHandle fileHandle;
 
     public JSONDataManager(String filePath, Class<T> dataClass) {
         this.filePath = filePath;
-        Array<T> tempData = null;
+        Array<T> tempData;
+
         try {
-            FileHandle fileHandle = Gdx.files.local(filePath);
-            tempData = json.fromJson(Array.class, dataClass, fileHandle);
+            fileHandle =  Gdx.files.local(filePath);
+            if (fileHandle.exists()){
+                FileHandle fileHandle = Gdx.files.internal(filePath);
+                tempData = json.fromJson(Array.class, dataClass, fileHandle);
+                data = tempData;
+
+            }
+            else {
+                Gdx.app.error("JSONDataManager", "File not found: " + filePath);
+
+            }
+
         } catch (Exception e) {
             Gdx.app.error("JSONDataManager", "Error al cargar archivo: " + e.getMessage());
         }
-        data = tempData;
-
-        //TEST
-        for (T object : data) {
-            System.out.println(object);
+        if (data != null){
+            for (T object : data){
+                System.out.println(object);
+            }
         }
     }
 
