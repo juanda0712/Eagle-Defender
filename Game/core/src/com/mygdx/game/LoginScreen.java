@@ -4,12 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
@@ -29,6 +32,7 @@ public class LoginScreen implements Screen {
     private final MainController game;
 
     private final Stage stage;
+    private FaceRecognitionActor faceRecognitionActor;
     private final OrthographicCamera camera;
     private final JSONDataManager<User2> user2Manager;
     private final Array<User2> data;
@@ -41,10 +45,12 @@ public class LoginScreen implements Screen {
         recognizer = new Recognizer(user2Manager);
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 900, 800);
+        camera.setToOrtho(false, 1720, 1080);
 
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+
+        faceRecognitionActor = new FaceRecognitionActor(user2Manager);
 
         setupUIElements();
     }
@@ -79,7 +85,6 @@ public class LoginScreen implements Screen {
                 fileChooser.setListener(new FileChooserAdapter() {
                     @Override
                     public void selected(Array<FileHandle> file) {
-                        // Se ejecuta cuando el usuario selecciona un archivo
                         FileHandle selectedFile = file.first();
                         String filePath = selectedFile.path();
                         boolean usuarioValido = false;
@@ -147,23 +152,39 @@ public class LoginScreen implements Screen {
                 }
             }
         });
-
-
-        // Agregar elementos a la tabla
-        Table table = new Table();
-        table.setFillParent(true);
+        float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
+        float leftTableWidth = screenWidth / 2;
+        float leftTableHeight = screenHeight;
         float padBottomValue = screenHeight * 0.05f;
 
-        table.add(welcomeLabel).padBottom(padBottomValue * 2).row();
-        table.add(infoLabel).padBottom(padBottomValue).row();
-        table.add(btnFacialRecognition).padBottom(padBottomValue).row();
-        table.add(usernameField).padBottom(padBottomValue).row();
-        table.add(passwordField).padBottom(padBottomValue).row();
-        table.add(btnRegister).padBottom(padBottomValue).row();
-        table.add(btnLogin).padBottom(padBottomValue).row();
+        Texture backgroundTexture = new Texture(Gdx.files.internal("loginBGpng.png")); // Reemplaza con la ubicación de tu imagen de fondo
+        Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
-        stage.addActor(table);
+
+        stage.addActor(faceRecognitionActor);
+        /*Table leftTable = new Table();
+        leftTable.setSize(leftTableWidth, leftTableHeight);
+        leftTable.setBackground(backgroundDrawable);
+        leftTable.add(btnFacialRecognition).padBottom(padBottomValue).center();
+
+        Table rightTable = new Table();
+        rightTable.setSize(leftTableWidth, leftTableHeight);
+        rightTable.add(welcomeLabel).padBottom(padBottomValue).center().row();
+        rightTable.add(infoLabel).padBottom(padBottomValue).center().row();
+        rightTable.add(usernameField).padBottom(padBottomValue).center().row();
+        rightTable.add(passwordField).padBottom(padBottomValue).center().row();
+        rightTable.add(btnRegister).padBottom(padBottomValue).center().row();
+        rightTable.add(btnLogin).padBottom(padBottomValue).center().row();
+
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.setSize(screenWidth, screenHeight);
+
+        mainTable.add(leftTable).expand().fill();
+        mainTable.add(rightTable).expand().fill();
+
+        stage.addActor(mainTable);*/
     }
 
     @Override
@@ -172,6 +193,13 @@ public class LoginScreen implements Screen {
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
+
+        // Llama al método act y draw del actor de detección de rostros
+        faceRecognitionActor.act(delta);
+        faceRecognitionActor.draw(stage.getBatch(), 1.0f);
+
+        //User2 detectedUser = faceRecognitionActor.getUser(); // Obtén el usuario detectado
+
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();

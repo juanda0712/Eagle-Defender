@@ -1,16 +1,15 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
 import org.bytedeco.javacv.Frame;
@@ -18,29 +17,25 @@ import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_objdetect.CascadeClassifier;
-import org.bytedeco.opencv.opencv_videoio.VideoCapture;
 import org.bytedeco.opencv.global.opencv_videoio;
+import org.bytedeco.opencv.opencv_videoio.VideoCapture;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
-public class RealTimeFaceDetectionScreen extends ScreenAdapter {
-    final MainController game;
+public class FaceRecognitionActor extends Actor {
     private VideoCapture capture;
     private OrthographicCamera camera;
     private SpriteBatch spriteBatch;
     private Texture cameraTexture;
-    private CascadeClassifier faceCascade;
-
     private Recognizer recognizer;
-    private final JSONDataManager<User2> user2Manager;
+    private JSONDataManager<User2> user2Manager;
     private boolean detectFaces = false;
-    private final Stage stage;
-    Mat frame;
-    Mat grayFrame;
+    private Mat frame;
+    private Mat grayFrame;
+    private User2 currentUser;
 
-    public RealTimeFaceDetectionScreen(final MainController game, JSONDataManager<User2> user2Manager) {
-        this.game = game;
+    public FaceRecognitionActor(JSONDataManager<User2> user2Manager) {
         this.user2Manager = user2Manager;
         int desiredWidth = 640;
         int desiredHeight = 480;
@@ -48,96 +43,34 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
         spriteBatch = new SpriteBatch();
         cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
-
-        faceCascade = new CascadeClassifier();
-        String cascadeFilePath = "assets/haarcascades/haarcascade_frontalface_default.xml";
-        faceCascade.load(cascadeFilePath);
-
         recognizer = new Recognizer(user2Manager);
-
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-
-        frame = new Mat();
-        grayFrame = new Mat();
-
-        setupUIElements();
     }
-
-    private void setupUIElements() {
-        Skin skin = VisUI.getSkin();
-
-        TextButton btnLogin = new TextButton("Aceptar", skin);
-        btnLogin.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                detectFaces = true;
-            }
-        });
-        // Agregar elementos a la tabla
-        Table table = new Table();
-        table.setFillParent(true);
-        float screenHeight = Gdx.graphics.getHeight();
-        float padBottomValue = screenHeight * 0.05f;
-
-        table.add(btnLogin).row();
-
-        stage.addActor(table);
-    }
-
 
     @Override
-    public void show() {
-        try {
-            if (!capture.open(0)) {
-                Gdx.app.error("RealTimeFaceDetectionScreen", "Error al abrir la cámara");
-                return;
-            } else {
-                System.out.println("ENTRO A LA CAMARA");
-            }
-            //capture.set(opencv_videoio.CAP_PROP_ORIENTATION_AUTO, 90);
-            capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT, 90);
-
-            int desiredWidth = 640;
-            int desiredHeight = 480;
-
-            capture.set(opencv_videoio.CAP_PROP_FRAME_WIDTH, desiredWidth);
-            capture.set(opencv_videoio.CAP_PROP_FRAME_HEIGHT, desiredHeight);
-
-        } catch (Exception e) {
-            Gdx.app.error("RealTimeFaceDetectionScreen", "Error al inicializar: " + e.getMessage());
+    public void act(float delta) {
+        if (!capture.isOpened()) {
+            Gdx.app.error("RealTimeFaceDetectionActor", "Error al abrir la cámara");
+            return;
         }
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         capture.read(frame);
 
         if (detectFaces) {
             opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
-            //opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGB2GRAY);
-            //opencv_imgproc.equalizeHist(grayFrame, grayFrame);
 
             Size newSize = new Size(450, 450);
             opencv_imgproc.resize(grayFrame, grayFrame, newSize);
 
-            //String filePath3 = Gdx.files.local("data/imgs/test1.png").path();
-            //Mat newImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
-
-            System.out.println(grayFrame);
-            User2 user = recognizer.Predict(grayFrame);
-            //User2 user = recognizer.Predict();
+            currentUser = recognizer.Predict(grayFrame);
             detectFaces = false;
-            System.out.println(user);
         }
 
         Frame processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(frame));
         cameraTexture.draw(toPixmap(processedFrame), 0, 0);
+    }
 
-
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
         float cameraX = (Gdx.graphics.getWidth() - cameraTexture.getWidth()) / 2f;
         float cameraY = (Gdx.graphics.getHeight() - cameraTexture.getHeight()) / 2f;
 
@@ -145,23 +78,14 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         spriteBatch.begin();
         spriteBatch.draw(cameraTexture, cameraX, cameraY);
         spriteBatch.end();
-
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
     }
 
-    @Override
-    public void resize(int width, int height) {
-        camera.setToOrtho(false, width, height);
+    public void startFaceDetection() {
+        detectFaces = true;
     }
 
-    @Override
-    public void dispose() {
-        if (capture != null) {
-            capture.release();
-        }
-        cameraTexture.dispose();
-        spriteBatch.dispose();
+    public User2 getUser() {
+        return currentUser;
     }
 
     private BufferedImage toBufferedImage(Mat mat) {
@@ -197,7 +121,7 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
         pixmap.getPixels().clear();
         pixmap.getPixels().put(pixels);
         pixmap.getPixels().flip();
-
         return pixmap;
     }
 }
+

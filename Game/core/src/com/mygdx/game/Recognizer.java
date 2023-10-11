@@ -36,7 +36,6 @@ public class Recognizer {
         data = user2Manager.read();
 
         String directoryPath = "data/imgs/";
-        //FileHandle directoryHandle = Gdx.files.local(directoryPath);
 
         MatVector images = new MatVector();
 
@@ -61,10 +60,6 @@ public class Recognizer {
     }
 
     public User2 Predict(Mat newImg) {
-        //public User2 Predict() {
-        //String filePath3 = Gdx.files.local("data/imgs/test1.png").path();
-        //Mat newImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
-
         IntPointer label = new IntPointer(1);
         DoublePointer confidence = new DoublePointer(1);
         model.predict(newImg, label, confidence);

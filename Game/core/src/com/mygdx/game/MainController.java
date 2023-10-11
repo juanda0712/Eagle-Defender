@@ -24,9 +24,9 @@ public class MainController extends Game {
         System.out.println(user);*/
         VisUI.load();
         batch = new SpriteBatch();
-        //login = new LoginScreen(this, user2Manager);
-        faceScreen = new RealTimeFaceDetectionScreen(this, user2Manager);
-        this.setScreen(faceScreen);
+        login = new LoginScreen(this, user2Manager);
+        //faceScreen = new RealTimeFaceDetectionScreen(this, user2Manager);
+        this.setScreen(login);
     }
 
     public void changeScreen(Screen newScreen) {
