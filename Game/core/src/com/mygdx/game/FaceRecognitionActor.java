@@ -44,6 +44,9 @@ public class FaceRecognitionActor extends Actor {
         spriteBatch = new SpriteBatch();
         cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
         recognizer = new Recognizer(user2Manager);
+
+        frame = new Mat();
+        grayFrame = new Mat();
     }
 
     @Override
@@ -54,7 +57,6 @@ public class FaceRecognitionActor extends Actor {
         }
 
         capture.read(frame);
-
         if (detectFaces) {
             opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
 
