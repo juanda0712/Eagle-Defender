@@ -37,8 +37,8 @@ public class FaceRecognitionActor extends Actor {
 
     public FaceRecognitionActor(JSONDataManager<User2> user2Manager) {
         this.user2Manager = user2Manager;
-        int desiredWidth = 640;
-        int desiredHeight = 480;
+        int desiredWidth = 1720;
+        int desiredHeight = 1080;
         capture = new VideoCapture(0);
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
         spriteBatch = new SpriteBatch();
@@ -76,10 +76,10 @@ public class FaceRecognitionActor extends Actor {
         float cameraX = (Gdx.graphics.getWidth() - cameraTexture.getWidth()) / 2f;
         float cameraY = (Gdx.graphics.getHeight() - cameraTexture.getHeight()) / 2f;
 
-        spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.begin();
-        spriteBatch.draw(cameraTexture, cameraX, cameraY);
-        spriteBatch.end();
+       // batch.setProjectionMatrix(camera.combined);
+        //batch.begin();
+        batch.draw(cameraTexture, cameraX, cameraY);
+        //batch.end();
     }
 
     public void startFaceDetection() {

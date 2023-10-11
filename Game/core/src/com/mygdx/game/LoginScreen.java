@@ -162,11 +162,13 @@ public class LoginScreen implements Screen {
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
 
-        stage.addActor(faceRecognitionActor);
-        /*Table leftTable = new Table();
+//        stage.addActor(faceRecognitionActor);
+        Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        leftTable.add(btnFacialRecognition).padBottom(padBottomValue).center();
+        //leftTable.add(btnFacialRecognition).padBottom(padBottomValue).center();
+        leftTable.add(faceRecognitionActor).size(600, 400).padBottom(padBottomValue).center();
+
 
         Table rightTable = new Table();
         rightTable.setSize(leftTableWidth, leftTableHeight);
@@ -184,7 +186,7 @@ public class LoginScreen implements Screen {
         mainTable.add(leftTable).expand().fill();
         mainTable.add(rightTable).expand().fill();
 
-        stage.addActor(mainTable);*/
+        stage.addActor(mainTable);
     }
 
     @Override
@@ -193,13 +195,13 @@ public class LoginScreen implements Screen {
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-
+        game.batch.begin();
         // Llama al método act y draw del actor de detección de rostros
         faceRecognitionActor.act(delta);
-        faceRecognitionActor.draw(stage.getBatch(), 1.0f);
+        faceRecognitionActor.draw(game.batch, 1.0f);
 
         //User2 detectedUser = faceRecognitionActor.getUser(); // Obtén el usuario detectado
-
+        game.batch.end();
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
