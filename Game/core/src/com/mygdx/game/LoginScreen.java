@@ -51,7 +51,7 @@ public class LoginScreen implements Screen {
         TextureRegionDrawable underlineDrawable = new TextureRegionDrawable(new Texture("underline2.png"));
 
         // Create styles
-        VisTextField.VisTextFieldStyle textFieldStyle = CustomStyle.createTextFieldStyle(font, Color.ORANGE, underlineDrawable);
+        VisTextField.VisTextFieldStyle textFieldStyle = CustomStyle.createTextFieldStyle(font, Color.BLACK, underlineDrawable);
         VisCheckBox.VisCheckBoxStyle checkBoxStyle = CustomStyle.createCheckBoxStyle(font, Color.BLUE, Color.BLACK);
 
         //GRAPHIC ELEMENTS
@@ -60,6 +60,8 @@ public class LoginScreen implements Screen {
 
         final VisTextField usernameField = GraphicElements.createTextField("Username", textFieldStyle);
         final VisTextField passwordField = GraphicElements.createTextField("Password", textFieldStyle);
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
 
         TextButton btnFacialRecognition = GraphicElements.createCustomButton("> Facial Recognition <", checkBoxStyle, new ClickListener() {
             @Override

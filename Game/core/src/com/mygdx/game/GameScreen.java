@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -14,9 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.kotcrab.vis.ui.widget.color.internal.Palette;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
+import jdk.internal.org.jline.utils.ColorPalette;
 
 public class GameScreen implements Screen {
     private final MainController game;
@@ -28,11 +31,10 @@ public class GameScreen implements Screen {
     private Label usernameLabel;
     private Label fullNameLabel;
 
+    private Array<Actor> arrayGUIElements;
+
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user) {
-        palette1 = new ColorPalette(
-                Color.BLUE,
-                Color.ORANGE
-        );
+
 
         this.game = game;
         this.user2Manager = user2Manager;
@@ -100,20 +102,29 @@ public class GameScreen implements Screen {
         stage.addActor(fullNameLabel);
         stage.addActor(usernameLabel);
         stage.addActor(user);
-        setColorPalette();
-    }
-
-    private void setColorPalette() {
-        if (user.getSelectedColorPalette().isEmpty()) {
-            System.out.println("hola");
-        } else if (user.getSelectedColorPalette().equals("Palette 1")) {
-            applyColorPalette(); // Apply palette1 to your GUI elements
-        } else if (user.getSelectedColorPalette().equals("Palette 2")) {
-            //applyColorPalette(palette2); // Apply palette2 to your GUI elements
-        }
+        arrayGUIElements = new Array<>();
+        arrayGUIElements.add(fullNameLabel);
+        arrayGUIElements.add(usernameLabel);
+        arrayGUIElements.add(label1);
+        applyColorPalette();
     }
     private void applyColorPalette (){
-        fullNameLabel.setColor(Color.BLUE);
+        if (user.getSelectedColorPalette().equals("Palette 1")) {
+            for (Actor element : arrayGUIElements) {
+                if (element instanceof Label) {
+                    Label label = (Label) element;
+                    label.setColor(0.2f, 0.2f, 0.8f, 0.5f); // Blue with transparency
+                } else if (element instanceof TextButton) {
+                    TextButton button = (TextButton) element;
+                    button.setColor(0.2f, 0.2f, 0.8f, 0.5f); // Blue with transparency
+                }
+            }
+        }
+        else if (user.getSelectedColorPalette().equals("Palette 2")) {
+            for(Actor elements : arrayGUIElements){
+                elements.setColor(Color.ORANGE);
+            }
+        }
     }
 
     @Override
