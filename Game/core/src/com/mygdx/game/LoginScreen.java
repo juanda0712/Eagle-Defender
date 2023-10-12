@@ -50,7 +50,7 @@ public class LoginScreen implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        faceRecognitionActor = new FaceRecognitionActor(user2Manager);
+        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
 
         setupUIElements();
     }
@@ -80,35 +80,7 @@ public class LoginScreen implements Screen {
         btnFacialRecognition.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
-                fileChooser.setSelectionMode(FileChooser.SelectionMode.FILES);
-                fileChooser.setListener(new FileChooserAdapter() {
-                    @Override
-                    public void selected(Array<FileHandle> file) {
-                        FileHandle selectedFile = file.first();
-                        String filePath = selectedFile.path();
-                        boolean usuarioValido = false;
-                        double result;
-
-                        for (User2 user : data) {
-                            result = ImageComparator.comparator(filePath, user.getImage());
-                            if (result > 0.8) {
-                                usuarioValido = true;
-                                game.changeScreen(new GameScreen(game, user2Manager, user));
-                                dispose();
-                                break;
-                            }
-                        }
-                        if (!usuarioValido) {
-                            System.out.println("USUARIO NO VALIDO");
-                        }
-
-
-                    }
-                });
-
-                stage.addActor(fileChooser.fadeIn());
-                fileChooser.setVisible(true);
+                faceRecognitionActor.startFaceDetection();
             }
         });
 
@@ -162,12 +134,11 @@ public class LoginScreen implements Screen {
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
 
-//        stage.addActor(faceRecognitionActor);
         Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        //leftTable.add(btnFacialRecognition).padBottom(padBottomValue).center();
-        leftTable.add(faceRecognitionActor).size(600, 400).padBottom(padBottomValue).center();
+        leftTable.add(faceRecognitionActor).center().row();
+        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 10).left().row();
 
 
         Table rightTable = new Table();
@@ -195,14 +166,6 @@ public class LoginScreen implements Screen {
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-        game.batch.begin();
-        // Llama al método act y draw del actor de detección de rostros
-        faceRecognitionActor.act(delta);
-        faceRecognitionActor.draw(game.batch, 1.0f);
-
-        //User2 detectedUser = faceRecognitionActor.getUser(); // Obtén el usuario detectado
-        game.batch.end();
-
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }

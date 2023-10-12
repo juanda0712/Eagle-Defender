@@ -4,26 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.global.opencv_imgproc;
-import org.bytedeco.opencv.opencv_objdetect.CascadeClassifier;
-import org.bytedeco.opencv.global.opencv_videoio;
 import org.bytedeco.opencv.opencv_videoio.VideoCapture;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 public class FaceRecognitionActor extends Actor {
+    private final MainController game;
     private VideoCapture capture;
     private OrthographicCamera camera;
     private SpriteBatch spriteBatch;
@@ -34,19 +29,22 @@ public class FaceRecognitionActor extends Actor {
     private Mat frame;
     private Mat grayFrame;
     private User2 currentUser;
+    private Frame processedFrame;
 
-    public FaceRecognitionActor(JSONDataManager<User2> user2Manager) {
+    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager) {
+        this.game = game;
         this.user2Manager = user2Manager;
-        int desiredWidth = 1720;
-        int desiredHeight = 1080;
+        int desiredWidth = 960;
+        int desiredHeight = 720;
         capture = new VideoCapture(0);
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
+        cameraTexture = new Texture(320, 240, Pixmap.Format.RGB888);
         spriteBatch = new SpriteBatch();
-        cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
         recognizer = new Recognizer(user2Manager);
 
         frame = new Mat();
         grayFrame = new Mat();
+        processedFrame = new Frame();
     }
 
     @Override
@@ -64,22 +62,30 @@ public class FaceRecognitionActor extends Actor {
             opencv_imgproc.resize(grayFrame, grayFrame, newSize);
 
             currentUser = recognizer.Predict(grayFrame);
+            System.out.println(currentUser);
+            game.changeScreen(new GameScreen(game, user2Manager, currentUser));
             detectFaces = false;
+            game.dispose();
         }
 
-        Frame processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(frame));
+        if (processedFrame != null) {
+            processedFrame.close();
+        }
+        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(frame));
         cameraTexture.draw(toPixmap(processedFrame), 0, 0);
+        frame.release();
+        grayFrame.release();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        float cameraX = (Gdx.graphics.getWidth() - cameraTexture.getWidth()) / 2f;
-        float cameraY = (Gdx.graphics.getHeight() - cameraTexture.getHeight()) / 2f;
-
-       // batch.setProjectionMatrix(camera.combined);
-        //batch.begin();
-        batch.draw(cameraTexture, cameraX, cameraY);
-        //batch.end();
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+        float leftTableWidth = screenWidth / 2;
+        float leftTableHeight = screenHeight;
+        float camerax = (leftTableWidth - 320) / 2;
+        float cameray = (leftTableHeight - 240) / 2;
+        batch.draw(cameraTexture, camerax + 30, cameray, cameraTexture.getWidth(), cameraTexture.getHeight(), 0, 0, cameraTexture.getWidth(), cameraTexture.getHeight(), false, true);
     }
 
     public void startFaceDetection() {

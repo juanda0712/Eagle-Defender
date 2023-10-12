@@ -30,8 +30,8 @@ public class Recognizer {
 
     public Recognizer(JSONDataManager<User2> user2Manager) {
         this.user2Manager = user2Manager;
-        model = EigenFaceRecognizer.create();
-        //model = LBPHFaceRecognizer.create();
+        //model = EigenFaceRecognizer.create();
+        model = LBPHFaceRecognizer.create();
         //model = FisherFaceRecognizer.create();
         data = user2Manager.read();
 
@@ -60,6 +60,9 @@ public class Recognizer {
     }
 
     public User2 Predict(Mat newImg) {
+        //String filePath3 = Gdx.files.local("data/imgs/juan.png").path();
+        //Mat testImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
+
         IntPointer label = new IntPointer(1);
         DoublePointer confidence = new DoublePointer(1);
         model.predict(newImg, label, confidence);
