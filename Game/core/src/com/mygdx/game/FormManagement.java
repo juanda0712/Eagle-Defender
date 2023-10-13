@@ -219,7 +219,7 @@ public class FormManagement implements Screen {
         choiceBoxAnimation = new SelectBox<>(skin);
         choiceBoxAnimation.setItems(animations);
 
-        selectTexture = new Label("Select one wall texture", skin);
+        selectTexture = new Label("Select one   git wall texture", skin);
         selectTexture.setColor(Color.BLACK);
 
         choiceBoxTexture = new SelectBox<>(skin);

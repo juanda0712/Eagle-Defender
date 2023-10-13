@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -42,6 +43,8 @@ public class GameScreen implements Screen {
     private Label usernameLabel;
     private Label fullNameLabel;
 
+    private final Array<Actor> arrayGUIElements = new Array<>();
+
     Sprite playerSprite;
     Sprite bulletSprite;
 
@@ -71,8 +74,8 @@ public class GameScreen implements Screen {
 
     boolean isShooting = false;
     float bulletSpeed = 800.0f;
-    int contador =0;
-    int contador2 =0;
+    int contador = 0;
+    int contador2 = 0;
     private Array<Image> placedImages;
 
     private GameScreenFeatures gameScreenFeatures;
@@ -142,13 +145,11 @@ public class GameScreen implements Screen {
         bulletSprite = new Sprite(bulletTexture);
 
 
-
         //playerRect = new Rectangle(playerX, playerY, playerTexture.getWidth(), playerTexture.getHeight());
 
         playerImage = new Image(playerSprite);
-        playerImage.setPosition(1300,500);
+        playerImage.setPosition(1300, 500);
         bulletImage = new Image(bulletSprite);
-
 
 
         Image image1 = new Image(eagleTexture);
@@ -158,16 +159,16 @@ public class GameScreen implements Screen {
         Image userImage = new Image(userimageTexture);
 
         Image lineaVertical = new Image(lineaRecta);
-        lineaVertical.setPosition(Gdx.graphics.getWidth() / 2,0);
+        lineaVertical.setPosition(Gdx.graphics.getWidth() / 2, 0);
         lineaVertical.setSize(2, 920);
 
         Image lineaHorizontal = new Image(lineaRecta);
-        lineaHorizontal.setPosition(0,920);
+        lineaHorizontal.setPosition(0, 920);
         lineaHorizontal.setSize(Gdx.graphics.getWidth(), 2);
 
 
         userImage.setPosition(30, 920);
-        userImage.setSize(150,150);
+        userImage.setSize(150, 150);
 
 
         stage.addActor(backButton);
@@ -186,7 +187,30 @@ public class GameScreen implements Screen {
         stage.addActor(lineaHorizontal);
         stage.addActor(playerImage);
 
+        arrayGUIElements.add(fullNameLabel);
+        arrayGUIElements.add(usernameLabel);
+        arrayGUIElements.add(defenderLabel);
+        applyColorPalette();
+    }
 
+
+    private void applyColorPalette() {
+        fullNameLabel.setColor(Color.BLUE);
+        if (user.getSelectedColorPalette().equals("Palette 1")) {
+            for (Actor element : arrayGUIElements) {
+                if (element instanceof Label) {
+                    Label label = (Label) element;
+                    label.setColor(0.2f, 0.2f, 0.8f, 0.5f); // Blue with transparency
+                } else if (element instanceof TextButton) {
+                    TextButton button = (TextButton) element;
+                    button.setColor(0.2f, 0.2f, 0.8f, 0.5f); // Blue with transparency
+                }
+            }
+        } else if (user.getSelectedColorPalette().equals("Palette 2")) {
+            for (Actor elements : arrayGUIElements) {
+                elements.setColor(Color.ORANGE);
+            }
+        }
         stage.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -201,8 +225,6 @@ public class GameScreen implements Screen {
                 return true;
             }
         });
-
-
 
 
     }
@@ -299,12 +321,6 @@ public class GameScreen implements Screen {
         }
 
     }
-
-
-
-
-
-
 
 
     @Override
