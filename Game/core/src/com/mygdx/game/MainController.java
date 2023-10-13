@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kotcrab.vis.ui.VisUI;
-import com.mygdx.models.User;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
 
@@ -19,13 +18,9 @@ public class MainController extends Game {
     @Override
     public void create() {
         user2Manager = new JSONDataManager<>("data/users2.json", User2.class);
-        /*recognizer = new Recognizer(user2Manager);
-        User2 user = recognizer.Predict();
-        System.out.println(user);*/
         VisUI.load();
         batch = new SpriteBatch();
         login = new LoginScreen(this, user2Manager);
-        //faceScreen = new RealTimeFaceDetectionScreen(this, user2Manager);
         this.setScreen(login);
     }
 
