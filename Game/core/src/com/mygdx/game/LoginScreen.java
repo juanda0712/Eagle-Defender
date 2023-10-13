@@ -137,8 +137,8 @@ public class LoginScreen implements Screen {
         Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        leftTable.add(faceRecognitionActor).center().row();
-        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 10).left().row();
+        leftTable.add(faceRecognitionActor).size(320, 240).center().row();
+        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 15).center().row();
 
 
         Table rightTable = new Table();

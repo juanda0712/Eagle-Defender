@@ -13,6 +13,7 @@ import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
@@ -34,11 +35,19 @@ public class FaceRecognitionActor extends Actor {
     public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
-        int desiredWidth = 960;
-        int desiredHeight = 720;
+        int desiredWidth = 320;
+        int desiredHeight = 240;
+
+        // Configura la resolución de captura deseada (320x240)
+        int captureWidth = 320;
+        int captureHeight = 240;
         capture = new VideoCapture(0);
+        capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
+        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);
+
+        // Configura la resolución del OrthographicCamera y cameraTexture
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
-        cameraTexture = new Texture(320, 240, Pixmap.Format.RGB888);
+        cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
         spriteBatch = new SpriteBatch();
         recognizer = new Recognizer(user2Manager);
 
