@@ -29,36 +29,45 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.utils.ImageComparator;
 
 
-public class LoginScreen implements Screen {
+public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
+{
 
     private final MainController game;
 
-    private final Stage stage;
-    private FaceRecognitionActor faceRecognitionActor;
+    private Stage stage = new Stage();
+    //private FaceRecognitionActor faceRecognitionActor;
+    private final Skin skin = VisUI.getSkin();
+    private Dialog dialog = new Dialog("", skin);
     private final OrthographicCamera camera;
     private final JSONDataManager<User2> user2Manager;
+
+    private final QuestionsForm2 questionsForm;
+
+    private Array<String> questionsArray;
     private final Array<User2> data;
-    private Recognizer recognizer;
+
+    private User2 user;
+    //private Recognizer recognizer;
 
     public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager) {
+        questionsForm = new QuestionsForm2(game,  user2Manager, user, this);
         this.game = game;
         this.user2Manager = user2Manager;
         data = user2Manager.read();
-        recognizer = new Recognizer(user2Manager);
+        //recognizer = new Recognizer(user2Manager);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
 
-        stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
+        //faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
 
         setupUIElements();
     }
 
     private void setupUIElements() {
-        Skin skin = VisUI.getSkin();
+
         BitmapFont font = new BitmapFont();
         TextureRegionDrawable underlineDrawable = new TextureRegionDrawable(new Texture("underline2.png"));
 
@@ -78,7 +87,7 @@ public class LoginScreen implements Screen {
         TextButton btnFacialRecognition = GraphicElements.createCustomButton("> Facial Recognition <", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                faceRecognitionActor.startFaceDetection();
+                //faceRecognitionActor.startFaceDetection();
             }
         });
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
@@ -88,13 +97,30 @@ public class LoginScreen implements Screen {
                 dispose();
             }
         });
+        TextButton btnForgotPassword = GraphicElements.createCustomButton("Forgot password?", checkBoxStyle, new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (questionsForm.isVisible()) {
+                    stage.addActor(questionsForm);
+                    questionsForm.fadeIn();
+                }
+            }
+        });
         TextButton btnLogin = GraphicElements.createButton("Login", skin, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
                 if (!loginValidation(username, password)) {
-                    System.out.println("Usuario invalido");
+                    final Dialog dialog = new Dialog("", skin);
+                    dialog.show(stage);
+                    dialog.setSize(280, 60);
+                    dialog.button("Ok", new ClickListener() {
+                        public void clicked(InputEvent event, float x, float y) {
+                            dialog.remove();
+
+                        }
+                    });
                 }
             }
         });
@@ -112,7 +138,7 @@ public class LoginScreen implements Screen {
         Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        leftTable.add(faceRecognitionActor).size(320, 240).center().row();
+        // leftTable.add(faceRecognitionActor).size(320, 240).center().row();
         leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 15).center().row();
 
 
@@ -123,6 +149,7 @@ public class LoginScreen implements Screen {
         rightTable.add(usernameField).padBottom(padBottomValue).center().row();
         rightTable.add(passwordField).padBottom(padBottomValue).center().row();
         rightTable.add(btnRegister).padBottom(padBottomValue).center().row();
+        rightTable.add(btnForgotPassword).padBottom(padBottomValue).center().row();
         rightTable.add(btnLogin).padBottom(padBottomValue).center().row();
 
         Table mainTable = new Table();
@@ -148,7 +175,8 @@ public class LoginScreen implements Screen {
         return validUser;
     }
 
-    @Override
+
+
     public void render(float delta) {
         ScreenUtils.clear(1, 2, 1, 2);
 
@@ -181,4 +209,19 @@ public class LoginScreen implements Screen {
     @Override
     public void dispose() {
     }
-}
+
+
+    public void displayDialog(String message) {
+
+        dialog.text(message);
+        dialog.button("Ok", new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+        dialog.show(stage);
+
+    }
+
+
+    }
