@@ -7,17 +7,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.kotcrab.vis.ui.VisUI;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.utils.JSONDataManager;
@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 
 public class GameScreen implements Screen {
@@ -80,20 +81,132 @@ public class GameScreen implements Screen {
 
     private GameScreenFeatures gameScreenFeatures;
 
+    private boolean placingEnabled = false;
+    private ImageButton woodenButton;
+    private ImageButton cementButton;
+    private ImageButton steelButton;
+    private ImageButton eagleButton;
+    private Label woodCounterLabel;
+    private Label cementCounterLabel;
+    private Label steelCounterLabel;
+    private Label eagleCounterLabel;
+    private CountersBarriers countersBarriers;
+    //private Image selectedImageToRotate;
+    //private boolean rotatingImage = false;
 
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user) {
+
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
         this.game = game;
         this.user2Manager = user2Manager;
         this.user = user;
+        this.countersBarriers = countersBarriers;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         placedImages = new Array<>();
-        gameScreenFeatures = new GameScreenFeatures(stage, placedImages);
+        setupButtons();
+        gameScreenFeatures = new GameScreenFeatures(stage, placedImages, this, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
         setupUIElements();
+
     }
+
+    private void setupButtons() {
+        Skin skin = VisUI.getSkin();
+        // ImageButton de barrera de madera, y su label de contador
+        Drawable buttonUpWood = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/wood.jpg"))));
+        Drawable buttonDownWood = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/woodD.jpg"))));
+        woodenButton = new ImageButton(buttonUpWood, buttonDownWood);
+        woodenButton.setPosition(10, 10);
+        woodenButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!woodenButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    cementButton.setChecked(false);
+                    steelButton.setChecked(false);
+                    eagleButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(woodenButton);
+        woodCounterLabel = new Label("wood barriers: " + countersBarriers.getWoodCounter(), skin);
+        woodCounterLabel.setPosition(10, 80);
+        stage.addActor(woodCounterLabel);
+
+        // ImageButton de barrera de cemento, y su label de contador
+        Drawable buttonUpCement = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/cement.jpg"))));
+        Drawable buttonDownCement = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/cementD.jpg"))));
+        cementButton = new ImageButton(buttonUpCement, buttonDownCement);
+        cementButton.setPosition(160, 10);
+        cementButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!cementButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    woodenButton.setChecked(false);
+                    steelButton.setChecked(false);
+                    eagleButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(cementButton);
+        cementCounterLabel = new Label("cement barriers: " + countersBarriers.getCementCounter(), skin);
+        cementCounterLabel.setPosition(160, 80);
+        stage.addActor(cementCounterLabel);
+
+        // ImageButton de barrera de acero, y su label de contador
+        Drawable buttonUpSteel = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/steel.jpg"))));
+        Drawable buttonDownSteel = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/steelD.jpg"))));
+        steelButton = new ImageButton(buttonUpSteel, buttonDownSteel);
+        steelButton.setPosition(320, 10);
+        steelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!steelButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    woodenButton.setChecked(false);
+                    cementButton.setChecked(false);
+                    eagleButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(steelButton);
+        steelCounterLabel = new Label("steel barriers: " + countersBarriers.getSteelCounter(), skin);
+        steelCounterLabel.setPosition(320, 80);
+        stage.addActor(steelCounterLabel);
+
+        //ImageButton de Eagle, y su label de contador
+        Drawable buttonUpEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/head.jpg"))));
+        Drawable buttonDownEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/head.jpg"))));
+        eagleButton = new ImageButton(buttonUpEagle, buttonDownEagle);
+        eagleButton.setPosition(460, 10);
+        eagleButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!eagleButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    cementButton.setChecked(false);
+                    steelButton.setChecked(false);
+                    woodenButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(eagleButton);
+        eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
+        eagleCounterLabel.setPosition(460, 90);
+        stage.addActor(eagleCounterLabel);
+    }
+
 
     private void setupUIElements() {
         Skin skin = VisUI.getSkin();
@@ -145,8 +258,6 @@ public class GameScreen implements Screen {
         bulletSprite = new Sprite(bulletTexture);
 
 
-        //playerRect = new Rectangle(playerX, playerY, playerTexture.getWidth(), playerTexture.getHeight());
-
         playerImage = new Image(playerSprite);
         playerImage.setPosition(1300, 500);
         bulletImage = new Image(bulletSprite);
@@ -191,6 +302,36 @@ public class GameScreen implements Screen {
         arrayGUIElements.add(usernameLabel);
         arrayGUIElements.add(defenderLabel);
         applyColorPalette();
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    // Maneja el clic izquierdo como lo hacías anteriormente.
+                    if (woodenButton.isChecked()) {
+                        gameScreenFeatures.addWood(x, y);
+                    } else if (cementButton.isChecked()) {
+                        gameScreenFeatures.addCement(x, y);
+                    } else if (steelButton.isChecked()) {
+                        gameScreenFeatures.addSteel(x, y);
+                    } else if (eagleButton.isChecked()) {
+                        gameScreenFeatures.addEagle(x, y);
+                    }
+                }
+                return true;
+            }
+        });
+    }
+
+    public boolean isPlacingEnabled() {
+        return placingEnabled;
+    }
+
+    public void updateCounterLabel() {
+        woodCounterLabel.setText("wood barriers: " + countersBarriers.getWoodCounter());
+        cementCounterLabel.setText("cement barriers: " + countersBarriers.getCementCounter());
+        steelCounterLabel.setText("steel barriers: " + countersBarriers.getSteelCounter());
+        eagleCounterLabel.setText("Eagle: " + countersBarriers.getEagleCounter());
     }
 
 
@@ -211,21 +352,6 @@ public class GameScreen implements Screen {
                 elements.setColor(Color.ORANGE);
             }
         }
-        stage.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (button == Input.Buttons.LEFT) {
-
-                    gameScreenFeatures.AddImage(x, y);
-
-                    Sprite nuevaBarrera = new Sprite(playerTexture);
-                    playerSprite.setPosition(playerX, playerY);
-                    //placedRectangles.add(nuevaBarrera);
-                }
-                return true;
-            }
-        });
-
 
     }
 
@@ -239,6 +365,7 @@ public class GameScreen implements Screen {
         Array<User2> users = user2Manager.read();
         usernameLabel.setText(user.getUsername());
         fullNameLabel.setText(user.getFullName());
+        updateCounterLabel();
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
             bulletImage.setPosition(bulletX, bulletY);

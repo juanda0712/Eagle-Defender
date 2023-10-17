@@ -324,7 +324,8 @@ public class FormManagement implements Screen {
                         for (User2 user : users) {
                             System.out.println(user);
                         }
-                        game.changeScreen(new GameScreen(game, user2Manager, newUser));
+                        CountersBarriers counters = new CountersBarriers();
+                        game.changeScreen(new GameScreen(game, user2Manager, newUser,counters));
                         dispose();
                     }
                 } else {

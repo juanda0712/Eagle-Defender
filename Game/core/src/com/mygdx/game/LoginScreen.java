@@ -35,7 +35,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
     private final MainController game;
 
     private Stage stage = new Stage();
-    //private FaceRecognitionActor faceRecognitionActor;
+    private FaceRecognitionActor faceRecognitionActor;
     private final Skin skin = VisUI.getSkin();
     private Dialog dialog = new Dialog("", skin);
     private final OrthographicCamera camera;
@@ -61,7 +61,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
         Gdx.input.setInputProcessor(stage);
 
-        //faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
+        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
 
         setupUIElements();
     }
@@ -87,7 +87,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         TextButton btnFacialRecognition = GraphicElements.createCustomButton("> Facial Recognition <", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //faceRecognitionActor.startFaceDetection();
+                faceRecognitionActor.startFaceDetection();
             }
         });
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
@@ -138,7 +138,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        // leftTable.add(faceRecognitionActor).size(320, 240).center().row();
+        leftTable.add(faceRecognitionActor).size(320, 240).center().row();
         leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 15).center().row();
 
 
@@ -167,7 +167,9 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         for (User2 user : data) {
             if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
                 validUser = true;
-                game.changeScreen(new GameScreen(game, user2Manager, user));
+                CountersBarriers counters = new CountersBarriers();
+
+                game.changeScreen(new GameScreen(game, user2Manager, user,counters));
                 dispose();
                 break;
             }
