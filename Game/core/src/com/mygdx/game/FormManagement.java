@@ -22,6 +22,8 @@ import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import lombok.Getter;
+import lombok.Setter;
 
 
 import java.text.ParseException;
@@ -51,6 +53,10 @@ public class FormManagement implements Screen {
     private Label selectPreferedPalette;
     private ImageButton btnPalette1;
     private ImageButton btnPalette2;
+    private ImageButton btnPalette3;
+    private ImageButton btnPalette4;
+    private ImageButton btnPalette5;
+
     private Label selectAnimation;
     private SelectBox<String> choiceBoxAnimation;
     private Label selectTexture;
@@ -58,14 +64,17 @@ public class FormManagement implements Screen {
     private Label paymentMethods;
     private TextButton btnPaymentMethods;
     String[] animations = {"Explosions", "Shock", "Transparency"};
-    String[] textures = {"Smooth", "Bricked", "Rocky"};
+    String[] textures = {"Wooden", "Concrete", "Steel"};
 
     private Label uploadPfp;
     private TextButton btnUpload;
     private TextButton btnCreateAccount;
+    private TextButton btnReturnLogin;
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
     private QuestionsForm questionsForm;
+    @Getter @Setter
+    private String selectedColorPalette = "";
     private boolean validPassword = false;
     private boolean isValidDate = false;
     private FileHandle selectedFile;
@@ -151,23 +160,58 @@ public class FormManagement implements Screen {
         selectPreferedPalette = new Label("Select your preferred color palette", skin);
         selectPreferedPalette.setColor(Color.BLACK);
 
-        btnPalette1 = new ImageButton(skin);
-        Texture texture = new Texture(Gdx.files.internal("Palette 1.png"));
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        ImageButton.ImageButtonStyle style1 = new ImageButton.ImageButtonStyle();
+        style1.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 1.png"))));
+        btnPalette1 = new ImageButton(style1);
+        btnPalette1.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Palette 1");
+            }
+        });
 
-        TextureRegion imageRegion = new TextureRegion(texture);
-        imageRegion.setRegionWidth(102);
-        imageRegion.setRegionHeight(22);
+        ImageButton.ImageButtonStyle style2 = new ImageButton.ImageButtonStyle();
+        style2.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 2.png"))));
+        btnPalette2 = new ImageButton(style2);
+        btnPalette2.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Palette 2");
+            }
+        });
 
-        btnPalette1.getStyle().imageUp = new TextureRegionDrawable(imageRegion);
 
-        btnPalette2 = new ImageButton(skin);
-        Texture texture2 = new Texture(Gdx.files.internal("Palette 2.png"));
-        texture2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        ImageButton.ImageButtonStyle style3 = new ImageButton.ImageButtonStyle();
+        style3.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 3.png"))));
+        btnPalette3 = new ImageButton(style3);
+        btnPalette3.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Palette 3");
+            }
+        });
 
-        TextureRegion imageRegion2 = new TextureRegion(texture2);
-        imageRegion2.setRegionWidth(93);
-        imageRegion2.setRegionHeight(22);
+
+        ImageButton.ImageButtonStyle style4 = new ImageButton.ImageButtonStyle();
+        style4.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 4.png"))));
+        btnPalette4 = new ImageButton(style4);
+        btnPalette4.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Palette 4");
+            }
+        });
+
+
+        ImageButton.ImageButtonStyle style5 = new ImageButton.ImageButtonStyle();
+        style5.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 5.png"))));
+        btnPalette5 = new ImageButton(style5);
+        btnPalette5.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Palette 5");
+            }
+        });
 
         selectAnimation = new Label("Select one animation", skin);
         selectAnimation.setColor(Color.BLACK);
@@ -175,7 +219,7 @@ public class FormManagement implements Screen {
         choiceBoxAnimation = new SelectBox<>(skin);
         choiceBoxAnimation.setItems(animations);
 
-        selectTexture = new Label("Select one wall texture", skin);
+        selectTexture = new Label("Select one   git wall texture", skin);
         selectTexture.setColor(Color.BLACK);
 
         choiceBoxTexture = new SelectBox<>(skin);
@@ -236,7 +280,7 @@ public class FormManagement implements Screen {
                         String song1 = searchField1.getText();
                         String song2 = searchField2.getText();
                         String song3 = searchField3.getText();
-                        String selectedColorPalette = "paleta";
+                        String selectedColorPalette = getSelectedColorPalette();
                         String animation = choiceBoxAnimation.getSelected();
                         String texture = choiceBoxTexture.getSelected();
                         String image = selectedFile.name();
@@ -288,6 +332,13 @@ public class FormManagement implements Screen {
                 }
             }
         });
+        btnReturnLogin = new TextButton("Return", skin);
+        btnReturnLogin.addListener(new ClickListener(){
+            public void clicked(InputEvent event, float x, float y) {
+                game.changeScreen(new LoginScreen(game, user2Manager));
+                dispose();
+            }
+        });
     }
     private void setUPGUIElements (){
         Table contentTable = new Table();
@@ -305,13 +356,14 @@ public class FormManagement implements Screen {
                 confirmPasswordField,
                 searchSongs,
                 searchField1, searchField2, searchField3,
-                selectPreferedPalette, btnPalette1, btnPalette2,
+                selectPreferedPalette,
+                btnPalette1, btnPalette2, btnPalette3, btnPalette4, btnPalette5,
                 selectAnimation, choiceBoxAnimation,
                 selectTexture, choiceBoxTexture,
                 paymentMethods, btnPaymentMethods,
                 uploadPfp, btnUpload,questionsLabel,
                 btnQuestions,
-                btnCreateAccount
+                btnCreateAccount, btnReturnLogin
         );
         for (Actor element: GUIElements){
             contentTable.add(element).left().padBottom(padBottomValue).row();
