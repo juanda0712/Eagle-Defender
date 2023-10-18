@@ -90,7 +90,7 @@ public class RealTimeFaceDetectionScreen extends ScreenAdapter {
     public void show() {
         try {
             if (!capture.open(0)) {
-                Gdx.app.error("RealTimeFaceDetectionScreen", "Error al abrir la cámara");
+                //Gdx.app.error("RealTimeFaceDetectionScreen", "Error al abrir la cámara");
                 return;
             } else {
                 System.out.println("ENTRO A LA CAMARA");

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -49,19 +50,13 @@ public class GameScreen implements Screen {
     Sprite playerSprite;
     Sprite bulletSprite;
 
-    Sprite playerRect;
-    //Animation animation;
-
-    Rectangle bulletRect;
-
-
-    Texture defensorTexture;
-    Texture atacanteTexture;
-    Texture barreraTexture;
     Texture bulletTexture;
     Texture player;
     Texture playerTexture;
-    Texture lineTexture;
+    Texture fireTexture;
+    Texture waterTexture;
+    Texture bombTexture;
+
 
     Image playerImage;
     Image bulletImage;
@@ -82,17 +77,26 @@ public class GameScreen implements Screen {
     private GameScreenFeatures gameScreenFeatures;
 
     private boolean placingEnabled = false;
+    private boolean attackEnabled = false;
+
+    boolean isCollide = false;
     private ImageButton woodenButton;
     private ImageButton cementButton;
     private ImageButton steelButton;
     private ImageButton eagleButton;
+
+    private ImageButton waterButton;
+    private ImageButton fireButton;
+    private ImageButton bombButton;
+
     private Label woodCounterLabel;
     private Label cementCounterLabel;
     private Label steelCounterLabel;
     private Label eagleCounterLabel;
     private CountersBarriers countersBarriers;
-    //private Image selectedImageToRotate;
-    //private boolean rotatingImage = false;
+
+    private int contadorBullet;
+
 
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
@@ -205,6 +209,61 @@ public class GameScreen implements Screen {
         eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
         eagleCounterLabel.setPosition(460, 90);
         stage.addActor(eagleCounterLabel);
+
+        // ImageButton de barrera de acero, y su label de contador
+        Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
+        fireButton = new ImageButton(fireChoose);
+        fireButton.setPosition(1500, 10);
+        fireButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!fireButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    waterButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    attackEnabled = true;
+                }
+            }
+        });
+        stage.addActor(fireButton);
+
+        Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
+        waterButton = new ImageButton(waterChoose);
+        waterButton.setPosition(1800, 10);
+        waterButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!waterButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    fireButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    attackEnabled = true;
+                }
+            }
+        });
+        stage.addActor(waterButton);
+
+        Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
+        bombButton = new ImageButton(bombChoose);
+        bombButton.setPosition(1000, 10);
+        bombButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!bombButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    fireButton.setChecked(false);
+                    waterButton.setChecked(false);
+                    attackEnabled = true;
+                }
+            }
+        });
+        stage.addActor(bombButton);
     }
 
 
@@ -249,8 +308,12 @@ public class GameScreen implements Screen {
         Texture goblinTexture = new Texture(Gdx.files.internal("assets/duendegod.png"));
         Texture userimageTexture = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
         Texture lineaRecta = new Texture("negro2.jpg");
+        Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
         playerTexture = new Texture("SSF6.png");
+        fireTexture = new Texture("fire1.PNG");
+        waterTexture = new Texture("Water12.png");
+        bombTexture = new Texture("Bomb1.png");
 
         playerSprite = new Sprite(playerTexture);
         playerSprite.setPosition(playerX, playerY);
@@ -267,7 +330,11 @@ public class GameScreen implements Screen {
         image1.setPosition(1000, 600);
         Image image2 = new Image(goblinTexture);
         image2.setPosition(1000, 200);
+
         Image userImage = new Image(userimageTexture);
+        Image maskImage = new Image(circulo);
+
+
 
         Image lineaVertical = new Image(lineaRecta);
         lineaVertical.setPosition(Gdx.graphics.getWidth() / 2, 0);
@@ -277,9 +344,18 @@ public class GameScreen implements Screen {
         lineaHorizontal.setPosition(0, 920);
         lineaHorizontal.setSize(Gdx.graphics.getWidth(), 2);
 
+        Image lineaHorizontalboton = new Image(lineaRecta);
+        lineaHorizontalboton.setPosition(0, 110);
+        lineaHorizontalboton.setSize(Gdx.graphics.getWidth(), 2);
+
 
         userImage.setPosition(30, 920);
         userImage.setSize(150, 150);
+
+        maskImage.setSize(userImage.getWidth(), userImage.getHeight());
+        //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
+
+
 
 
         stage.addActor(backButton);
@@ -294,9 +370,15 @@ public class GameScreen implements Screen {
         stage.addActor(fullNameLabel);
         stage.addActor(this.usernameLabel);
         stage.addActor(userImage);
+        //stage.addActor(maskImage);
+
+
+
         stage.addActor(lineaVertical);
         stage.addActor(lineaHorizontal);
+        stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
+
 
         arrayGUIElements.add(fullNameLabel);
         arrayGUIElements.add(usernameLabel);
@@ -328,9 +410,13 @@ public class GameScreen implements Screen {
     }
 
     public void updateCounterLabel() {
+        woodCounterLabel.setColor(Color.RED);
         woodCounterLabel.setText("wood barriers: " + countersBarriers.getWoodCounter());
+        cementCounterLabel.setColor(Color.RED);
         cementCounterLabel.setText("cement barriers: " + countersBarriers.getCementCounter());
+        steelCounterLabel.setColor(Color.RED);
         steelCounterLabel.setText("steel barriers: " + countersBarriers.getSteelCounter());
+        eagleCounterLabel.setColor(Color.RED);
         eagleCounterLabel.setText("Eagle: " + countersBarriers.getEagleCounter());
     }
 
@@ -357,6 +443,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
         Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
         ScreenUtils.clear(backgroundColor);
         camera.update();
@@ -366,10 +453,36 @@ public class GameScreen implements Screen {
         usernameLabel.setText(user.getUsername());
         fullNameLabel.setText(user.getFullName());
         updateCounterLabel();
+
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
             bulletImage.setPosition(bulletX, bulletY);
-            stage.addActor(bulletImage);
+            if (fireButton.isChecked()) {
+                bulletSprite.setTexture(fireTexture);
+                stage.addActor(bulletImage);
+            } else if (waterButton.isChecked()) {
+                bulletSprite.setTexture(waterTexture);
+                stage.addActor(bulletImage);
+            }
+            else if (bombButton.isChecked()) {
+                bulletSprite.setTexture(bombTexture);
+                stage.addActor(bulletImage);
+            }
+
+
+
+            // Si la bala salió de la pantalla la elimina
+            if (bulletX < -bulletSprite.getWidth()) {
+                isShooting = false;
+            }
+        }
+
+        if (isCollide) {
+            //collisionSprite.setPosition(bulletX-50, bulletY);
+            //collisionSprite.setPosition(bulletX-15, bulletY);
+            //collisionSprite.draw(batch);
+            //isShooting = false;
+
 
             // Si la bala salió de la pantalla la elimina
             if (bulletX < -bulletSprite.getWidth()) {
@@ -383,15 +496,25 @@ public class GameScreen implements Screen {
 
 
     private void handleInput() {
-/*
-        for (Rectangle barrera : placedRectangles) {
-            if (bulletSprite.getBoundingRectangle().overlaps(barrera.getBoundingRectangle()) && isShooting) {
-                System.out.println("collided");
-                isShooting = false;
-                contador = contador + 1;
+
+        Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
+
+        for (Image barrierImage : gameScreenFeatures.getBarrierImages()) {
+            float barrierX = barrierImage.getX();
+            float barrierY = barrierImage.getY();
+            float barrierWidth = barrierImage.getWidth();
+            float barrierHeight = barrierImage.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
+                isShooting = false; // Desactivar la bala
+                isCollide = true;
+
             }
         }
-        */
+
 
 
         if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {

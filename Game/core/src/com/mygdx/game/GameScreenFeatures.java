@@ -238,4 +238,10 @@ public class GameScreenFeatures {
             gameScreen.updateCounterLabel();
         }
     }
+    public Array<Image> getBarrierImages() {
+        return placedImages;
+    }
+
+
+
 }
