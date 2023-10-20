@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
-import com.mygdx.game.CountersBarriers;
 
 public class SelectMode implements Screen {
     private final MainController game;
@@ -23,7 +22,9 @@ public class SelectMode implements Screen {
     private TextButton button4;
     private JSONDataManager<User2> user2Manager;
     private User2 user;
-    private CountersBarriers countersBarriers;
+
+    //CountersBarriers counters = new CountersBarriers();
+    //game.changeScreen(new GameScreen(game, user2Manager, user,counters));
 
     public SelectMode(final MainController game) {
         this.game = game;
@@ -35,8 +36,6 @@ public class SelectMode implements Screen {
 
     private void setupUIElements() {
         Skin skin = VisUI.getSkin();
-        countersBarriers = new CountersBarriers();
-        user = new User2();
 
         button1 = new TextButton("Button 1", skin);
         button1.setPosition(100, 300);
@@ -52,14 +51,11 @@ public class SelectMode implements Screen {
         button2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                try {
-                    //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                //
+
+                //game.changeScreen(new GameScreen(game, user2Manager, user,counters));
             }
         });
-
 
         button3 = new TextButton("Button 3", skin);
         button3.setPosition(100, 100);
