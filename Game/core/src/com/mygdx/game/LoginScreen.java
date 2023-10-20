@@ -167,8 +167,8 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         for (User2 user : data) {
             if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
                 validUser = true;
-
-                game.changeScreen(new SelectMode(game));
+                CountersBarriers countersBarriers = new CountersBarriers();
+                game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers));
                 dispose();
                 break;
             }

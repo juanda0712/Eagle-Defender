@@ -34,87 +34,77 @@ import java.util.List;
 public class GameScreen implements Screen {
     //private List<Barrera> barreras = new ArrayList<>();
     private final MainController game;
-
     private List<Rectangle> placedRectangles = new ArrayList<>();
-
     private final Stage stage;
     private final OrthographicCamera camera;
     private JSONDataManager<User2> user2Manager;
-
     private User2 user;
     private Label usernameLabel;
     private Label fullNameLabel;
-
     private final Array<Actor> arrayGUIElements = new Array<>();
-
     Sprite playerSprite;
     Sprite bulletSprite;
-
     Texture bulletTexture;
     Texture player;
     Texture playerTexture;
     Texture fireTexture;
     Texture waterTexture;
     Texture bombTexture;
-
-
     Image playerImage;
     Image bulletImage;
-
     SpriteBatch batch;
     float playerX = 1300;
     float playerY = 500;
     float speed = 400.0f;
     float bulletX;
     float bulletY;
-
     boolean isShooting = false;
     float bulletSpeed = 800.0f;
     int contador = 0;
     int contador2 = 0;
     private Array<Image> placedImages;
-
     private GameScreenFeatures gameScreenFeatures;
-
     private boolean placingEnabled = false;
     private boolean attackEnabled = false;
-
     boolean isCollide = false;
     private ImageButton woodenButton;
     private ImageButton cementButton;
     private ImageButton steelButton;
     private ImageButton eagleButton;
-
     private ImageButton waterButton;
     private ImageButton fireButton;
     private ImageButton bombButton;
-
     private Label woodCounterLabel;
     private Label cementCounterLabel;
     private Label steelCounterLabel;
     private Label eagleCounterLabel;
-    private CountersBarriers countersBarriers;
-
+    private final CountersBarriers countersBarriers;
     private int contadorBullet;
-
-
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
         this.game = game;
         this.user2Manager = user2Manager;
         this.user = user;
-        this.countersBarriers = countersBarriers;
+        this.countersBarriers = countersBarriers; // Asignar countersBarriers antes de utilizarlo
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+        Skin skin = VisUI.getSkin();
+
+        // Configurar labels después de asignar countersBarriers
+        woodCounterLabel = new Label("wood barriers: " + countersBarriers.getWoodCounter(), skin);
+        cementCounterLabel = new Label("cement barriers: " + countersBarriers.getCementCounter(), skin);
+        steelCounterLabel = new Label("steel barriers: " + countersBarriers.getSteelCounter(), skin);
+        eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
+
         placedImages = new Array<>();
         setupButtons();
         gameScreenFeatures = new GameScreenFeatures(stage, placedImages, this, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
         setupUIElements();
-
     }
+
 
     private void setupButtons() {
         Skin skin = VisUI.getSkin();
@@ -137,7 +127,7 @@ public class GameScreen implements Screen {
             }
         });
         stage.addActor(woodenButton);
-        woodCounterLabel = new Label("wood barriers: " + countersBarriers.getWoodCounter(), skin);
+        woodCounterLabel = new Label("", skin);
         woodCounterLabel.setPosition(10, 80);
         stage.addActor(woodCounterLabel);
 
@@ -160,7 +150,7 @@ public class GameScreen implements Screen {
             }
         });
         stage.addActor(cementButton);
-        cementCounterLabel = new Label("cement barriers: " + countersBarriers.getCementCounter(), skin);
+        cementCounterLabel = new Label("", skin);
         cementCounterLabel.setPosition(160, 80);
         stage.addActor(cementCounterLabel);
 
@@ -183,7 +173,7 @@ public class GameScreen implements Screen {
             }
         });
         stage.addActor(steelButton);
-        steelCounterLabel = new Label("steel barriers: " + countersBarriers.getSteelCounter(), skin);
+        steelCounterLabel = new Label("", skin);
         steelCounterLabel.setPosition(320, 80);
         stage.addActor(steelCounterLabel);
 
@@ -206,7 +196,7 @@ public class GameScreen implements Screen {
             }
         });
         stage.addActor(eagleButton);
-        eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
+        eagleCounterLabel = new Label("", skin);
         eagleCounterLabel.setPosition(460, 90);
         stage.addActor(eagleCounterLabel);
 
@@ -306,7 +296,14 @@ public class GameScreen implements Screen {
 
         Texture eagleTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
         Texture goblinTexture = new Texture(Gdx.files.internal("assets/duendegod.png"));
-        Texture userimageTexture = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
+        Texture userimageTexture = null;
+        if (userimageTexture != null) {
+            Image userImage = new Image(userimageTexture);
+            stage.addActor(userImage);
+        } else {
+            // Si userimageTexture es null, puedes asignar una textura predeterminada o manejarlo según tus necesidades específicas.
+        }
+
         Texture lineaRecta = new Texture("negro2.jpg");
         Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
@@ -331,7 +328,7 @@ public class GameScreen implements Screen {
         Image image2 = new Image(goblinTexture);
         image2.setPosition(1000, 200);
 
-        Image userImage = new Image(userimageTexture);
+        //Image userImage = new Image(userimageTexture);
         Image maskImage = new Image(circulo);
 
 
@@ -349,10 +346,10 @@ public class GameScreen implements Screen {
         lineaHorizontalboton.setSize(Gdx.graphics.getWidth(), 2);
 
 
-        userImage.setPosition(30, 920);
-        userImage.setSize(150, 150);
+        //userImage.setPosition(30, 920);
+        //userImage.setSize(150, 150);
 
-        maskImage.setSize(userImage.getWidth(), userImage.getHeight());
+        //maskImage.setSize(userImage.getWidth(), userImage.getHeight());
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
 
@@ -369,7 +366,7 @@ public class GameScreen implements Screen {
         stage.addActor(image2);
         stage.addActor(fullNameLabel);
         stage.addActor(this.usernameLabel);
-        stage.addActor(userImage);
+        //stage.addActor(userImage);
         //stage.addActor(maskImage);
 
 
@@ -379,11 +376,10 @@ public class GameScreen implements Screen {
         stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
 
-
         arrayGUIElements.add(fullNameLabel);
         arrayGUIElements.add(usernameLabel);
         arrayGUIElements.add(defenderLabel);
-        applyColorPalette();
+        //applyColorPalette();
 
         stage.addListener(new InputListener() {
             @Override
@@ -421,7 +417,7 @@ public class GameScreen implements Screen {
     }
 
 
-    private void applyColorPalette() {
+    /*private void applyColorPalette() {
         fullNameLabel.setColor(Color.BLUE);
         if (user.getSelectedColorPalette().equals("Palette 1")) {
             for (Actor element : arrayGUIElements) {
@@ -439,7 +435,7 @@ public class GameScreen implements Screen {
             }
         }
 
-    }
+    }*/
 
     @Override
     public void render(float delta) {
