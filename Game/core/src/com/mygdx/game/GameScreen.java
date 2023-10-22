@@ -30,7 +30,6 @@ import lombok.Getter;
 import com.badlogic.gdx.utils.Timer;
 
 
-
 import java.util.*;
 import java.util.List;
 
@@ -49,7 +48,6 @@ public class GameScreen implements Screen {
     private boolean isTimerActive = false;
     private boolean isTimerActivelabel = false;
     private float elapsedTime;
-
 
 
     private User2 user;
@@ -242,61 +240,62 @@ public class GameScreen implements Screen {
         eagleCounterLabel.setPosition(460, 90);
         stage.addActor(eagleCounterLabel);
     }
-        public void setupButtonsAttacker(){
-            Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
-            fireButton = new ImageButton(fireChoose);
-            fireButton.setPosition(1500, 10);
-            fireButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (!fireButton.isChecked()) {
-                        attackEnabled = false;
 
-                    } else {
-                        waterButton.setChecked(false);
-                        bombButton.setChecked(false);
-                        attackEnabled = true;
-                    }
+    public void setupButtonsAttacker() {
+        Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
+        fireButton = new ImageButton(fireChoose);
+        fireButton.setPosition(1500, 10);
+        fireButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!fireButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    waterButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    attackEnabled = true;
                 }
-            });
-            stage.addActor(fireButton);
+            }
+        });
+        stage.addActor(fireButton);
 
-            Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
-            waterButton = new ImageButton(waterChoose);
-            waterButton.setPosition(1800, 10);
-            waterButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (!waterButton.isChecked()) {
-                        attackEnabled = false;
+        Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
+        waterButton = new ImageButton(waterChoose);
+        waterButton.setPosition(1800, 10);
+        waterButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!waterButton.isChecked()) {
+                    attackEnabled = false;
 
-                    } else {
-                        fireButton.setChecked(false);
-                        bombButton.setChecked(false);
-                        attackEnabled = true;
-                    }
+                } else {
+                    fireButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    attackEnabled = true;
                 }
-            });
-            stage.addActor(waterButton);
+            }
+        });
+        stage.addActor(waterButton);
 
-            Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
-            bombButton = new ImageButton(bombChoose);
-            bombButton.setPosition(1000, 10);
-            bombButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (!bombButton.isChecked()) {
-                        attackEnabled = false;
+        Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
+        bombButton = new ImageButton(bombChoose);
+        bombButton.setPosition(1000, 10);
+        bombButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!bombButton.isChecked()) {
+                    attackEnabled = false;
 
-                    } else {
-                        fireButton.setChecked(false);
-                        waterButton.setChecked(false);
-                        attackEnabled = true;
-                    }
+                } else {
+                    fireButton.setChecked(false);
+                    waterButton.setChecked(false);
+                    attackEnabled = true;
                 }
-            });
-            stage.addActor(bombButton);
-        }
+            }
+        });
+        stage.addActor(bombButton);
+    }
 
     private void setupUIElements() {
 
@@ -305,76 +304,77 @@ public class GameScreen implements Screen {
         setUpImages();
     }
 
-    private void setUpLabels (){
-            Skin skin = VisUI.getSkin();
-            TextButton backButton = new TextButton("Back", skin);
-            backButton.setPosition(1600, 0);
-            backButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    // Cambiar la pantalla a LoginScreen
-                    game.setScreen(new LoginScreen(game, user2Manager));
-                }
-            });
-            fullNameLabel = new Label(user.getFullName(), skin);
-            fullNameLabel.setColor(Color.BLACK);
-            fullNameLabel.setPosition(280, 1000);
-            usernameLabel = new Label(user.getUsername(), skin);
-            usernameLabel.setColor(Color.BLACK);
-            usernameLabel.setPosition(280, 980);
+    private void setUpLabels() {
+        Skin skin = VisUI.getSkin();
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.setPosition(1600, 0);
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Cambiar la pantalla a LoginScreen
+                game.setScreen(new LoginScreen(game, user2Manager));
+            }
+        });
+        fullNameLabel = new Label(user.getFullName(), skin);
+        fullNameLabel.setColor(Color.BLACK);
+        fullNameLabel.setPosition(280, 1000);
+        usernameLabel = new Label(user.getUsername(), skin);
+        usernameLabel.setColor(Color.BLACK);
+        usernameLabel.setPosition(280, 980);
 
-            Label userInfo = new Label("User information:", skin);
-            userInfo.setColor(Color.BLACK);
-            userInfo.setPosition(200, 1020);
-            Label player2Name = new Label("Unknown player 2", skin);
-            player2Name.setColor(Color.BLACK);
-            player2Name.setPosition(1500, 950);
-            Label defenderLabel = new Label("Defender", skin);
-            defenderLabel.setColor(Color.BLACK);
-            defenderLabel.setPosition(1200, 550);
-            Label attackerLabel = new Label("Attacker", skin);
-            attackerLabel.setColor(Color.BLACK);
-            attackerLabel.setPosition(1200, 200);
-            Label fullnameLabel = new Label("Fullname: ", skin);
-            fullnameLabel.setColor(Color.BLACK);
-            fullnameLabel.setPosition(200, 1000);
-            Label usernameLabel = new Label("Username: ", skin);
-            usernameLabel.setColor(Color.BLACK);
-            usernameLabel.setPosition(200, 980);
+        Label userInfo = new Label("User information:", skin);
+        userInfo.setColor(Color.BLACK);
+        userInfo.setPosition(200, 1020);
+        Label player2Name = new Label("Unknown player 2", skin);
+        player2Name.setColor(Color.BLACK);
+        player2Name.setPosition(1500, 950);
+        Label defenderLabel = new Label("Defender", skin);
+        defenderLabel.setColor(Color.BLACK);
+        defenderLabel.setPosition(1200, 550);
+        Label attackerLabel = new Label("Attacker", skin);
+        attackerLabel.setColor(Color.BLACK);
+        attackerLabel.setPosition(1200, 200);
+        Label fullnameLabel = new Label("Fullname: ", skin);
+        fullnameLabel.setColor(Color.BLACK);
+        fullnameLabel.setPosition(200, 1000);
+        Label usernameLabel = new Label("Username: ", skin);
+        usernameLabel.setColor(Color.BLACK);
+        usernameLabel.setPosition(200, 980);
 
-            //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
+        //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
-            stage.addActor(backButton);
-            stage.addActor(userInfo);
-            stage.addActor(player2Name);
-            stage.addActor(defenderLabel);
-            stage.addActor(attackerLabel);
-            stage.addActor(fullnameLabel);
-            stage.addActor(usernameLabel);
+        stage.addActor(backButton);
+        stage.addActor(userInfo);
+        stage.addActor(player2Name);
+        stage.addActor(defenderLabel);
+        stage.addActor(attackerLabel);
+        stage.addActor(fullnameLabel);
+        stage.addActor(usernameLabel);
 
-            stage.addActor(fullNameLabel);
-            stage.addActor(this.usernameLabel);
+        stage.addActor(fullNameLabel);
+        stage.addActor(this.usernameLabel);
 
-            stage.addListener(new InputListener() {
-                @Override
-                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if (button == Input.Buttons.LEFT) {
-                        // Maneja el clic izquierdo como lo hacías anteriormente.
-                        if (woodenButton.isChecked()) {
-                            gameScreenFeatures.addWood(x, y);
-                        } else if (cementButton.isChecked()) {
-                            gameScreenFeatures.addCement(x, y);
-                        } else if (steelButton.isChecked()) {
-                            gameScreenFeatures.addSteel(x, y);
-                        } else if (eagleButton.isChecked()) {
-                            gameScreenFeatures.addEagle(x, y);
-                        }
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    // Maneja el clic izquierdo como lo hacías anteriormente.
+                    if (woodenButton.isChecked()) {
+                        gameScreenFeatures.addWood(x, y);
+                    } else if (cementButton.isChecked()) {
+                        gameScreenFeatures.addCement(x, y);
+                    } else if (steelButton.isChecked()) {
+                        gameScreenFeatures.addSteel(x, y);
+                    } else if (eagleButton.isChecked()) {
+                        gameScreenFeatures.addEagle(x, y);
                     }
-                    return true;
                 }
-            });
-        }
-    private void setUpImages (){
+                return true;
+            }
+        });
+    }
+
+    private void setUpImages() {
         Texture eagleTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
         Texture goblinTexture = new Texture(Gdx.files.internal("assets/duendegod.png"));
         Texture userimageTexture = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
@@ -421,14 +421,6 @@ public class GameScreen implements Screen {
         maskImage.setSize(userImage.getWidth(), userImage.getHeight());
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
-        stage.addActor(backButton);
-        stage.addActor(userInfo);
-        stage.addActor(player2Name);
-        stage.addActor(defenderLabel);
-        stage.addActor(attackerLabel);
-        stage.addActor(fullnameLabel);
-        stage.addActor(usernameLabel);
-
         stage.addActor(image1);
         stage.addActor(image2);
         stage.addActor(userImage);
@@ -439,8 +431,8 @@ public class GameScreen implements Screen {
         stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
     }
-    private void setUpBackground() {
 
+    private void setUpBackground() {
 
 
         stage.addListener(new InputListener() {
@@ -465,7 +457,7 @@ public class GameScreen implements Screen {
         Image imageBG = new Image(desertTexture);
         imageBG.setPosition(0, 110);
 
-        imageBG.setSize(1980,810);
+        imageBG.setSize(1980, 810);
         stage.addActor(imageBG);
 
     }
@@ -507,6 +499,7 @@ public class GameScreen implements Screen {
 
         return filter;
     }
+
     private void applyColorFilter() {
         String selectedPalette = user.getSelectedColorPalette();
         Color filter = getColorFilterForPalette(selectedPalette);
@@ -551,7 +544,6 @@ public class GameScreen implements Screen {
         }
 
 
-
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
             bulletImage.setPosition(bulletX, bulletY);
@@ -561,8 +553,7 @@ public class GameScreen implements Screen {
             } else if (waterButton.isChecked()) {
                 bulletSprite.setTexture(waterTexture);
                 stage.addActor(bulletImage);
-            }
-            else if (bombButton.isChecked()) {
+            } else if (bombButton.isChecked()) {
                 bulletSprite.setTexture(bombTexture);
                 stage.addActor(bulletImage);
             }
@@ -592,7 +583,6 @@ public class GameScreen implements Screen {
 
 
     public void handleInput() {
-
 
 
         Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
@@ -635,7 +625,7 @@ public class GameScreen implements Screen {
         }
 
 
-        if(isTimerActive){
+        if (isTimerActive) {
             if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
                 // Inicia el disparo de la bala desde la posición del player.
                 bulletX = playerX + playerSprite.getWidth();

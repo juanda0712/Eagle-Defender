@@ -50,7 +50,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
     //private Recognizer recognizer;
 
     public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager) {
-        questionsForm = new QuestionsForm2(game,  user2Manager, user, this);
+        questionsForm = new QuestionsForm2(game, user2Manager, user, this);
         this.game = game;
         this.user2Manager = user2Manager;
         data = user2Manager.read();
@@ -124,7 +124,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 }
             }
         });
-      
+
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
         float leftTableWidth = screenWidth / 2;
@@ -169,15 +169,14 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 validUser = true;
                 CountersBarriers countersBarriers = new CountersBarriers();
                 GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers);
-                game.changeScreen(new IAMode(game, user));
-                //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers));
+                //game.changeScreen(new IAMode(game, user));
+                game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers));
                 dispose();
                 break;
             }
         }
         return validUser;
     }
-
 
 
     public void render(float delta) {
@@ -227,4 +226,4 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
     }
 
 
-    }
+}

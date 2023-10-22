@@ -38,7 +38,9 @@ public class GameScreenFeatures {
         if (gameScreen.isPlacingEnabled() && countersBarriers.getWoodCounter() > 0 && woodenButton.isChecked()) {
             String selectedTexture = user.getTexture();
             String imagePath = "assets/wood.jpg";
-            if (x < stage.getWidth() / 2) {
+            float maxY = stage.getHeight() - 120;
+            float minY = 120;
+            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
                     imagePath = "assets/woodSQ.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
@@ -48,7 +50,9 @@ public class GameScreenFeatures {
                 }
                 Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
                 Image newImage = new Image(newImageTexture);
-                newImage.setPosition(x, y);
+                newImage.setSize(80, 80);
+                newImage.setPosition(x - (newImage.getWidth() / 2), y - (newImage.getHeight() / 2));
+                newImage.setSize(newImage.getWidth(), newImage.getHeight());
 
                 boolean canPlace = true;
                 for (Image placedImage : placedImages) {
@@ -79,6 +83,7 @@ public class GameScreenFeatures {
             }
         }
     }
+
     public void minusWoodCounter() {
         if (countersBarriers.getWoodCounter() > 0) {
             countersBarriers.setWoodCounter(countersBarriers.getWoodCounter() - 1);
@@ -91,7 +96,9 @@ public class GameScreenFeatures {
         if (gameScreen.isPlacingEnabled() && countersBarriers.getCementCounter() > 0 && cementButton.isChecked()) {
             String selectedTexture = user.getTexture();
             String imagePath = "assets/cement.jpg";
-            if (x < stage.getWidth() / 2) {
+            float maxY = stage.getHeight() - 120;
+            float minY = 120;
+            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
                     imagePath = "assets/cementSQ.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
@@ -101,7 +108,9 @@ public class GameScreenFeatures {
                 }
                 Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
                 Image newImage = new Image(newImageTexture);
-                newImage.setPosition(x, y);
+                newImage.setSize(80, 80);
+                newImage.setPosition(x - (newImage.getWidth() / 2), y - (newImage.getHeight() / 2));
+                newImage.setSize(newImage.getWidth(), newImage.getHeight());
 
                 boolean canPlace = true;
                 for (Image placedImage : placedImages) {
@@ -132,6 +141,7 @@ public class GameScreenFeatures {
             }
         }
     }
+
     public void minusCementCounter() {
         if (countersBarriers.getCementCounter() > 0) {
             countersBarriers.setCementCounter(countersBarriers.getCementCounter() - 1);
@@ -144,7 +154,9 @@ public class GameScreenFeatures {
         if (gameScreen.isPlacingEnabled() && countersBarriers.getSteelCounter() > 0 && steelButton.isChecked()) {
             String selectedTexture = user.getTexture();
             String imagePath = "assets/steel.jpg";
-            if (x < stage.getWidth() / 2) {
+            float maxY = stage.getHeight() - 120;
+            float minY = 120;
+            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
                     imagePath = "assets/steelSQ.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
@@ -154,7 +166,9 @@ public class GameScreenFeatures {
                 }
                 Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
                 Image newImage = new Image(newImageTexture);
-                newImage.setPosition(x, y);
+                newImage.setSize(80, 80);
+                newImage.setPosition(x - (newImage.getWidth() / 2), y - (newImage.getHeight() / 2));
+                newImage.setSize(newImage.getWidth(), newImage.getHeight());
 
                 boolean canPlace = true;
                 for (Image placedImage : placedImages) {
@@ -185,6 +199,7 @@ public class GameScreenFeatures {
             }
         }
     }
+
     public void minusSteelCounter() {
         if (countersBarriers.getSteelCounter() > 0) {
             countersBarriers.setSteelCounter(countersBarriers.getSteelCounter() - 1);
@@ -196,11 +211,14 @@ public class GameScreenFeatures {
         if (gameScreen.isPlacingEnabled() && countersBarriers.getEagleCounter() > 0 && eagleButton.isChecked()) {
             if (!aguilaGodPlaced) {
                 // Verificar que la posición x esté en la parte izquierda de la pantalla
-                if (x < stage.getWidth() / 2) {
+                float maxY = stage.getHeight() - 120;
+                float minY = 120;
+                if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
                     Texture aguilaGodTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
                     Image aguilaGodImage = new Image(aguilaGodTexture);
-                    aguilaGodImage.setPosition(x, y);
-                    aguilaGodImage.setSize(150, 80);
+                    aguilaGodImage.setSize(80, 80);
+                    aguilaGodImage.setPosition(x - (aguilaGodImage.getWidth() / 2), y - (aguilaGodImage.getHeight() / 2));
+                    aguilaGodImage.setSize(aguilaGodImage.getWidth(), aguilaGodImage.getHeight());
 
                     boolean canPlace = true;
                     for (Image placedImage : placedImages) {
@@ -233,12 +251,14 @@ public class GameScreenFeatures {
             }
         }
     }
+
     public void minusEagleCounter() {
         if (countersBarriers.getEagleCounter() > 0) {
             countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
             gameScreen.updateCounterLabel();
         }
     }
+
     public Array<Image> getBarrierImages() {
         return placedImages;
     }
