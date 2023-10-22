@@ -10,7 +10,6 @@ buildscript {
     }
     dependencies {
 
-
     }
 }
 
@@ -26,6 +25,8 @@ allprojects {
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
+        sourceCompatibility = 17
+        targetCompatibility = 17
     }
 
     repositories {
@@ -67,5 +68,8 @@ project(":core") {
 
         implementation "org.bytedeco:javacv-platform:1.5.5"
         implementation "org.bytedeco:opencv-platform:4.5.1-1.5.5"
+
+        implementation "org.json:json:20210307"
+        implementation 'com.github.scribejava:scribejava-apis:8.3.3'
     }
 }

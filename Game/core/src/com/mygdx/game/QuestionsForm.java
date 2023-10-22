@@ -12,14 +12,18 @@ import com.badlogic.gdx.utils.Array;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextField;
 import com.kotcrab.vis.ui.widget.VisWindow;
+import lombok.Getter;
 
 
+@Getter
 public class QuestionsForm extends VisWindow {
 
-    private Array<String> questions;
+    private final Array<String> questions;
 
 
     public QuestionsForm() {
+
+
         super("Questions");
         Skin skin = VisUI.getSkin();
         questions = new Array<String>();
@@ -97,7 +101,4 @@ public class QuestionsForm extends VisWindow {
         questions.add(field.getText());
     }
 
-    public Array<String> getQuestions() {
-        return questions;
-    }
 }
