@@ -50,6 +50,8 @@ public class CardDataForm extends VisWindow {
         row();
 
         VisTextField cardCVSField = new VisTextField("");
+        cardCVSField.setPasswordMode(true);
+        cardCVSField.setPasswordCharacter('*');
         add(cardCVSField).left().pad(5);
         row();
 

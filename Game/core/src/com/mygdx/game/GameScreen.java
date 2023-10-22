@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,12 +58,12 @@ public class GameScreen implements Screen {
     Texture fireTexture;
     Texture waterTexture;
     Texture bombTexture;
-
-
+    private Image lineaHorizontal;
+    private Texture lineaRecta;
     Image playerImage;
     Image bulletImage;
 
-    SpriteBatch batch;
+    private SpriteBatch batch;
     float playerX = 1300;
     float playerY = 500;
     float speed = 400.0f;
@@ -76,6 +78,7 @@ public class GameScreen implements Screen {
 
     private GameScreenFeatures gameScreenFeatures;
 
+    @Getter
     private boolean placingEnabled = false;
     private boolean attackEnabled = false;
 
@@ -268,46 +271,86 @@ public class GameScreen implements Screen {
 
 
     private void setupUIElements() {
-        Skin skin = VisUI.getSkin();
-        TextButton backButton = new TextButton("Back", skin);
-        backButton.setPosition(1600, 0);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Cambiar la pantalla a LoginScreen
-                game.setScreen(new LoginScreen(game, user2Manager));
-            }
-        });
-        fullNameLabel = new Label(user.getFullName(), skin);
-        fullNameLabel.setColor(Color.BLACK);
-        fullNameLabel.setPosition(280, 1000);
-        usernameLabel = new Label(user.getUsername(), skin);
-        usernameLabel.setColor(Color.BLACK);
-        usernameLabel.setPosition(280, 980);
 
-        Label userInfo = new Label("User information:", skin);
-        userInfo.setColor(Color.BLACK);
-        userInfo.setPosition(200, 1020);
-        Label player2Name = new Label("unknown player 2", skin);
-        player2Name.setColor(Color.BLACK);
-        player2Name.setPosition(1500, 950);
-        Label defenderLabel = new Label("Defender", skin);
-        defenderLabel.setColor(Color.BLACK);
-        defenderLabel.setPosition(1200, 550);
-        Label attackerLabel = new Label("Attacker", skin);
-        attackerLabel.setColor(Color.BLACK);
-        attackerLabel.setPosition(1200, 200);
-        Label fullnameLabel = new Label("Fullname: ", skin);
-        fullnameLabel.setColor(Color.BLACK);
-        fullnameLabel.setPosition(200, 1000);
-        Label usernameLabel = new Label("Username: ", skin);
-        usernameLabel.setColor(Color.BLACK);
-        usernameLabel.setPosition(200, 980);
+        setUpBackground();
+        setUpLabels();
+        setUpImages();
+    }
 
+    private void setUpLabels (){
+            Skin skin = VisUI.getSkin();
+            TextButton backButton = new TextButton("Back", skin);
+            backButton.setPosition(1600, 0);
+            backButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    // Cambiar la pantalla a LoginScreen
+                    game.setScreen(new LoginScreen(game, user2Manager));
+                }
+            });
+            fullNameLabel = new Label(user.getFullName(), skin);
+            fullNameLabel.setColor(Color.BLACK);
+            fullNameLabel.setPosition(280, 1000);
+            usernameLabel = new Label(user.getUsername(), skin);
+            usernameLabel.setColor(Color.BLACK);
+            usernameLabel.setPosition(280, 980);
+
+            Label userInfo = new Label("User information:", skin);
+            userInfo.setColor(Color.BLACK);
+            userInfo.setPosition(200, 1020);
+            Label player2Name = new Label("Unknown player 2", skin);
+            player2Name.setColor(Color.BLACK);
+            player2Name.setPosition(1500, 950);
+            Label defenderLabel = new Label("Defender", skin);
+            defenderLabel.setColor(Color.BLACK);
+            defenderLabel.setPosition(1200, 550);
+            Label attackerLabel = new Label("Attacker", skin);
+            attackerLabel.setColor(Color.BLACK);
+            attackerLabel.setPosition(1200, 200);
+            Label fullnameLabel = new Label("Fullname: ", skin);
+            fullnameLabel.setColor(Color.BLACK);
+            fullnameLabel.setPosition(200, 1000);
+            Label usernameLabel = new Label("Username: ", skin);
+            usernameLabel.setColor(Color.BLACK);
+            usernameLabel.setPosition(200, 980);
+
+            //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
+
+            stage.addActor(backButton);
+            stage.addActor(userInfo);
+            stage.addActor(player2Name);
+            stage.addActor(defenderLabel);
+            stage.addActor(attackerLabel);
+            stage.addActor(fullnameLabel);
+            stage.addActor(usernameLabel);
+
+            stage.addActor(fullNameLabel);
+            stage.addActor(this.usernameLabel);
+
+            stage.addListener(new InputListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    if (button == Input.Buttons.LEFT) {
+                        // Maneja el clic izquierdo como lo hacías anteriormente.
+                        if (woodenButton.isChecked()) {
+                            gameScreenFeatures.addWood(x, y);
+                        } else if (cementButton.isChecked()) {
+                            gameScreenFeatures.addCement(x, y);
+                        } else if (steelButton.isChecked()) {
+                            gameScreenFeatures.addSteel(x, y);
+                        } else if (eagleButton.isChecked()) {
+                            gameScreenFeatures.addEagle(x, y);
+                        }
+                    }
+                    return true;
+                }
+            });
+        }
+    private void setUpImages (){
         Texture eagleTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
         Texture goblinTexture = new Texture(Gdx.files.internal("assets/duendegod.png"));
         Texture userimageTexture = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
-        Texture lineaRecta = new Texture("negro2.jpg");
+        lineaRecta = new Texture("negro2.jpg");
         Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
         playerTexture = new Texture("SSF6.png");
@@ -319,28 +362,24 @@ public class GameScreen implements Screen {
         playerSprite.setPosition(playerX, playerY);
 
         bulletSprite = new Sprite(bulletTexture);
-
-
         playerImage = new Image(playerSprite);
         playerImage.setPosition(1300, 500);
         bulletImage = new Image(bulletSprite);
 
-
         Image image1 = new Image(eagleTexture);
         image1.setPosition(1000, 600);
+
         Image image2 = new Image(goblinTexture);
         image2.setPosition(1000, 200);
 
         Image userImage = new Image(userimageTexture);
         Image maskImage = new Image(circulo);
 
-
-
         Image lineaVertical = new Image(lineaRecta);
-        lineaVertical.setPosition(Gdx.graphics.getWidth() / 2, 0);
+        lineaVertical.setPosition((float) Gdx.graphics.getWidth() / 2, 0);
         lineaVertical.setSize(2, 920);
 
-        Image lineaHorizontal = new Image(lineaRecta);
+        lineaHorizontal = new Image(lineaRecta);
         lineaHorizontal.setPosition(0, 920);
         lineaHorizontal.setSize(Gdx.graphics.getWidth(), 2);
 
@@ -353,61 +392,25 @@ public class GameScreen implements Screen {
         userImage.setSize(150, 150);
 
         maskImage.setSize(userImage.getWidth(), userImage.getHeight());
-        //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
-
-
-
-
-        stage.addActor(backButton);
-        stage.addActor(userInfo);
-        stage.addActor(player2Name);
-        stage.addActor(defenderLabel);
-        stage.addActor(attackerLabel);
-        stage.addActor(fullnameLabel);
-        stage.addActor(usernameLabel);
         stage.addActor(image1);
         stage.addActor(image2);
-        stage.addActor(fullNameLabel);
-        stage.addActor(this.usernameLabel);
         stage.addActor(userImage);
-        //stage.addActor(maskImage);
-
-
-
-        stage.addActor(lineaVertical);
         stage.addActor(lineaHorizontal);
+        //stage.addActor(maskImage);
+        stage.addActor(lineaVertical);
         stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
+    }
+    private void setUpBackground() {
 
+        Texture desertTexture = new Texture(Gdx.files.internal("assets/desert.png"));
+        Image imageBG = new Image(desertTexture);
+        imageBG.setPosition(0, 110);
 
-        arrayGUIElements.add(fullNameLabel);
-        arrayGUIElements.add(usernameLabel);
-        arrayGUIElements.add(defenderLabel);
-        applyColorPalette();
-
-        stage.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (button == Input.Buttons.LEFT) {
-                    // Maneja el clic izquierdo como lo hacías anteriormente.
-                    if (woodenButton.isChecked()) {
-                        gameScreenFeatures.addWood(x, y);
-                    } else if (cementButton.isChecked()) {
-                        gameScreenFeatures.addCement(x, y);
-                    } else if (steelButton.isChecked()) {
-                        gameScreenFeatures.addSteel(x, y);
-                    } else if (eagleButton.isChecked()) {
-                        gameScreenFeatures.addEagle(x, y);
-                    }
-                }
-                return true;
-            }
-        });
+        imageBG.setSize(1980,810);
+        stage.addActor(imageBG);
     }
 
-    public boolean isPlacingEnabled() {
-        return placingEnabled;
-    }
 
     public void updateCounterLabel() {
         woodCounterLabel.setColor(Color.RED);
@@ -421,31 +424,53 @@ public class GameScreen implements Screen {
     }
 
 
-    private void applyColorPalette() {
-        fullNameLabel.setColor(Color.BLUE);
-        if (user.getSelectedColorPalette().equals("Palette 1")) {
-            for (Actor element : arrayGUIElements) {
-                if (element instanceof Label) {
-                    Label label = (Label) element;
-                    label.setColor(0.2f, 0.2f, 0.8f, 0.5f); // Blue with transparency
-                } else if (element instanceof TextButton) {
-                    TextButton button = (TextButton) element;
-                    button.setColor(0.2f, 0.2f, 0.8f, 0.5f); // Blue with transparency
-                }
-            }
-        } else if (user.getSelectedColorPalette().equals("Palette 2")) {
-            for (Actor elements : arrayGUIElements) {
-                elements.setColor(Color.ORANGE);
-            }
+    private Color getColorFilterForPalette(String selectedPalette) {
+        Color filter = new Color(1, 1, 1, 1); // Color inicial (sin filtro)
+        System.out.println(selectedPalette);
+        selectedPalette = "Palette 1";
+        switch (selectedPalette) {
+            case "Palette 1":
+                filter.set(0.839f, 0.725f, 0.553f, 1);
+                break;
+            case "Palette 2":
+                filter.set(0.6157f, 0.6784f, 0.7412f, 1);
+                break;
+            case "Palette 3":
+                filter.set(0.9451f, 0.6784f, 0.3529f, 1);
+                break;
+            case "Palette 4":
+                filter.set(0.9490f, 0.8784f, 0.5804f, 1);
+                break;
+            case "Palette 5":
+                filter.set(0.6039f, 0.6157f, 0.5412f, 1);
+                break;
         }
-
+        return filter;
     }
+    private void applyColorFilter() {
+        String selectedPalette = user.getSelectedColorPalette();
+        Color filter = getColorFilterForPalette(selectedPalette);
+
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+
+        batch.begin();
+        batch.setColor(filter);
+
+
+        batch.setColor(Color.WHITE);
+        batch.end();
+    }
+
 
     @Override
     public void render(float delta) {
-
-        Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
-        ScreenUtils.clear(backgroundColor);
+        String selectedPalette = user.getSelectedColorPalette();
+        //Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
+        //ScreenUtils.clear(backgroundColor);
+        ScreenUtils.clear(getColorFilterForPalette(selectedPalette));
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));

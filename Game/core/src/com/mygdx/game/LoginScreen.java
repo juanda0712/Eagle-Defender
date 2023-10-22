@@ -61,7 +61,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
         Gdx.input.setInputProcessor(stage);
 
-        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
+        //faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
 
         setupUIElements();
     }
@@ -112,7 +112,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
                 if (!loginValidation(username, password)) {
-                    final Dialog dialog = new Dialog("", skin);
+                    final Dialog dialog = new Dialog("Incorrect user or password", skin);
                     dialog.show(stage);
                     dialog.setSize(280, 60);
                     dialog.button("Ok", new ClickListener() {
