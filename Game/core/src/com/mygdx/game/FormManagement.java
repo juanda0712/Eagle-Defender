@@ -266,7 +266,8 @@ public class FormManagement implements Screen {
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
                 isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
                 if (isValidDate && validPassword) {
-                    if (!nameField.isEmpty() && !usernameField.isEmpty() && !birthDateField.isEmpty() && !emailField.isEmpty() && !passwordField.isEmpty() && !confirmPasswordField.isEmpty()) {
+                    if (!nameField.isEmpty() && !usernameField.isEmpty() && !birthDateField.isEmpty() && !emailField.isEmpty() && !passwordField.isEmpty()
+                            && !confirmPasswordField.isEmpty()  ) {
                         getQuestions();
                         for (String question : questionsArray) {
                             System.out.println(question);
@@ -408,19 +409,54 @@ public class FormManagement implements Screen {
 
         } else if (passwordhere.length() < 8) {
             this.validPassword = false;
-            System.out.println("Password length must have at least 8 characters");
+            final Dialog dialog2 = new Dialog("Password length must have at least 8 characters",skin);
+            dialog2.show(stage);
+            dialog2.setSize(280,60);
+            dialog2.button("Ok", new ClickListener(){
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog2.remove();
+                }
+            });
         } else if (!specialCharPatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            System.out.println("Password must have at least one special character");
+            final Dialog dialog3 = new Dialog("Password must have at least one special character",skin);
+            dialog3.show(stage);
+            dialog3.setSize(280,60);
+            dialog3.button("Ok", new ClickListener(){
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog3.remove();
+                }
+            });
         } else if (!UpperCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            System.out.println("Password must have at least one uppercase character");
+            final Dialog dialog4 = new Dialog("Password must have at least one uppercase character",skin);
+            dialog4.show(stage);
+            dialog4.setSize(280,60);
+            dialog4.button("Ok", new ClickListener(){
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog4.remove();
+                }
+            });
         } else if (!lowerCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            System.out.println("Password must have at least one lowercase character");
+            final Dialog dialog5 = new Dialog("Password must have at least one lowercase character",skin);
+            dialog5.show(stage);
+            dialog5.setSize(280,60);
+            dialog5.button("Ok", new ClickListener(){
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog5.remove();
+                }
+            });
         } else if (!digitCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            System.out.println("Password must have at least one digit character");
+            final Dialog dialog6 = new Dialog("Password must have at least one digit character",skin);
+            dialog6.show(stage);
+            dialog6.setSize(280,60);
+            dialog6.button("Ok", new ClickListener(){
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog6.remove();
+                }
+            });
         } else {
             this.validPassword = true;
         }
