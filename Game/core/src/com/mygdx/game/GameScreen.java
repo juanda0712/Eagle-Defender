@@ -88,6 +88,7 @@ public class GameScreen implements Screen {
     private Array<Image> placedImages;
 
     private GameScreenFeatures gameScreenFeatures;
+    private IAMode iaMode;
 
     @Getter
     private boolean placingEnabled = false;
@@ -112,7 +113,6 @@ public class GameScreen implements Screen {
     private int contadorBullet;
 
 
-
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
         this.game = game;
         this.elapsedTime = 0;
@@ -124,7 +124,8 @@ public class GameScreen implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         placedImages = new Array<>();
-        setupButtons();
+        setupButtonsDefender();
+        setupButtonsAttacker();
         gameScreenFeatures = new GameScreenFeatures(stage, placedImages, this, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
         // Crea la etiqueta (Label) para mostrar el tiempo restante
@@ -145,10 +146,9 @@ public class GameScreen implements Screen {
         }, 60); // 60 segundos (1 minuto)
 
         setupUIElements();
-
     }
 
-    private void setupButtons() {
+    public void setupButtonsDefender() {
         Skin skin = VisUI.getSkin();
         // ImageButton de barrera de madera, y su label de contador
         Drawable buttonUpWood = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/wood.jpg"))));
@@ -241,63 +241,62 @@ public class GameScreen implements Screen {
         eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
         eagleCounterLabel.setPosition(460, 90);
         stage.addActor(eagleCounterLabel);
-
-        // ImageButton de barrera de acero, y su label de contador
-        Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
-        fireButton = new ImageButton(fireChoose);
-        fireButton.setPosition(1500, 10);
-        fireButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!fireButton.isChecked()) {
-                    attackEnabled = false;
-
-                } else {
-                    waterButton.setChecked(false);
-                    bombButton.setChecked(false);
-                    attackEnabled = true;
-                }
-            }
-        });
-        stage.addActor(fireButton);
-
-        Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
-        waterButton = new ImageButton(waterChoose);
-        waterButton.setPosition(1800, 10);
-        waterButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!waterButton.isChecked()) {
-                    attackEnabled = false;
-
-                } else {
-                    fireButton.setChecked(false);
-                    bombButton.setChecked(false);
-                    attackEnabled = true;
-                }
-            }
-        });
-        stage.addActor(waterButton);
-
-        Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
-        bombButton = new ImageButton(bombChoose);
-        bombButton.setPosition(1000, 10);
-        bombButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!bombButton.isChecked()) {
-                    attackEnabled = false;
-
-                } else {
-                    fireButton.setChecked(false);
-                    waterButton.setChecked(false);
-                    attackEnabled = true;
-                }
-            }
-        });
-        stage.addActor(bombButton);
     }
+        public void setupButtonsAttacker(){
+            Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
+            fireButton = new ImageButton(fireChoose);
+            fireButton.setPosition(1500, 10);
+            fireButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!fireButton.isChecked()) {
+                        attackEnabled = false;
 
+                    } else {
+                        waterButton.setChecked(false);
+                        bombButton.setChecked(false);
+                        attackEnabled = true;
+                    }
+                }
+            });
+            stage.addActor(fireButton);
+
+            Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
+            waterButton = new ImageButton(waterChoose);
+            waterButton.setPosition(1800, 10);
+            waterButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!waterButton.isChecked()) {
+                        attackEnabled = false;
+
+                    } else {
+                        fireButton.setChecked(false);
+                        bombButton.setChecked(false);
+                        attackEnabled = true;
+                    }
+                }
+            });
+            stage.addActor(waterButton);
+
+            Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
+            bombButton = new ImageButton(bombChoose);
+            bombButton.setPosition(1000, 10);
+            bombButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!bombButton.isChecked()) {
+                        attackEnabled = false;
+
+                    } else {
+                        fireButton.setChecked(false);
+                        waterButton.setChecked(false);
+                        attackEnabled = true;
+                    }
+                }
+            });
+            stage.addActor(bombButton);
+        }
 
     private void setupUIElements() {
 
@@ -416,21 +415,51 @@ public class GameScreen implements Screen {
         lineaHorizontalboton.setPosition(0, 110);
         lineaHorizontalboton.setSize(Gdx.graphics.getWidth(), 2);
 
-
         userImage.setPosition(30, 920);
         userImage.setSize(150, 150);
 
         maskImage.setSize(userImage.getWidth(), userImage.getHeight());
+        //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
+
+        stage.addActor(backButton);
+        stage.addActor(userInfo);
+        stage.addActor(player2Name);
+        stage.addActor(defenderLabel);
+        stage.addActor(attackerLabel);
+        stage.addActor(fullnameLabel);
+        stage.addActor(usernameLabel);
+
         stage.addActor(image1);
         stage.addActor(image2);
         stage.addActor(userImage);
         stage.addActor(lineaHorizontal);
         //stage.addActor(maskImage);
+
         stage.addActor(lineaVertical);
         stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
     }
     private void setUpBackground() {
+
+
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    if (woodenButton.isChecked()) {
+                        gameScreenFeatures.addWood(x, y);
+                    } else if (cementButton.isChecked()) {
+                        gameScreenFeatures.addCement(x, y);
+                    } else if (steelButton.isChecked()) {
+                        gameScreenFeatures.addSteel(x, y);
+                    } else if (eagleButton.isChecked()) {
+                        gameScreenFeatures.addEagle(x, y);
+                    }
+                }
+                return true;
+            }
+        });
 
         Texture desertTexture = new Texture(Gdx.files.internal("assets/desert.png"));
         Image imageBG = new Image(desertTexture);
@@ -438,6 +467,7 @@ public class GameScreen implements Screen {
 
         imageBG.setSize(1980,810);
         stage.addActor(imageBG);
+
     }
 
 
@@ -474,6 +504,7 @@ public class GameScreen implements Screen {
                 filter.set(0.6039f, 0.6157f, 0.5412f, 1);
                 break;
         }
+
         return filter;
     }
     private void applyColorFilter() {
@@ -536,8 +567,6 @@ public class GameScreen implements Screen {
                 stage.addActor(bulletImage);
             }
 
-
-
             // Si la bala salió de la pantalla la elimina
             if (bulletX < -bulletSprite.getWidth()) {
                 isShooting = false;
@@ -562,7 +591,7 @@ public class GameScreen implements Screen {
     }
 
 
-    private void handleInput() {
+    public void handleInput() {
 
 
 
@@ -613,6 +642,7 @@ public class GameScreen implements Screen {
                 bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                 isShooting = true;
             }
+
 
             if (Gdx.input.isKeyPressed(Input.Keys.W) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
                 System.out.println("W");

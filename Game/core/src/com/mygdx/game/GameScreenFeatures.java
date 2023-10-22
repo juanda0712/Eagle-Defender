@@ -200,6 +200,7 @@ public class GameScreenFeatures {
                     Texture aguilaGodTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
                     Image aguilaGodImage = new Image(aguilaGodTexture);
                     aguilaGodImage.setPosition(x, y);
+                    aguilaGodImage.setSize(150, 80);
 
                     boolean canPlace = true;
                     for (Image placedImage : placedImages) {
@@ -241,7 +242,5 @@ public class GameScreenFeatures {
     public Array<Image> getBarrierImages() {
         return placedImages;
     }
-
-
 
 }
