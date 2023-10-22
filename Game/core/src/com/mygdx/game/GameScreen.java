@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,11 +25,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+
+import java.util.*;
 import java.util.List;
-
 
 
 public class GameScreen implements Screen {
@@ -36,16 +37,25 @@ public class GameScreen implements Screen {
     private final MainController game;
 
     private List<Rectangle> placedRectangles = new ArrayList<>();
-
+    Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
+    List<Rectangle> barrierRectangles = new ArrayList<>();
     private final Stage stage;
     private final OrthographicCamera camera;
     private JSONDataManager<User2> user2Manager;
+
+    private boolean isTimerActive = false;
+    private boolean isTimerActivelabel = false;
+    private float elapsedTime;
+
+
 
     private User2 user;
     private Label usernameLabel;
     private Label fullNameLabel;
 
     private final Array<Actor> arrayGUIElements = new Array<>();
+    private int remainingTime = 60;
+    private Label timerLabel;
 
     Sprite playerSprite;
     Sprite bulletSprite;
@@ -101,6 +111,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
         this.game = game;
+        this.elapsedTime = 0;
         this.user2Manager = user2Manager;
         this.user = user;
         this.countersBarriers = countersBarriers;
@@ -112,6 +123,23 @@ public class GameScreen implements Screen {
         setupButtons();
         gameScreenFeatures = new GameScreenFeatures(stage, placedImages, this, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
+        // Crea la etiqueta (Label) para mostrar el tiempo restante
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new BitmapFont(); // Configura el estilo de fuente
+        timerLabel = new Label("Time: " + remainingTime, labelStyle);
+        timerLabel.setPosition(500, 500); // Posición en la pantalla
+        stage.addActor(timerLabel);
+        isTimerActivelabel = true;
+
+        timerLabel.setText("Time: " + remainingTime);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                isTimerActive = true;
+            }
+        }, 60); // 60 segundos (1 minuto)
+
         setupUIElements();
 
     }
@@ -453,6 +481,19 @@ public class GameScreen implements Screen {
         usernameLabel.setText(user.getUsername());
         fullNameLabel.setText(user.getFullName());
         updateCounterLabel();
+        if (isTimerActivelabel) {
+            elapsedTime += delta;
+            if (elapsedTime >= 1.0f) {  // Actualizar cada segundo
+                remainingTime--;
+                if (remainingTime <= 0) {
+                    isTimerActivelabel = false; // El tiempo ha finalizado
+                }
+                timerLabel.setText("Time: " + remainingTime);
+                elapsedTime = 0; // Reiniciar el contador de tiempo transcurrido
+            }
+        }
+
+
 
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
@@ -497,6 +538,8 @@ public class GameScreen implements Screen {
 
     private void handleInput() {
 
+
+
         Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
 
         for (Image barrierImage : gameScreenFeatures.getBarrierImages()) {
@@ -507,67 +550,89 @@ public class GameScreen implements Screen {
 
             Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
 
+            boolean containsBarrier = false;
+            for (Rectangle existingBarrier : barrierRectangles) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight) {
+                    containsBarrier = true;
+                    break;
+                }
+            }
+
+            if (!containsBarrier) {
+                // Agregar el rectángulo de la barrera a la lista y establecer el contador inicial en el mapa
+                barrierRectangles.add(barrierBounds);
+                barrierCounters.put(barrierBounds, 3);  // Puedes establecer el valor inicial que desees
+            }
+
             if (Intersector.overlaps(bulletBounds, barrierBounds)) {
                 // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
                 isShooting = false; // Desactivar la bala
                 isCollide = true;
 
+                Integer currentCounter = barrierCounters.get(barrierBounds);
+                if (currentCounter != null && currentCounter > 0) {
+                    barrierCounters.put(barrierBounds, currentCounter - 1);
+                    System.out.println(currentCounter);
+                }
+
             }
+
         }
 
 
+        if(isTimerActive){
+            if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
+                // Inicia el disparo de la bala desde la posición del player.
+                bulletX = playerX + playerSprite.getWidth();
+                bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
+                isShooting = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
-            // Inicia el disparo de la bala desde la posición del player.
-            bulletX = playerX + playerSprite.getWidth();
-            bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
-            isShooting = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.W) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
+                System.out.println("W");
+                if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
+                    playerY += speed * Gdx.graphics.getDeltaTime();
+                    player = new Texture("WalkR1.png");
+                    playerSprite.setTexture(new Texture("WalkR1.png"));
+                    playerImage.setPosition(playerX, playerY);
+                }
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
-            System.out.println("W");
-            if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
-                playerY += speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR1.png");
-                playerSprite.setTexture(new Texture("WalkR1.png"));
+
+            if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
+                System.out.println("S");
+                playerY -= speed * Gdx.graphics.getDeltaTime();
+                player = new Texture("WalkR2.png");
+                playerSprite.setTexture(new Texture("WalkR2.png"));
                 playerImage.setPosition(playerX, playerY);
             }
-        }
 
 
-        if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
-            System.out.println("S");
-            playerY -= speed * Gdx.graphics.getDeltaTime();
-            player = new Texture("WalkR2.png");
-            playerSprite.setTexture(new Texture("WalkR2.png"));
-            playerImage.setPosition(playerX, playerY);
-        }
-
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A) && playerX > 0) {
-            System.out.println("A");
-            float centerX = Gdx.graphics.getWidth() / 2.0f;
-            if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
-                playerX -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR3.png");
-                playerSprite.setTexture(new Texture("WalkR3.png"));
-                playerImage.setPosition(playerX, playerY);
+            if (Gdx.input.isKeyPressed(Input.Keys.A) && playerX > 0) {
+                System.out.println("A");
+                float centerX = Gdx.graphics.getWidth() / 2.0f;
+                if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
+                    playerX -= speed * Gdx.graphics.getDeltaTime();
+                    player = new Texture("WalkR3.png");
+                    playerSprite.setTexture(new Texture("WalkR3.png"));
+                    playerImage.setPosition(playerX, playerY);
+                }
             }
-        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
-            System.out.println("D");
-            playerX += speed * Gdx.graphics.getDeltaTime();
+            if (Gdx.input.isKeyPressed(Input.Keys.D) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
+                System.out.println("D");
+                playerX += speed * Gdx.graphics.getDeltaTime();
 
-            player = new Texture("WalkR4.png");
-            playerSprite.setTexture(new Texture("WalkR4.png"));
-            playerImage.setPosition(playerX, playerY);
+                player = new Texture("WalkR4.png");
+                playerSprite.setTexture(new Texture("WalkR4.png"));
+                playerImage.setPosition(playerX, playerY);
 
-        }
+            }
 
-        if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            player = new Texture("SSF6.png");
-            playerSprite.setTexture(new Texture("SSF6.png"));
+            if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
+                player = new Texture("SSF6.png");
+                playerSprite.setTexture(new Texture("SSF6.png"));
+            }
         }
 
     }
