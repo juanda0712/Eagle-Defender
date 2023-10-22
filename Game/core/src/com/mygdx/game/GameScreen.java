@@ -26,18 +26,18 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.utils.SpotifyAuthenticator;
 import lombok.Getter;
 import com.badlogic.gdx.utils.Timer;
 
-
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class GameScreen implements Screen {
     //private List<Barrera> barreras = new ArrayList<>();
     private final MainController game;
-
     private List<Rectangle> placedRectangles = new ArrayList<>();
     Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
     List<Rectangle> barrierRectangles = new ArrayList<>();
@@ -109,10 +109,11 @@ public class GameScreen implements Screen {
     private CountersBarriers countersBarriers;
 
     private int contadorBullet;
+    private AtomicReference<SpotifyAuthenticator> spotifyReference;
 
-
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
         this.game = game;
+        this.spotifyReference = spotifyReference;
         this.elapsedTime = 0;
         this.user2Manager = user2Manager;
         this.user = user;
@@ -477,7 +478,6 @@ public class GameScreen implements Screen {
 
     private Color getColorFilterForPalette(String selectedPalette) {
         Color filter = new Color(1, 1, 1, 1); // Color inicial (sin filtro)
-        System.out.println(selectedPalette);
         selectedPalette = "Palette 1";
         switch (selectedPalette) {
             case "Palette 1":
@@ -520,6 +520,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        //Ejemplo reproduccion de una cancion
+        if (this.spotifyReference.get() != null) {
+            this.spotifyReference.get().getSongInfo("billi+jean");
+        }
+
+
         String selectedPalette = user.getSelectedColorPalette();
         //Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
         //ScreenUtils.clear(backgroundColor);

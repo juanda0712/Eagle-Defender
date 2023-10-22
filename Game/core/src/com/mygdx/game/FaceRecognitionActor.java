@@ -73,7 +73,7 @@ public class FaceRecognitionActor extends Actor {
 
             currentUser = recognizer.Predict(grayFrame);
             System.out.println(currentUser);
-            game.changeScreen(new GameScreen(game, user2Manager, currentUser,countersBarriers));
+            game.changeScreen(new GameScreen(game, user2Manager, currentUser, countersBarriers, null));
             detectFaces = false;
             game.dispose();
         }

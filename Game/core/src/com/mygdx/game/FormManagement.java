@@ -73,7 +73,8 @@ public class FormManagement implements Screen {
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
     private QuestionsForm questionsForm;
-    @Getter @Setter
+    @Getter
+    @Setter
     private String selectedColorPalette = "";
     private boolean validPassword = false;
     private boolean isValidDate = false;
@@ -90,7 +91,7 @@ public class FormManagement implements Screen {
         setUPGUIElements();
     }
 
-    private void createGUIElements (){
+    private void createGUIElements() {
         questionsForm = new QuestionsForm();
         final CardDataForm cardDataForm = new CardDataForm();
         Skin skin = VisUI.getSkin();
@@ -163,7 +164,7 @@ public class FormManagement implements Screen {
         ImageButton.ImageButtonStyle style1 = new ImageButton.ImageButtonStyle();
         style1.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 1.png"))));
         btnPalette1 = new ImageButton(style1);
-        btnPalette1.addListener(new ClickListener(){
+        btnPalette1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColorPalette("Palette 1");
@@ -173,7 +174,7 @@ public class FormManagement implements Screen {
         ImageButton.ImageButtonStyle style2 = new ImageButton.ImageButtonStyle();
         style2.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 2.png"))));
         btnPalette2 = new ImageButton(style2);
-        btnPalette2.addListener(new ClickListener(){
+        btnPalette2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColorPalette("Palette 2");
@@ -184,7 +185,7 @@ public class FormManagement implements Screen {
         ImageButton.ImageButtonStyle style3 = new ImageButton.ImageButtonStyle();
         style3.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 3.png"))));
         btnPalette3 = new ImageButton(style3);
-        btnPalette3.addListener(new ClickListener(){
+        btnPalette3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColorPalette("Palette 3");
@@ -195,7 +196,7 @@ public class FormManagement implements Screen {
         ImageButton.ImageButtonStyle style4 = new ImageButton.ImageButtonStyle();
         style4.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 4.png"))));
         btnPalette4 = new ImageButton(style4);
-        btnPalette4.addListener(new ClickListener(){
+        btnPalette4.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColorPalette("Palette 4");
@@ -206,7 +207,7 @@ public class FormManagement implements Screen {
         ImageButton.ImageButtonStyle style5 = new ImageButton.ImageButtonStyle();
         style5.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 5.png"))));
         btnPalette5 = new ImageButton(style5);
-        btnPalette5.addListener(new ClickListener(){
+        btnPalette5.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColorPalette("Palette 5");
@@ -267,7 +268,7 @@ public class FormManagement implements Screen {
                 isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
                 if (isValidDate && validPassword) {
                     if (!nameField.isEmpty() && !usernameField.isEmpty() && !birthDateField.isEmpty() && !emailField.isEmpty() && !passwordField.isEmpty()
-                            && !confirmPasswordField.isEmpty()  ) {
+                            && !confirmPasswordField.isEmpty()) {
                         getQuestions();
                         for (String question : questionsArray) {
                             System.out.println(question);
@@ -326,7 +327,7 @@ public class FormManagement implements Screen {
                             System.out.println(user);
                         }
                         CountersBarriers counters = new CountersBarriers();
-                        game.changeScreen(new GameScreen(game, user2Manager, newUser,counters));
+                        game.changeScreen(new GameScreen(game, user2Manager, newUser, counters, null));
                         dispose();
                     }
                 } else {
@@ -335,14 +336,15 @@ public class FormManagement implements Screen {
             }
         });
         btnReturnLogin = new TextButton("Return", skin);
-        btnReturnLogin.addListener(new ClickListener(){
+        btnReturnLogin.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 game.changeScreen(new LoginScreen(game, user2Manager));
                 dispose();
             }
         });
     }
-    private void setUPGUIElements (){
+
+    private void setUPGUIElements() {
         Table contentTable = new Table();
         float screenHeight = Gdx.graphics.getHeight();
         float padBottomValue = screenHeight * 0.05f;
@@ -363,11 +365,11 @@ public class FormManagement implements Screen {
                 selectAnimation, choiceBoxAnimation,
                 selectTexture, choiceBoxTexture,
                 paymentMethods, btnPaymentMethods,
-                uploadPfp, btnUpload,questionsLabel,
+                uploadPfp, btnUpload, questionsLabel,
                 btnQuestions,
                 btnCreateAccount, btnReturnLogin
         );
-        for (Actor element: GUIElements){
+        for (Actor element : GUIElements) {
             contentTable.add(element).left().padBottom(padBottomValue).row();
         }
         contentTable.padBottom(padBottomValue * 2);
@@ -397,10 +399,10 @@ public class FormManagement implements Screen {
         Pattern digitCasePatten = Pattern.compile("[0-9 ]");
         if (!passwordhere.equals(confirmhere)) {
             this.validPassword = false;
-            final Dialog dialog = new Dialog("Password confirmation does not match",skin);
+            final Dialog dialog = new Dialog("Password confirmation does not match", skin);
             dialog.show(stage);
-            dialog.setSize(280,60);
-            dialog.button("Ok", new ClickListener(){
+            dialog.setSize(280, 60);
+            dialog.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog.remove();
 
@@ -409,50 +411,50 @@ public class FormManagement implements Screen {
 
         } else if (passwordhere.length() < 8) {
             this.validPassword = false;
-            final Dialog dialog2 = new Dialog("Password length must have at least 8 characters",skin);
+            final Dialog dialog2 = new Dialog("Password length must have at least 8 characters", skin);
             dialog2.show(stage);
-            dialog2.setSize(280,60);
-            dialog2.button("Ok", new ClickListener(){
+            dialog2.setSize(280, 60);
+            dialog2.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog2.remove();
                 }
             });
         } else if (!specialCharPatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            final Dialog dialog3 = new Dialog("Password must have at least one special character",skin);
+            final Dialog dialog3 = new Dialog("Password must have at least one special character", skin);
             dialog3.show(stage);
-            dialog3.setSize(280,60);
-            dialog3.button("Ok", new ClickListener(){
+            dialog3.setSize(280, 60);
+            dialog3.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog3.remove();
                 }
             });
         } else if (!UpperCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            final Dialog dialog4 = new Dialog("Password must have at least one uppercase character",skin);
+            final Dialog dialog4 = new Dialog("Password must have at least one uppercase character", skin);
             dialog4.show(stage);
-            dialog4.setSize(280,60);
-            dialog4.button("Ok", new ClickListener(){
+            dialog4.setSize(280, 60);
+            dialog4.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog4.remove();
                 }
             });
         } else if (!lowerCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            final Dialog dialog5 = new Dialog("Password must have at least one lowercase character",skin);
+            final Dialog dialog5 = new Dialog("Password must have at least one lowercase character", skin);
             dialog5.show(stage);
-            dialog5.setSize(280,60);
-            dialog5.button("Ok", new ClickListener(){
+            dialog5.setSize(280, 60);
+            dialog5.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog5.remove();
                 }
             });
         } else if (!digitCasePatten.matcher(passwordhere).find()) {
             this.validPassword = false;
-            final Dialog dialog6 = new Dialog("Password must have at least one digit character",skin);
+            final Dialog dialog6 = new Dialog("Password must have at least one digit character", skin);
             dialog6.show(stage);
-            dialog6.setSize(280,60);
-            dialog6.button("Ok", new ClickListener(){
+            dialog6.setSize(280, 60);
+            dialog6.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog6.remove();
                 }

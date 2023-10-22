@@ -37,7 +37,7 @@ public class SelectMode implements Screen {
     private void setupUIElements() {
         Skin skin = VisUI.getSkin();
         CountersBarriers countersBarriers = new CountersBarriers();
-        final GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers);
+        final GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers, null);
 
         button1 = new TextButton("Button 1", skin);
         button1.setPosition(100, 300);

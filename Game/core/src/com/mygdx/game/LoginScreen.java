@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -18,21 +17,18 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextField;
-import com.kotcrab.vis.ui.widget.file.FileChooser;
-import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
-import com.mygdx.utils.CustomStyle;
-import com.mygdx.utils.GraphicElements;
-import com.mygdx.utils.JSONDataManager;
-import com.badlogic.gdx.files.FileHandle;
+import com.mygdx.utils.*;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.utils.ImageComparator;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 {
 
     private final MainController game;
+    private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
     private Stage stage = new Stage();
     private FaceRecognitionActor faceRecognitionActor;
@@ -164,13 +160,21 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
     private boolean loginValidation(String username, String password) {
         boolean validUser = false;
+
         for (User2 user : data) {
             if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
                 validUser = true;
                 CountersBarriers countersBarriers = new CountersBarriers();
-                GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers);
-                //game.changeScreen(new IAMode(game, user));
-                game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers));
+
+
+                Thread spotifyAuthThread = new Thread(() -> {
+                    SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                    spotifyReference.set(spotify);
+                });
+
+                spotifyAuthThread.start();
+
+                game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));
                 dispose();
                 break;
             }
