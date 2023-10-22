@@ -31,6 +31,7 @@ public class FaceRecognitionActor extends Actor {
     private Mat grayFrame;
     private User2 currentUser;
     private Frame processedFrame;
+    private CountersBarriers countersBarriers;
 
     public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -72,7 +73,7 @@ public class FaceRecognitionActor extends Actor {
 
             currentUser = recognizer.Predict(grayFrame);
             System.out.println(currentUser);
-            game.changeScreen(new GameScreen(game, user2Manager, currentUser));
+            game.changeScreen(new GameScreen(game, user2Manager, currentUser,countersBarriers));
             detectFaces = false;
             game.dispose();
         }
@@ -141,4 +142,3 @@ public class FaceRecognitionActor extends Actor {
         return pixmap;
     }
 }
-

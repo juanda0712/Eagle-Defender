@@ -5,27 +5,30 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.kotcrab.vis.ui.VisUI;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+
+import java.util.*;
 import java.util.List;
 
 
@@ -34,33 +37,36 @@ public class GameScreen implements Screen {
     private final MainController game;
 
     private List<Rectangle> placedRectangles = new ArrayList<>();
-
+    Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
+    List<Rectangle> barrierRectangles = new ArrayList<>();
     private final Stage stage;
     private final OrthographicCamera camera;
     private JSONDataManager<User2> user2Manager;
+
+    private boolean isTimerActive = false;
+    private boolean isTimerActivelabel = false;
+    private float elapsedTime;
+
+
 
     private User2 user;
     private Label usernameLabel;
     private Label fullNameLabel;
 
     private final Array<Actor> arrayGUIElements = new Array<>();
+    private int remainingTime = 60;
+    private Label timerLabel;
 
     Sprite playerSprite;
     Sprite bulletSprite;
 
-    Sprite playerRect;
-    //Animation animation;
-
-    Rectangle bulletRect;
-
-
-    Texture defensorTexture;
-    Texture atacanteTexture;
-    Texture barreraTexture;
     Texture bulletTexture;
     Texture player;
     Texture playerTexture;
-    Texture lineTexture;
+    Texture fireTexture;
+    Texture waterTexture;
+    Texture bombTexture;
+
 
     Image playerImage;
     Image bulletImage;
@@ -80,20 +86,214 @@ public class GameScreen implements Screen {
 
     private GameScreenFeatures gameScreenFeatures;
 
+    private boolean placingEnabled = false;
+    private boolean attackEnabled = false;
 
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user) {
+    boolean isCollide = false;
+    private ImageButton woodenButton;
+    private ImageButton cementButton;
+    private ImageButton steelButton;
+    private ImageButton eagleButton;
+
+    private ImageButton waterButton;
+    private ImageButton fireButton;
+    private ImageButton bombButton;
+
+    private Label woodCounterLabel;
+    private Label cementCounterLabel;
+    private Label steelCounterLabel;
+    private Label eagleCounterLabel;
+    private CountersBarriers countersBarriers;
+
+    private int contadorBullet;
+
+
+
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers) {
         this.game = game;
+        this.elapsedTime = 0;
         this.user2Manager = user2Manager;
         this.user = user;
+        this.countersBarriers = countersBarriers;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         placedImages = new Array<>();
-        gameScreenFeatures = new GameScreenFeatures(stage, placedImages);
+        setupButtons();
+        gameScreenFeatures = new GameScreenFeatures(stage, placedImages, this, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
+        // Crea la etiqueta (Label) para mostrar el tiempo restante
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new BitmapFont(); // Configura el estilo de fuente
+        timerLabel = new Label("Time: " + remainingTime, labelStyle);
+        timerLabel.setPosition(500, 500); // Posición en la pantalla
+        stage.addActor(timerLabel);
+        isTimerActivelabel = true;
+
+        timerLabel.setText("Time: " + remainingTime);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                isTimerActive = true;
+            }
+        }, 60); // 60 segundos (1 minuto)
+
         setupUIElements();
+
     }
+
+    private void setupButtons() {
+        Skin skin = VisUI.getSkin();
+        // ImageButton de barrera de madera, y su label de contador
+        Drawable buttonUpWood = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/wood.jpg"))));
+        Drawable buttonDownWood = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/woodD.jpg"))));
+        woodenButton = new ImageButton(buttonUpWood, buttonDownWood);
+        woodenButton.setPosition(10, 10);
+        woodenButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!woodenButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    cementButton.setChecked(false);
+                    steelButton.setChecked(false);
+                    eagleButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(woodenButton);
+        woodCounterLabel = new Label("wood barriers: " + countersBarriers.getWoodCounter(), skin);
+        woodCounterLabel.setPosition(10, 80);
+        stage.addActor(woodCounterLabel);
+
+        // ImageButton de barrera de cemento, y su label de contador
+        Drawable buttonUpCement = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/cement.jpg"))));
+        Drawable buttonDownCement = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/cementD.jpg"))));
+        cementButton = new ImageButton(buttonUpCement, buttonDownCement);
+        cementButton.setPosition(160, 10);
+        cementButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!cementButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    woodenButton.setChecked(false);
+                    steelButton.setChecked(false);
+                    eagleButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(cementButton);
+        cementCounterLabel = new Label("cement barriers: " + countersBarriers.getCementCounter(), skin);
+        cementCounterLabel.setPosition(160, 80);
+        stage.addActor(cementCounterLabel);
+
+        // ImageButton de barrera de acero, y su label de contador
+        Drawable buttonUpSteel = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/steel.jpg"))));
+        Drawable buttonDownSteel = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/steelD.jpg"))));
+        steelButton = new ImageButton(buttonUpSteel, buttonDownSteel);
+        steelButton.setPosition(320, 10);
+        steelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!steelButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    woodenButton.setChecked(false);
+                    cementButton.setChecked(false);
+                    eagleButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(steelButton);
+        steelCounterLabel = new Label("steel barriers: " + countersBarriers.getSteelCounter(), skin);
+        steelCounterLabel.setPosition(320, 80);
+        stage.addActor(steelCounterLabel);
+
+        //ImageButton de Eagle, y su label de contador
+        Drawable buttonUpEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/head.jpg"))));
+        Drawable buttonDownEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/head.jpg"))));
+        eagleButton = new ImageButton(buttonUpEagle, buttonDownEagle);
+        eagleButton.setPosition(460, 10);
+        eagleButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!eagleButton.isChecked()) {
+                    placingEnabled = false;
+                } else {
+                    cementButton.setChecked(false);
+                    steelButton.setChecked(false);
+                    woodenButton.setChecked(false);
+                    placingEnabled = true;
+                }
+            }
+        });
+        stage.addActor(eagleButton);
+        eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
+        eagleCounterLabel.setPosition(460, 90);
+        stage.addActor(eagleCounterLabel);
+
+        // ImageButton de barrera de acero, y su label de contador
+        Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
+        fireButton = new ImageButton(fireChoose);
+        fireButton.setPosition(1500, 10);
+        fireButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!fireButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    waterButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    attackEnabled = true;
+                }
+            }
+        });
+        stage.addActor(fireButton);
+
+        Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
+        waterButton = new ImageButton(waterChoose);
+        waterButton.setPosition(1800, 10);
+        waterButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!waterButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    fireButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    attackEnabled = true;
+                }
+            }
+        });
+        stage.addActor(waterButton);
+
+        Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
+        bombButton = new ImageButton(bombChoose);
+        bombButton.setPosition(1000, 10);
+        bombButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!bombButton.isChecked()) {
+                    attackEnabled = false;
+
+                } else {
+                    fireButton.setChecked(false);
+                    waterButton.setChecked(false);
+                    attackEnabled = true;
+                }
+            }
+        });
+        stage.addActor(bombButton);
+    }
+
 
     private void setupUIElements() {
         Skin skin = VisUI.getSkin();
@@ -136,16 +336,18 @@ public class GameScreen implements Screen {
         Texture goblinTexture = new Texture(Gdx.files.internal("assets/duendegod.png"));
         Texture userimageTexture = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
         Texture lineaRecta = new Texture("negro2.jpg");
+        Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
         playerTexture = new Texture("SSF6.png");
+        fireTexture = new Texture("fire1.PNG");
+        waterTexture = new Texture("Water12.png");
+        bombTexture = new Texture("Bomb1.png");
 
         playerSprite = new Sprite(playerTexture);
         playerSprite.setPosition(playerX, playerY);
 
         bulletSprite = new Sprite(bulletTexture);
 
-
-        //playerRect = new Rectangle(playerX, playerY, playerTexture.getWidth(), playerTexture.getHeight());
 
         playerImage = new Image(playerSprite);
         playerImage.setPosition(1300, 500);
@@ -156,7 +358,11 @@ public class GameScreen implements Screen {
         image1.setPosition(1000, 600);
         Image image2 = new Image(goblinTexture);
         image2.setPosition(1000, 200);
+
         Image userImage = new Image(userimageTexture);
+        Image maskImage = new Image(circulo);
+
+
 
         Image lineaVertical = new Image(lineaRecta);
         lineaVertical.setPosition(Gdx.graphics.getWidth() / 2, 0);
@@ -166,9 +372,18 @@ public class GameScreen implements Screen {
         lineaHorizontal.setPosition(0, 920);
         lineaHorizontal.setSize(Gdx.graphics.getWidth(), 2);
 
+        Image lineaHorizontalboton = new Image(lineaRecta);
+        lineaHorizontalboton.setPosition(0, 110);
+        lineaHorizontalboton.setSize(Gdx.graphics.getWidth(), 2);
+
 
         userImage.setPosition(30, 920);
         userImage.setSize(150, 150);
+
+        maskImage.setSize(userImage.getWidth(), userImage.getHeight());
+        //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
+
+
 
 
         stage.addActor(backButton);
@@ -183,14 +398,54 @@ public class GameScreen implements Screen {
         stage.addActor(fullNameLabel);
         stage.addActor(this.usernameLabel);
         stage.addActor(userImage);
+        //stage.addActor(maskImage);
+
+
+
         stage.addActor(lineaVertical);
         stage.addActor(lineaHorizontal);
+        stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
+
 
         arrayGUIElements.add(fullNameLabel);
         arrayGUIElements.add(usernameLabel);
         arrayGUIElements.add(defenderLabel);
         applyColorPalette();
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    // Maneja el clic izquierdo como lo hacías anteriormente.
+                    if (woodenButton.isChecked()) {
+                        gameScreenFeatures.addWood(x, y);
+                    } else if (cementButton.isChecked()) {
+                        gameScreenFeatures.addCement(x, y);
+                    } else if (steelButton.isChecked()) {
+                        gameScreenFeatures.addSteel(x, y);
+                    } else if (eagleButton.isChecked()) {
+                        gameScreenFeatures.addEagle(x, y);
+                    }
+                }
+                return true;
+            }
+        });
+    }
+
+    public boolean isPlacingEnabled() {
+        return placingEnabled;
+    }
+
+    public void updateCounterLabel() {
+        woodCounterLabel.setColor(Color.RED);
+        woodCounterLabel.setText("wood barriers: " + countersBarriers.getWoodCounter());
+        cementCounterLabel.setColor(Color.RED);
+        cementCounterLabel.setText("cement barriers: " + countersBarriers.getCementCounter());
+        steelCounterLabel.setColor(Color.RED);
+        steelCounterLabel.setText("steel barriers: " + countersBarriers.getSteelCounter());
+        eagleCounterLabel.setColor(Color.RED);
+        eagleCounterLabel.setText("Eagle: " + countersBarriers.getEagleCounter());
     }
 
 
@@ -211,26 +466,12 @@ public class GameScreen implements Screen {
                 elements.setColor(Color.ORANGE);
             }
         }
-        stage.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (button == Input.Buttons.LEFT) {
-
-                    gameScreenFeatures.AddImage(x, y);
-
-                    Sprite nuevaBarrera = new Sprite(playerTexture);
-                    playerSprite.setPosition(playerX, playerY);
-                    //placedRectangles.add(nuevaBarrera);
-                }
-                return true;
-            }
-        });
-
 
     }
 
     @Override
     public void render(float delta) {
+
         Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
         ScreenUtils.clear(backgroundColor);
         camera.update();
@@ -239,10 +480,50 @@ public class GameScreen implements Screen {
         Array<User2> users = user2Manager.read();
         usernameLabel.setText(user.getUsername());
         fullNameLabel.setText(user.getFullName());
+        updateCounterLabel();
+        if (isTimerActivelabel) {
+            elapsedTime += delta;
+            if (elapsedTime >= 1.0f) {  // Actualizar cada segundo
+                remainingTime--;
+                if (remainingTime <= 0) {
+                    isTimerActivelabel = false; // El tiempo ha finalizado
+                }
+                timerLabel.setText("Time: " + remainingTime);
+                elapsedTime = 0; // Reiniciar el contador de tiempo transcurrido
+            }
+        }
+
+
+
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
             bulletImage.setPosition(bulletX, bulletY);
-            stage.addActor(bulletImage);
+            if (fireButton.isChecked()) {
+                bulletSprite.setTexture(fireTexture);
+                stage.addActor(bulletImage);
+            } else if (waterButton.isChecked()) {
+                bulletSprite.setTexture(waterTexture);
+                stage.addActor(bulletImage);
+            }
+            else if (bombButton.isChecked()) {
+                bulletSprite.setTexture(bombTexture);
+                stage.addActor(bulletImage);
+            }
+
+
+
+            // Si la bala salió de la pantalla la elimina
+            if (bulletX < -bulletSprite.getWidth()) {
+                isShooting = false;
+            }
+        }
+
+        if (isCollide) {
+            //collisionSprite.setPosition(bulletX-50, bulletY);
+            //collisionSprite.setPosition(bulletX-15, bulletY);
+            //collisionSprite.draw(batch);
+            //isShooting = false;
+
 
             // Si la bala salió de la pantalla la elimina
             if (bulletX < -bulletSprite.getWidth()) {
@@ -256,68 +537,102 @@ public class GameScreen implements Screen {
 
 
     private void handleInput() {
-/*
-        for (Rectangle barrera : placedRectangles) {
-            if (bulletSprite.getBoundingRectangle().overlaps(barrera.getBoundingRectangle()) && isShooting) {
-                System.out.println("collided");
-                isShooting = false;
-                contador = contador + 1;
+
+
+
+        Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
+
+        for (Image barrierImage : gameScreenFeatures.getBarrierImages()) {
+            float barrierX = barrierImage.getX();
+            float barrierY = barrierImage.getY();
+            float barrierWidth = barrierImage.getWidth();
+            float barrierHeight = barrierImage.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            boolean containsBarrier = false;
+            for (Rectangle existingBarrier : barrierRectangles) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight) {
+                    containsBarrier = true;
+                    break;
+                }
             }
+
+            if (!containsBarrier) {
+                // Agregar el rectángulo de la barrera a la lista y establecer el contador inicial en el mapa
+                barrierRectangles.add(barrierBounds);
+                barrierCounters.put(barrierBounds, 3);  // Puedes establecer el valor inicial que desees
+            }
+
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
+                isShooting = false; // Desactivar la bala
+                isCollide = true;
+
+                Integer currentCounter = barrierCounters.get(barrierBounds);
+                if (currentCounter != null && currentCounter > 0) {
+                    barrierCounters.put(barrierBounds, currentCounter - 1);
+                    System.out.println(currentCounter);
+                }
+
+            }
+
         }
-        */
 
 
-        if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
-            // Inicia el disparo de la bala desde la posición del player.
-            bulletX = playerX + playerSprite.getWidth();
-            bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
-            isShooting = true;
-        }
+        if(isTimerActive){
+            if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
+                // Inicia el disparo de la bala desde la posición del player.
+                bulletX = playerX + playerSprite.getWidth();
+                bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
+                isShooting = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
-            System.out.println("W");
-            if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
-                playerY += speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR1.png");
-                playerSprite.setTexture(new Texture("WalkR1.png"));
+            if (Gdx.input.isKeyPressed(Input.Keys.W) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
+                System.out.println("W");
+                if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
+                    playerY += speed * Gdx.graphics.getDeltaTime();
+                    player = new Texture("WalkR1.png");
+                    playerSprite.setTexture(new Texture("WalkR1.png"));
+                    playerImage.setPosition(playerX, playerY);
+                }
+            }
+
+
+            if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
+                System.out.println("S");
+                playerY -= speed * Gdx.graphics.getDeltaTime();
+                player = new Texture("WalkR2.png");
+                playerSprite.setTexture(new Texture("WalkR2.png"));
                 playerImage.setPosition(playerX, playerY);
             }
-        }
 
 
-        if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
-            System.out.println("S");
-            playerY -= speed * Gdx.graphics.getDeltaTime();
-            player = new Texture("WalkR2.png");
-            playerSprite.setTexture(new Texture("WalkR2.png"));
-            playerImage.setPosition(playerX, playerY);
-        }
-
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A) && playerX > 0) {
-            System.out.println("A");
-            float centerX = Gdx.graphics.getWidth() / 2.0f;
-            if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
-                playerX -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR3.png");
-                playerSprite.setTexture(new Texture("WalkR3.png"));
-                playerImage.setPosition(playerX, playerY);
+            if (Gdx.input.isKeyPressed(Input.Keys.A) && playerX > 0) {
+                System.out.println("A");
+                float centerX = Gdx.graphics.getWidth() / 2.0f;
+                if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
+                    playerX -= speed * Gdx.graphics.getDeltaTime();
+                    player = new Texture("WalkR3.png");
+                    playerSprite.setTexture(new Texture("WalkR3.png"));
+                    playerImage.setPosition(playerX, playerY);
+                }
             }
-        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
-            System.out.println("D");
-            playerX += speed * Gdx.graphics.getDeltaTime();
+            if (Gdx.input.isKeyPressed(Input.Keys.D) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
+                System.out.println("D");
+                playerX += speed * Gdx.graphics.getDeltaTime();
 
-            player = new Texture("WalkR4.png");
-            playerSprite.setTexture(new Texture("WalkR4.png"));
-            playerImage.setPosition(playerX, playerY);
+                player = new Texture("WalkR4.png");
+                playerSprite.setTexture(new Texture("WalkR4.png"));
+                playerImage.setPosition(playerX, playerY);
 
-        }
+            }
 
-        if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            player = new Texture("SSF6.png");
-            playerSprite.setTexture(new Texture("SSF6.png"));
+            if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
+                player = new Texture("SSF6.png");
+                playerSprite.setTexture(new Texture("SSF6.png"));
+            }
         }
 
     }

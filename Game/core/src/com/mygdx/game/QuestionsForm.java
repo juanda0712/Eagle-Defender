@@ -20,6 +20,8 @@ public class QuestionsForm extends VisWindow {
 
 
     public QuestionsForm() {
+
+
         super("Questions");
         Skin skin = VisUI.getSkin();
         questions = new Array<String>();

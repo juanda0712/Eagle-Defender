@@ -63,8 +63,8 @@ public class FormManagement implements Screen {
     private SelectBox<String> choiceBoxTexture;
     private Label paymentMethods;
     private TextButton btnPaymentMethods;
-    String[] animations = {"Explosions", "Shock", "Transparency"};
-    String[] textures = {"Wooden", "Concrete", "Steel"};
+    private String[] animations = {"Explosions", "Shock", "Transparency"};
+    private String[] textures = {"Wooden", "Concrete", "Steel"};
 
     private Label uploadPfp;
     private TextButton btnUpload;
@@ -324,7 +324,8 @@ public class FormManagement implements Screen {
                         for (User2 user : users) {
                             System.out.println(user);
                         }
-                        game.changeScreen(new GameScreen(game, user2Manager, newUser));
+                        CountersBarriers counters = new CountersBarriers();
+                        game.changeScreen(new GameScreen(game, user2Manager, newUser,counters));
                         dispose();
                     }
                 } else {
