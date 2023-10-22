@@ -26,6 +26,8 @@ public class CardDataForm extends VisWindow {
         row();
 
         VisTextField cardNumberField = new VisTextField("");
+        cardNumberField.setPasswordMode(true);
+        cardNumberField.setPasswordCharacter('*');
         add(cardNumberField).left().pad(5);
         row();
 
