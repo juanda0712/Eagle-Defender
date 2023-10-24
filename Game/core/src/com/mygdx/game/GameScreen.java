@@ -206,6 +206,7 @@ public class GameScreen implements Screen {
             @Override
             public void run() {
                 isTimerActive = true;
+
             }
         }, 5); // 60 segundos (1 minuto)
 
