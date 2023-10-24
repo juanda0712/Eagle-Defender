@@ -173,7 +173,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 });
 
                 spotifyAuthThread.start();
-
+                //game.changeScreen(new IAMode(game, user));
                 game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));
                 dispose();
                 break;
@@ -181,7 +181,6 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         }
         return validUser;
     }
-
 
     public void render(float delta) {
         ScreenUtils.clear(1, 2, 1, 2);
