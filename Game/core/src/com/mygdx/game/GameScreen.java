@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.utils.SpotifyAuthenticator;
 import lombok.Getter;
 import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import java.util.*;
 import java.util.List;
@@ -40,12 +41,20 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class GameScreen implements Screen {
 
-
+    boolean bulletCollided = false;
+    boolean bulletCollidedcement = false;
+    boolean bulletCollidedSteel = false;
     //private List<Barrera> barreras = new ArrayList<>();
     private final MainController game;
     private List<Rectangle> placedRectangles = new ArrayList<>();
     Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
+    Map<Rectangle, Integer> barrierCounterscement = new HashMap<>();  // Mapa para mantener los contadores de las barreras
+
+    Map<Rectangle, Integer> barrierCountersSteel = new HashMap<>();  // Mapa para mantener los contadores de las barreras
     List<Rectangle> barrierRectangles = new ArrayList<>();
+    List<Rectangle> barrierRectanglescement = new ArrayList<>();
+
+    List<Rectangle> barrierRectanglesSteel = new ArrayList<>();
     private List<Float> waterPowerTimers = new ArrayList<>();
     private List<Float> firePowerTimers = new ArrayList<>();
     private List<Float> bombPowerTimers = new ArrayList<>();
@@ -996,24 +1005,6 @@ public class GameScreen implements Screen {
             }
         }
 
-        if (isShooting) {
-            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
-            bulletImage.setPosition(bulletX, bulletY);
-            if (fireButton.isChecked()) {
-                bulletSprite.setTexture(fireTexture);
-                stage.addActor(bulletImage);
-            } else if (waterButton.isChecked()) {
-                bulletSprite.setTexture(waterTexture);
-                stage.addActor(bulletImage);
-            } else if (bombButton.isChecked()) {
-                bulletSprite.setTexture(bombTexture);
-                stage.addActor(bulletImage);
-            }
-
-            if (bulletX < -bulletSprite.getWidth()) {
-                isShooting = false;
-            }
-        }
 
         if (isTimerActive) {
 
@@ -1157,13 +1148,33 @@ public class GameScreen implements Screen {
             //collisionSprite.setPosition(bulletX-50, bulletY);
             //collisionSprite.setPosition(bulletX-15, bulletY);
             //collisionSprite.draw(batch);
+            //Actions.removeActor(bulletImage);
             //isShooting = false;
-
-
             // Si la bala salió de la pantalla la elimina
             if (bulletX < -bulletSprite.getWidth()) {
                 isShooting = false;
             }
+        }
+
+        if (isShooting) {
+            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
+            bulletImage.setPosition(bulletX, bulletY);
+            if (fireButton.isChecked()) {
+                bulletSprite.setTexture(fireTexture);
+                stage.addActor(bulletImage);
+            } else if (waterButton.isChecked()) {
+                bulletSprite.setTexture(waterTexture);
+                stage.addActor(bulletImage);
+            } else if (bombButton.isChecked()) {
+                bulletSprite.setTexture(bombTexture);
+                stage.addActor(bulletImage);
+            }
+
+            if (bulletX < -bulletSprite.getWidth()) {
+                isShooting = false;
+            }
+        }else{
+            Actions.removeActor(bulletImage);
         }
 
         handleInput();
@@ -1177,6 +1188,9 @@ public class GameScreen implements Screen {
         Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
 
         for (Image barrierImage : woodPVP) {
+            if(bulletCollided){
+                break;
+            }
             float barrierX = barrierImage.getX();
             float barrierY = barrierImage.getY();
             float barrierWidth = barrierImage.getWidth();
@@ -1185,37 +1199,191 @@ public class GameScreen implements Screen {
             Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
 
             boolean containsBarrier = false;
+
             for (Rectangle existingBarrier : barrierRectangles) {
-                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight &&
+                        existingBarrier.x == barrierX && existingBarrier.y == barrierY) {
                     containsBarrier = true;
-                    break;
+                    break; // Salir del bucle una vez que se haya encontrado una coincidencia
                 }
             }
 
             if (!containsBarrier) {
                 // Agregar el rectángulo de la barrera a la lista y establecer el contador inicial en el mapa
                 barrierRectangles.add(barrierBounds);
-                barrierCounters.put(barrierBounds, 3);  // Puedes establecer el valor inicial que desees
+                barrierCounters.put(barrierBounds, 1);  // Puedes establecer el valor inicial que desees
             }
 
             if (Intersector.overlaps(bulletBounds, barrierBounds)) {
                 // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
+
                 isShooting = false; // Desactivar la bala
                 isCollide = true;
+                bulletCollided = true;
+                stage.getRoot().removeActor(bulletImage);
 
                 Integer currentCounter = barrierCounters.get(barrierBounds);
+
                 if (currentCounter != null && currentCounter > 0) {
                     barrierCounters.put(barrierBounds, currentCounter - 1);
+                    barrierCounters.remove(barrierBounds);
+                    woodPVP.removeValue(barrierImage, true);
+                    barrierImage.remove();
                     System.out.println(currentCounter);
                 }
 
             }
+            System.out.println(barrierCounters);
+
+        }
+
+        for (Image barrierImage : cementPVP) {
+            if(bulletCollidedcement){
+                break;
+            }
+            float barrierX = barrierImage.getX();
+            float barrierY = barrierImage.getY();
+            float barrierWidth = barrierImage.getWidth();
+            float barrierHeight = barrierImage.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            boolean containsBarriercement = false;
+
+            for (Rectangle existingBarrier : barrierRectanglescement) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight &&
+                        existingBarrier.x == barrierX && existingBarrier.y == barrierY) {
+                    containsBarriercement = true;
+                    break; // Salir del bucle una vez que se haya encontrado una coincidencia
+                }
+            }
+
+            if (!containsBarriercement) {
+                // Agregar el rectángulo de la barrera a la lista y establecer el contador inicial en el mapa
+                barrierRectanglescement.add(barrierBounds);
+                barrierCounterscement.put(barrierBounds, 3);  // Puedes establecer el valor inicial que desees
+            }
+
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
+
+                isShooting = false; // Desactivar la bala
+                isCollide = true;
+                bulletCollidedcement = true;
+                stage.getRoot().removeActor(bulletImage);
+
+                Integer currentCountercement = barrierCounterscement.get(barrierBounds);
+
+                if (currentCountercement != null && currentCountercement > 0) {
+                    if(bomb) {
+                        barrierCounterscement.put(barrierBounds, currentCountercement - 3);
+                        System.out.println(currentCountercement);
+                        cementPVP.removeValue(barrierImage, true);
+                        barrierImage.remove();
+                        barrierCounterscement.remove(barrierBounds);
+                    } else if(fire){
+                        if(currentCountercement == 3) {
+                            barrierCounterscement.put(barrierBounds, currentCountercement - 2);
+                        } else if (currentCountercement < 3) {
+                            barrierCounterscement.put(barrierBounds, currentCountercement - 2);
+                            cementPVP.removeValue(barrierImage, true);
+                            barrierImage.remove();
+                            barrierCounterscement.remove(barrierBounds);
+                        }
+
+                    }else if(water){
+                        if(currentCountercement == 3 || currentCountercement == 2) {
+                            barrierCounterscement.put(barrierBounds, currentCountercement - 1);
+                        } else if (currentCountercement == 1) {
+                            barrierCounterscement.put(barrierBounds, currentCountercement - 1);
+                            cementPVP.removeValue(barrierImage, true);
+                            barrierImage.remove();
+                            barrierCounterscement.remove(barrierBounds);
+
+                        }
+
+                    }
+                }
+
+            }
+            System.out.println(barrierCounterscement);
+
+        }
+
+        for (Image barrierImage : steelPVP) {
+            if(bulletCollidedSteel){
+                break;
+            }
+            float barrierX = barrierImage.getX();
+            float barrierY = barrierImage.getY();
+            float barrierWidth = barrierImage.getWidth();
+            float barrierHeight = barrierImage.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            boolean containsBarrierSteel = false;
+
+            for (Rectangle existingBarrier : barrierRectanglesSteel) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight &&
+                        existingBarrier.x == barrierX && existingBarrier.y == barrierY) {
+                    containsBarrierSteel = true;
+                    break; // Salir del bucle una vez que se haya encontrado una coincidencia
+                }
+            }
+
+            if (!containsBarrierSteel) {
+                // Agregar el rectángulo de la barrera a la lista y establecer el contador inicial en el mapa
+                barrierRectanglesSteel.add(barrierBounds);
+                barrierCountersSteel.put(barrierBounds, 2);  // Puedes establecer el valor inicial que desees
+            }
+
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
+
+                isShooting = false; // Desactivar la bala
+                isCollide = true;
+                bulletCollidedSteel = true;
+                stage.getRoot().removeActor(bulletImage);
+
+                Integer currentCounterSteel = barrierCountersSteel.get(barrierBounds);
+
+                if (currentCounterSteel != null && currentCounterSteel > 0) {
+                    if(bomb) {
+                        barrierCountersSteel.put(barrierBounds, currentCounterSteel - 2);
+                        System.out.println(currentCounterSteel);
+                        steelPVP.removeValue(barrierImage, true);
+                        barrierImage.remove();
+                        barrierCountersSteel.remove(barrierBounds);
+                    } else if(fire) {
+                        barrierCountersSteel.put(barrierBounds, currentCounterSteel - 2);
+                        steelPVP.removeValue(barrierImage, true);
+                        barrierImage.remove();
+                        barrierCountersSteel.remove(barrierBounds);
+                    }else if(water){
+                        if(currentCounterSteel == 2) {
+                            barrierCountersSteel.put(barrierBounds, currentCounterSteel - 1);
+                        } else if (currentCounterSteel == 1) {
+                            barrierCountersSteel.put(barrierBounds, currentCounterSteel - 1);
+                            steelPVP.removeValue(barrierImage, true);
+                            barrierImage.remove();
+                            barrierCountersSteel.remove(barrierBounds);
+
+                        }
+
+                    }
+                }
+
+            }
+            System.out.println(barrierCountersSteel);
 
         }
 
 
         if (isTimerActive) {
             if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
+                bulletCollided = false;
+                bulletCollidedcement = false;
+                bulletCollidedSteel = false;
                 // Inicia el disparo de la bala desde la posición del player.
                 if (waterPowerCount > 0 && water) {
                     bulletX = playerX + playerSprite.getWidth();
@@ -1224,6 +1392,7 @@ public class GameScreen implements Screen {
                     waterCounterDrops++;
                     waterCounterDropsTimes.add(elapsedTimeWater);
                     isShooting = true;
+                    isCollide = false;
                 } else if (firePowerCount > 0 && fire) {
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
@@ -1231,6 +1400,7 @@ public class GameScreen implements Screen {
                     fireCounterDrops++;
                     fireCounterDropsTimes.add(elapsedTimeFire);
                     isShooting = true;
+                    isCollide = false;
                 } else if (bombPowerCount > 0 && bomb) {
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
@@ -1238,6 +1408,7 @@ public class GameScreen implements Screen {
                     bombCounterDrops++;
                     bombCounterDropsTimes.add(elapsedTimeFire);
                     isShooting = true;
+                    isCollide = false;
                 }
             }
 
