@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 public class GameScreen implements Screen {
@@ -48,7 +47,20 @@ public class GameScreen implements Screen {
     Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
     List<Rectangle> barrierRectangles = new ArrayList<>();
     private List<Float> waterPowerTimers = new ArrayList<>();
-    private int maxWaterPowerCount = 3; // Establece el valor máximo de "Water Power"
+    private List<Float> firePowerTimers = new ArrayList<>();
+    private List<Float> bombPowerTimers = new ArrayList<>();
+
+    private int maxWaterPowerCount = 3;
+    private int maxBombPowerCount = 4;
+
+    private int maxFirePowerCount = 2;
+
+
+
+
+    private List<Float> auxList = new ArrayList<Float>();
+    private List<Float> fireauxList = new ArrayList<Float>();
+    private List<Float> bombauxList = new ArrayList<Float>();
 
     private final Stage stage;
     private final OrthographicCamera camera;
@@ -56,8 +68,14 @@ public class GameScreen implements Screen {
 
     private boolean isTimerActive = false;
     private boolean isTimerActivelabel = false;
-    private float elapsedTime;
+    private float elapsedTimeWater;
+    private float elapsedTimeFire;
+    private float elapsedTimeBomb;
 
+    private boolean flagAux = false;
+    private boolean fireflagAux = false;
+
+    private boolean bombflagAux = false;
 
     private User2 user;
     private Label usernameLabel;
@@ -117,15 +135,15 @@ public class GameScreen implements Screen {
     private Label eagleCounterLabel;
     private CountersBarriers countersBarriers;
     private int waterPowerCount = 3;
-    private int firePowerCount = 3;
-    private int bombPowerCount = 3;
+    private int firePowerCount = 2;
+    private int bombPowerCount = 4;
     private float timer = 0; // Inicializa el temporizador en 0 segundos
     private final float resetInterval = 30.0f;
     private float waterCounterTimer = 0; // Contador para el WaterCounter
     private int waterCounterDrops = 0; // Contador de caídas del WaterCounter
+    private int fireCounterDrops = 0; // Contador de caídas del WaterCounter
+    private int bombCounterDrops = 0; // Contador de caídas del WaterCounter
 
-
-    private int contadorBullet;
     private AtomicReference<SpotifyAuthenticator> spotifyReference;
 
     private Boolean fire = false;
@@ -133,14 +151,20 @@ public class GameScreen implements Screen {
     private Boolean bomb = false;
 
     private Label waterCounterLabel;
+    private Label fireCounterLabel;
+    private Label bombCounterLabel;
     private List<Float> waterCounterDropsTimes = new ArrayList<>();
+    private List<Float> fireCounterDropsTimes = new ArrayList<>();
+    private List<Float> bombCounterDropsTimes = new ArrayList<>();
 
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
         this.game = game;
         this.spotifyReference = spotifyReference;
-        this.elapsedTime = 0;
+        this.elapsedTimeWater = 0;
+        this.elapsedTimeFire = 0;
+        this.elapsedTimeBomb = 0;
         this.user2Manager = user2Manager;
         this.user = user;
         this.countersBarriers = countersBarriers;
@@ -168,43 +192,10 @@ public class GameScreen implements Screen {
             public void run() {
                 isTimerActive = true;
             }
-        }, 60); // 60 segundos (1 minuto)
+        }, 5); // 60 segundos (1 minuto)
 
         setupUIElements();
 
-        executorService.scheduleAtFixedRate(() -> {
-            if (isTimerActive) {
-                // Código para manejar el tiempo y los contadores
-                elapsedTime += 1.0f; // Simula que ha pasado 1 segundo
-
-                if (waterCounterDrops > 0) {
-                    for (int i = 0; i < waterCounterDrops; i++) {
-                        if (elapsedTime >= resetInterval && waterPowerCount < maxWaterPowerCount) {
-                            // Aumenta el contador en 1
-                            waterPowerCount++;
-                            updateCounterLabel();
-
-                            // Registra el tiempo actual en el temporizador de este Water Power
-                            waterPowerTimers.add(elapsedTime);
-
-                            waterCounterDrops--; // Reduce la cantidad de caídas pendientes
-                            elapsedTime = 0;
-                        }
-                    }
-                }
-
-                // Registra el tiempo para cada Water Power independientemente
-                for (int i = 0; i < waterPowerTimers.size(); i++) {
-                    waterPowerTimers.set(i, waterPowerTimers.get(i) + 1.0f);
-                    if (waterPowerTimers.get(i) >= 5.0f) {
-                        // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
-                    }
-                }
-
-                System.out.println("Lista");
-                System.out.println(waterPowerTimers);
-            }
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void setupButtonsDefender() {
@@ -407,6 +398,13 @@ public class GameScreen implements Screen {
         waterCounterLabel = new Label("Water Power: " + waterPowerCount, skin);
         waterCounterLabel.setPosition(700, 980);
         stage.addActor(waterCounterLabel);
+        fireCounterLabel = new Label("Fire Power: " + firePowerCount, skin);
+        fireCounterLabel.setPosition(900, 980);
+        stage.addActor(fireCounterLabel);
+
+        bombCounterLabel = new Label("Bomb Power: " + firePowerCount, skin);
+        bombCounterLabel.setPosition(500, 980);
+        stage.addActor(bombCounterLabel);
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
         stage.addActor(backButton);
@@ -531,6 +529,10 @@ public class GameScreen implements Screen {
         eagleCounterLabel.setText("Eagle: " + countersBarriers.getEagleCounter());
         waterCounterLabel.setColor(Color.RED);
         waterCounterLabel.setText("Water Power: " + waterPowerCount);
+        fireCounterLabel.setColor(Color.RED);
+        fireCounterLabel.setText("Fire Power: " + firePowerCount);
+        bombCounterLabel.setColor(Color.RED);
+        bombCounterLabel.setText("Bomb Power: " + bombPowerCount);
     }
 
 
@@ -601,8 +603,8 @@ public class GameScreen implements Screen {
 
 
         if (isTimerActivelabel) {
-            elapsedTime += delta;
-            if (elapsedTime >= 1.0f) {  // Actualizar cada segundo
+            elapsedTimeWater += delta;
+            if (elapsedTimeWater >= 1.0f) {  // Actualizar cada segundo
                 remainingTime--;
                 if (remainingTime <= 0) {
                     isTimerActivelabel = false; // El tiempo ha finalizado
@@ -610,7 +612,7 @@ public class GameScreen implements Screen {
                 timerLabel.setText("Time: " + remainingTime);
                 timerLabel.setPosition(500, 980);
                 stage.addActor(timerLabel);
-                elapsedTime = 0; // Reiniciar el contador de tiempo transcurrido
+                elapsedTimeWater = 0; // Reiniciar el contador de tiempo transcurrido
             }
         }
 
@@ -635,25 +637,46 @@ public class GameScreen implements Screen {
         }
 
         if (isTimerActive) {
-            elapsedTime += delta;
+
+                elapsedTimeWater += delta;
+                elapsedTimeFire  += delta;
+                elapsedTimeBomb += delta;
 
             // Verifica si ha pasado el tiempo necesario para aumentar el contador
             if (waterCounterDrops > 0) {
-                for (int i = 0; i < waterCounterDrops; i++) {
-                    if (elapsedTime >= resetInterval && waterPowerCount < maxWaterPowerCount) {
+                if(Gdx.input.isKeyPressed(Input.Keys.R)&&water){
+                    flagAux = false;
+                    if (waterCounterDrops >= 2 && !flagAux && water) {
+                        auxList.add(elapsedTimeWater);
+                        flagAux = true;
+                    }
+                }
+
+                    if (elapsedTimeWater >= resetInterval && waterPowerCount < maxWaterPowerCount) {
                         // Aumenta el contador en 1
                         waterPowerCount++;
                         updateCounterLabel();
 
                         // Registra el tiempo actual en el temporizador de este Water Power
-                        waterPowerTimers.add(elapsedTime);
+                        waterPowerTimers.add(elapsedTimeWater);
 
                         waterCounterDrops--; // Reduce la cantidad de caídas pendientes
-                        elapsedTime = 0;
-                    }
-                }
-            }
 
+                        if (auxList.isEmpty()) {
+                            elapsedTimeWater = 0;
+                        } else {
+                            if (waterPowerCount < 3) {
+                                elapsedTimeWater = elapsedTimeWater - auxList.get(0);
+                                auxList.remove(0);
+                                flagAux = false;
+                            }else{
+                                auxList.clear();
+                            }
+
+                        }
+                    }
+
+            }
             // Registra el tiempo para cada Water Power independientemente
             for (int i = 0; i < waterPowerTimers.size(); i++) {
                 waterPowerTimers.set(i, waterPowerTimers.get(i) + delta);
@@ -662,10 +685,93 @@ public class GameScreen implements Screen {
                 }
             }
 
-            System.out.println("Lista");
-            System.out.println(waterPowerTimers);
+            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+            if (fireCounterDrops > 0) {
+                if(Gdx.input.isKeyPressed(Input.Keys.R) && fire){
+                    fireflagAux = false;
+                    if (fireCounterDrops >= 2 && !fireflagAux && fire) {
+                        fireauxList.add(elapsedTimeFire);
+                        fireflagAux = true;
+                    }
+                }
 
-            // Resto de tu código para el manejo de la bala, contadores, etc.
+                if (elapsedTimeFire >= resetInterval && firePowerCount < maxFirePowerCount) {
+                    // Aumenta el contador en 1
+                    firePowerCount++;
+                    updateCounterLabel();
+
+                    // Registra el tiempo actual en el temporizador de este Water Power
+                    firePowerTimers.add(elapsedTimeFire);
+
+                    fireCounterDrops--; // Reduce la cantidad de caídas pendientes
+
+                    if (fireauxList.isEmpty()) {
+                        elapsedTimeFire = 0;
+                    } else {
+                        if (firePowerCount < 2) {
+                            elapsedTimeFire = elapsedTimeFire - fireauxList.get(0);
+                            fireauxList.remove(0);
+                            fireflagAux = false;
+                        }else{
+                            fireauxList.clear();
+                        }
+
+                    }
+                }
+
+            }
+            // Registra el tiempo para cada Water Power independientemente
+            for (int i = 0; i < firePowerTimers.size(); i++) {
+                firePowerTimers.set(i, firePowerTimers.get(i) + delta);
+                if (firePowerTimers.get(i) >= 5.0f) {
+                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                }
+            }
+
+            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+            if (bombCounterDrops > 0) {
+                if(Gdx.input.isKeyPressed(Input.Keys.R) && bomb){
+                    bombflagAux = false;
+                    if (bombCounterDrops >= 2 && !bombflagAux && bomb) {
+                        bombauxList.add(elapsedTimeBomb);
+                        bombflagAux = true;
+                    }
+                }
+
+                if (elapsedTimeBomb >= resetInterval && bombPowerCount < maxBombPowerCount) {
+                    // Aumenta el contador en 1
+                    bombPowerCount++;
+                    updateCounterLabel();
+
+                    // Registra el tiempo actual en el temporizador de este Water Power
+                    bombPowerTimers.add(elapsedTimeBomb);
+
+                    bombCounterDrops--; // Reduce la cantidad de caídas pendientes
+
+                    if (bombauxList.isEmpty()) {
+                        elapsedTimeBomb = 0;
+                    } else {
+                        if (bombPowerCount < 4) {
+                            elapsedTimeBomb = elapsedTimeBomb - bombauxList.get(0);
+                            bombauxList.remove(0);
+                            bombflagAux = false;
+                        }else{
+                            bombauxList.clear();
+                        }
+
+                    }
+                }
+
+            }
+            // Registra el tiempo para cada Water Power independientemente
+            for (int i = 0; i < bombPowerTimers.size(); i++) {
+                bombPowerTimers.set(i, bombPowerTimers.get(i) + delta);
+                if (bombPowerTimers.get(i) >= 5.0f) {
+                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                }
+            }
+
+
         }
 
         if (isCollide) {
@@ -737,17 +843,21 @@ public class GameScreen implements Screen {
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                     waterPowerCount--;
                     waterCounterDrops++;
-                    waterCounterDropsTimes.add(elapsedTime);
+                    waterCounterDropsTimes.add(elapsedTimeWater);
                     isShooting = true;
                 } else if (firePowerCount > 0 && fire) {
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                     firePowerCount--;
+                    fireCounterDrops++;
+                    fireCounterDropsTimes.add(elapsedTimeFire);
                     isShooting = true;
                 } else if (bombPowerCount > 0 && bomb) {
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                     bombPowerCount--;
+                    bombCounterDrops++;
+                    bombCounterDropsTimes.add(elapsedTimeFire);
                     isShooting = true;
                 }
             }
