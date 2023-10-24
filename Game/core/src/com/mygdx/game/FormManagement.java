@@ -65,8 +65,8 @@ public class FormManagement implements Screen {
     private SelectBox<String> choiceBoxTexture;
     private Label paymentMethods;
     private TextButton btnPaymentMethods;
-    private String[] animations = {"Explosions", "Shock", "Transparency"};
-    private String[] textures = {"Wooden", "Concrete", "Steel"};
+    //private String[] animations = {"Explosions", "Shock", "Transparency"};
+    private String[] textures = {"Smooth", "Rocky", "Bricked"};
 
     private Label uploadPfp;
     private Label pfpLabel;
@@ -223,8 +223,8 @@ public class FormManagement implements Screen {
         selectAnimation = new Label("Select one animation", skin);
         selectAnimation.setColor(Color.BLACK);
 
-        choiceBoxAnimation = new SelectBox<>(skin);
-        choiceBoxAnimation.setItems(animations);
+        //choiceBoxAnimation = new SelectBox<>(skin);
+        //choiceBoxAnimation.setItems(animations);
 
         selectTexture = new Label("Select one   git wall texture", skin);
         selectTexture.setColor(Color.BLACK);
