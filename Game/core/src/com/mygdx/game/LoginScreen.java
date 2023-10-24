@@ -173,16 +173,15 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 validUser = true;
                 CountersBarriers countersBarriers = new CountersBarriers();
 
-                Thread spotifyAuthThread = new Thread(() -> {
-                    SpotifyAuthenticator spotify = new SpotifyAuthenticator();
-                    spotifyReference.set(spotify);
-                });
-
-                spotifyAuthThread.start();
-
                 if (user1 == null) {
                     game.changeScreen(new SelectMode(game, user2Manager, user));
                 } else {
+                    Thread spotifyAuthThread = new Thread(() -> {
+                        SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                        spotifyReference.set(spotify);
+                    });
+
+                    spotifyAuthThread.start();
                     game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference));
                 }
 
