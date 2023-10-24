@@ -91,7 +91,8 @@ public class GameScreen implements Screen {
     private User2 user;
     private User2 user2;
     private Label usernameLabel;
-    private Label fullNameLabel;
+    private Label username2Label;
+
 
     private final Array<Actor> arrayGUIElements = new Array<>();
     private int remainingTime = 60;
@@ -695,14 +696,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /*private void minusEagleCounter() {
-        if (countersBarriers.getEagleCounter() > 0) {
-            countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
-            //gameScreen.updateCounterLabel();
-        }
-    }*/
-
-
     public void setupButtonsAttacker() {
         Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
         fireButton = new ImageButton(fireChoose);
@@ -786,25 +779,34 @@ public class GameScreen implements Screen {
                 //game.setScreen(new LoginScreen(game, user2Manager));
             }
         });
-        fullNameLabel = new Label(user.getFullName(), skin);
-        fullNameLabel.setColor(Color.BLACK);
-        fullNameLabel.setPosition(280, 1000);
+
         usernameLabel = new Label(user.getUsername(), skin);
         usernameLabel.setColor(Color.BLACK);
-        usernameLabel.setPosition(280, 980);
+        usernameLabel.setPosition(280, 1000);
+
+        username2Label = new Label(user2.getUsername(), skin);
+        username2Label.setColor(Color.BLACK);
+        username2Label.setPosition(1610, 1000);
 
         Label userInfo = new Label("User information:", skin);
         userInfo.setColor(Color.BLACK);
         userInfo.setPosition(200, 1020);
-        Label player2Name = new Label("Unknown player 2", skin);
-        player2Name.setColor(Color.BLACK);
-        player2Name.setPosition(1500, 950);
-        Label fullnameLabel = new Label("Fullname: ", skin);
-        fullnameLabel.setColor(Color.BLACK);
-        fullnameLabel.setPosition(200, 1000);
+
+        Label user2Info = new Label("User information:", skin);
+        user2Info.setColor(Color.BLACK);
+        user2Info.setPosition(1530, 1020);
+
+
+
         Label usernameLabel = new Label("Username: ", skin);
         usernameLabel.setColor(Color.BLACK);
-        usernameLabel.setPosition(200, 980);
+        usernameLabel.setPosition(200, 1000);
+
+        Label username2Label = new Label("Username: ", skin);
+        username2Label.setColor(Color.BLACK);
+        username2Label.setPosition(1530, 1000);
+
+
         waterCounterLabel = new Label("Water Power: " + waterPowerCount, skin);
         waterCounterLabel.setPosition(700, 980);
         stage.addActor(waterCounterLabel);
@@ -819,12 +821,13 @@ public class GameScreen implements Screen {
 
         stage.addActor(backButton);
         stage.addActor(userInfo);
-        stage.addActor(player2Name);
-        stage.addActor(fullnameLabel);
+        stage.addActor(user2Info);
         stage.addActor(usernameLabel);
+        stage.addActor(username2Label);
 
-        stage.addActor(fullNameLabel);
+
         stage.addActor(this.usernameLabel);
+        stage.addActor(this.username2Label);
 
         stage.addListener(new InputListener() {
             @Override
@@ -850,6 +853,7 @@ public class GameScreen implements Screen {
         Texture eagleTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
         Texture goblinTexture = new Texture(Gdx.files.internal("assets/duendegod.png"));
         Texture userimageTexture = new Texture(Gdx.files.local("data/imgs/" + user.getImage()));
+        Texture user2imageTexture = new Texture(Gdx.files.local("data/imgs/" + user2.getImage()));
         lineaRecta = new Texture("negro2.jpg");
         Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
@@ -868,6 +872,7 @@ public class GameScreen implements Screen {
 
 
         Image userImage = new Image(userimageTexture);
+        Image user2Image = new Image(user2imageTexture);
         Image maskImage = new Image(circulo);
 
         Image lineaVertical = new Image(lineaRecta);
@@ -885,12 +890,16 @@ public class GameScreen implements Screen {
         userImage.setPosition(30, 920);
         userImage.setSize(150, 150);
 
+        user2Image.setPosition(1730, 920);
+        user2Image.setSize(150, 150);
+
         maskImage.setSize(userImage.getWidth(), userImage.getHeight());
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
         stage.addActor(userImage);
+        stage.addActor(user2Image);
         stage.addActor(lineaHorizontal);
-        //stage.addActor(maskImage);
+
 
         stage.addActor(lineaVertical);
         stage.addActor(lineaHorizontalboton);
@@ -1007,7 +1016,6 @@ public class GameScreen implements Screen {
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         Array<User2> users = user2Manager.read();
         usernameLabel.setText(user.getUsername());
-        fullNameLabel.setText(user.getFullName());
         updateCounterLabel();
 
 
