@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import com.mygdx.utils.SpotifyAuthenticator;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.*;
@@ -17,6 +18,7 @@ import org.opencv.videoio.Videoio;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FaceRecognitionActor extends Actor {
     private final MainController game;
@@ -31,20 +33,32 @@ public class FaceRecognitionActor extends Actor {
     private Mat grayFrame;
     private User2 currentUser;
     private Frame processedFrame;
-    private CountersBarriers countersBarriers;
+    private User2 user1;
+    private User2 user2;
+    private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
-    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager) {
+    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager, User2 user1, User2 user2) {
         this.game = game;
         this.user2Manager = user2Manager;
-        int desiredWidth = 320;
-        int desiredHeight = 240;
+        this.user1 = user1;
+        this.user2 = user2;
+        int desiredWidth = 640;
+        int desiredHeight = 360;
 
         // Configura la resolución de captura deseada (320x240)
-        int captureWidth = 320;
-        int captureHeight = 240;
-        capture = new VideoCapture(0);
+        capture = new VideoCapture(0); // Abre la cámara con índice 0 (cámara predeterminada)
+        int nuevoFormato = 1196444237; // Este es el valor numérico para MJPG (MJPEG)
+        capture.set(Videoio.CAP_PROP_FOURCC, nuevoFormato);
+
+        int captureWidth = 640; // Ancho deseado
+        int captureHeight = 360; // Alto deseado
+
+        // Configura el formato de captura
+
+        // Configura la resolución de captura deseada
         capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
         capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);
+
 
         // Configura la resolución del OrthographicCamera y cameraTexture
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
@@ -66,15 +80,34 @@ public class FaceRecognitionActor extends Actor {
 
         capture.read(frame);
         if (detectFaces) {
+            Size newSizeFrame = new Size(320, 240);
+            opencv_imgproc.resize(frame, frame, newSizeFrame);
             opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
 
-            Size newSize = new Size(450, 450);
+            Size newSize = new Size(640, 360);
             opencv_imgproc.resize(grayFrame, grayFrame, newSize);
 
             currentUser = recognizer.Predict(grayFrame);
             System.out.println(currentUser);
-            game.changeScreen(new GameScreen(game, user2Manager, currentUser, countersBarriers, null));
+
+            if (user1 == null) {
+                game.changeScreen(new SelectMode(game, user2Manager, currentUser));
+            } else {
+                //counter barriers
+                CountersBarriers countersBarriers = new CountersBarriers();
+                //Spotify
+                Thread spotifyAuthThread = new Thread(() -> {
+                    SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                    spotifyReference.set(spotify);
+                });
+
+                spotifyAuthThread.start();
+                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference));
+            }
+
+            //game.changeScreen(new SelectMode(game, user2Manager, currentUser));
             detectFaces = false;
+            capture.close();
             game.dispose();
         }
 
@@ -93,8 +126,8 @@ public class FaceRecognitionActor extends Actor {
         float screenHeight = Gdx.graphics.getHeight();
         float leftTableWidth = screenWidth / 2;
         float leftTableHeight = screenHeight;
-        float camerax = (leftTableWidth - 320) / 2;
-        float cameray = (leftTableHeight - 240) / 2;
+        float camerax = (leftTableWidth - 640) / 2;
+        float cameray = (leftTableHeight - 360) / 2;
         batch.draw(cameraTexture, camerax + 30, cameray, cameraTexture.getWidth(), cameraTexture.getHeight(), 0, 0, cameraTexture.getWidth(), cameraTexture.getHeight(), false, true);
     }
 

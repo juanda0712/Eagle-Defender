@@ -45,9 +45,15 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
     private User2 user;
     //private Recognizer recognizer;
 
-    public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager) {
+    //Flow
+    private User2 user1;
+    private User2 user2;
+
+    public LoginScreen(final MainController game, final JSONDataManager<User2> user2Manager, User2 user1, User2 user2) {
         questionsForm = new QuestionsForm2(game, user2Manager, user, this);
         this.game = game;
+        this.user1 = user1;
+        this.user2 = user2;
         this.user2Manager = user2Manager;
         data = user2Manager.read();
         //recognizer = new Recognizer(user2Manager);
@@ -57,7 +63,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
         Gdx.input.setInputProcessor(stage);
 
-        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager);
+        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager, user1, user2);
 
         setupUIElements();
     }
@@ -84,6 +90,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 faceRecognitionActor.startFaceDetection();
+                dispose();
             }
         });
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
@@ -166,22 +173,26 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 validUser = true;
                 CountersBarriers countersBarriers = new CountersBarriers();
 
+                if (user1 == null) {
+                    game.changeScreen(new SelectMode(game, user2Manager, user));
+                } else {
+                    Thread spotifyAuthThread = new Thread(() -> {
+                        SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                        spotifyReference.set(spotify);
+                    });
 
-                Thread spotifyAuthThread = new Thread(() -> {
-                    SpotifyAuthenticator spotify = new SpotifyAuthenticator();
-                    spotifyReference.set(spotify);
-                });
+                    spotifyAuthThread.start();
+                    game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference));
+                }
 
-                spotifyAuthThread.start();
+                //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));
 
-                game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));
                 dispose();
                 break;
             }
         }
         return validUser;
     }
-
 
     public void render(float delta) {
         ScreenUtils.clear(1, 2, 1, 2);
@@ -228,6 +239,4 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         dialog.show(stage);
 
     }
-
-
 }

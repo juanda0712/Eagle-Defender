@@ -20,7 +20,7 @@ public class MainController extends Game {
         user2Manager = new JSONDataManager<>("data/users2.json", User2.class);
         VisUI.load();
         batch = new SpriteBatch();
-        login = new LoginScreen(this, user2Manager);
+        login = new LoginScreen(this, user2Manager, null, null);
         this.setScreen(login);
     }
 
