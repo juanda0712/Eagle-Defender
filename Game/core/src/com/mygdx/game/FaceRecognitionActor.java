@@ -84,7 +84,7 @@ public class FaceRecognitionActor extends Actor {
             opencv_imgproc.resize(frame, frame, newSizeFrame);
             opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
 
-            Size newSize = new Size(450, 450);
+            Size newSize = new Size(640, 360);
             opencv_imgproc.resize(grayFrame, grayFrame, newSize);
 
             currentUser = recognizer.Predict(grayFrame);

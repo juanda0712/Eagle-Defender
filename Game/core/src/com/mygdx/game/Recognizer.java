@@ -30,8 +30,8 @@ public class Recognizer {
 
     public Recognizer(JSONDataManager<User2> user2Manager) {
         this.user2Manager = user2Manager;
-        //model = EigenFaceRecognizer.create();
-        model = LBPHFaceRecognizer.create();
+        model = EigenFaceRecognizer.create();
+        //model = LBPHFaceRecognizer.create();
         //model = FisherFaceRecognizer.create();
         data = user2Manager.read();
 
@@ -48,7 +48,7 @@ public class Recognizer {
             FileHandle fileHandle = Gdx.files.internal(directoryPath + user.getImage());
             String filePath = fileHandle.file().getAbsolutePath();
             Mat img = opencv_imgcodecs.imread(filePath, opencv_imgcodecs.IMREAD_GRAYSCALE);
-            Size newSize = new Size(450, 450);
+            Size newSize = new Size(640, 360);
             opencv_imgproc.resize(img, img, newSize);
             images.push_back(img);
         }
