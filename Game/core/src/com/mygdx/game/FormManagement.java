@@ -338,7 +338,7 @@ public class FormManagement implements Screen {
                         });
 
                         spotifyAuthThread.start();
-                        game.changeScreen(new GameScreen(game, user2Manager, newUser, counters, spotifyReference));
+                        game.changeScreen(new SelectMode(game, user2Manager, newUser));
                         dispose();
                     }
                 } else {
@@ -349,7 +349,7 @@ public class FormManagement implements Screen {
         btnReturnLogin = new TextButton("Return", skin);
         btnReturnLogin.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new LoginScreen(game, user2Manager));
+                game.changeScreen(new LoginScreen(game, user2Manager, null, null));
                 dispose();
             }
         });

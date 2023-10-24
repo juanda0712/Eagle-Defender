@@ -33,11 +33,15 @@ public class FaceRecognitionActor extends Actor {
     private Mat grayFrame;
     private User2 currentUser;
     private Frame processedFrame;
+    private User2 user1;
+    private User2 user2;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
-    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager) {
+    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager, User2 user1, User2 user2) {
         this.game = game;
         this.user2Manager = user2Manager;
+        this.user1 = user1;
+        this.user2 = user2;
         int desiredWidth = 320;
         int desiredHeight = 240;
 
@@ -87,7 +91,13 @@ public class FaceRecognitionActor extends Actor {
 
             spotifyAuthThread.start();
 
-            game.changeScreen(new GameScreen(game, user2Manager, currentUser, countersBarriers, spotifyReference));
+            if (user1 == null) {
+                game.changeScreen(new SelectMode(game, user2Manager, currentUser));
+            } else {
+                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference));
+            }
+
+            //game.changeScreen(new SelectMode(game, user2Manager, currentUser));
             detectFaces = false;
             capture.close();
             game.dispose();

@@ -89,7 +89,7 @@ public class GameOverScreen implements Screen {
         retry.setPosition(850, 300);
         retry.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, user2Manager, user, countersBarriers, null));
+                //((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, user2Manager, user, countersBarriers, null));
             }
         });
         stage.addActor(retry);

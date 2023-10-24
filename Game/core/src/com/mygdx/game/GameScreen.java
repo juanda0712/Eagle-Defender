@@ -56,8 +56,6 @@ public class GameScreen implements Screen {
     private int maxFirePowerCount = 2;
 
 
-
-
     private List<Float> auxList = new ArrayList<Float>();
     private List<Float> fireauxList = new ArrayList<Float>();
     private List<Float> bombauxList = new ArrayList<Float>();
@@ -78,6 +76,7 @@ public class GameScreen implements Screen {
     private boolean bombflagAux = false;
 
     private User2 user;
+    private User2 user2;
     private Label usernameLabel;
     private Label fullNameLabel;
 
@@ -159,7 +158,9 @@ public class GameScreen implements Screen {
 
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
+        System.out.println(user);
+        System.out.println(user2);
         this.game = game;
         this.spotifyReference = spotifyReference;
         this.elapsedTimeWater = 0;
@@ -167,6 +168,7 @@ public class GameScreen implements Screen {
         this.elapsedTimeBomb = 0;
         this.user2Manager = user2Manager;
         this.user = user;
+        this.user2 = user2;
         this.countersBarriers = countersBarriers;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
@@ -373,7 +375,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Cambiar la pantalla a LoginScreen
-                game.setScreen(new LoginScreen(game, user2Manager));
+                //game.setScreen(new LoginScreen(game, user2Manager));
             }
         });
         fullNameLabel = new Label(user.getFullName(), skin);
@@ -638,13 +640,13 @@ public class GameScreen implements Screen {
 
         if (isTimerActive) {
 
-                elapsedTimeWater += delta;
-                elapsedTimeFire  += delta;
-                elapsedTimeBomb += delta;
+            elapsedTimeWater += delta;
+            elapsedTimeFire += delta;
+            elapsedTimeBomb += delta;
 
             // Verifica si ha pasado el tiempo necesario para aumentar el contador
             if (waterCounterDrops > 0) {
-                if(Gdx.input.isKeyPressed(Input.Keys.R)&&water){
+                if (Gdx.input.isKeyPressed(Input.Keys.R) && water) {
                     flagAux = false;
                     if (waterCounterDrops >= 2 && !flagAux && water) {
                         auxList.add(elapsedTimeWater);
@@ -652,29 +654,29 @@ public class GameScreen implements Screen {
                     }
                 }
 
-                    if (elapsedTimeWater >= resetInterval && waterPowerCount < maxWaterPowerCount) {
-                        // Aumenta el contador en 1
-                        waterPowerCount++;
-                        updateCounterLabel();
+                if (elapsedTimeWater >= resetInterval && waterPowerCount < maxWaterPowerCount) {
+                    // Aumenta el contador en 1
+                    waterPowerCount++;
+                    updateCounterLabel();
 
-                        // Registra el tiempo actual en el temporizador de este Water Power
-                        waterPowerTimers.add(elapsedTimeWater);
+                    // Registra el tiempo actual en el temporizador de este Water Power
+                    waterPowerTimers.add(elapsedTimeWater);
 
-                        waterCounterDrops--; // Reduce la cantidad de caídas pendientes
+                    waterCounterDrops--; // Reduce la cantidad de caídas pendientes
 
-                        if (auxList.isEmpty()) {
-                            elapsedTimeWater = 0;
+                    if (auxList.isEmpty()) {
+                        elapsedTimeWater = 0;
+                    } else {
+                        if (waterPowerCount < 3) {
+                            elapsedTimeWater = elapsedTimeWater - auxList.get(0);
+                            auxList.remove(0);
+                            flagAux = false;
                         } else {
-                            if (waterPowerCount < 3) {
-                                elapsedTimeWater = elapsedTimeWater - auxList.get(0);
-                                auxList.remove(0);
-                                flagAux = false;
-                            }else{
-                                auxList.clear();
-                            }
-
+                            auxList.clear();
                         }
+
                     }
+                }
 
             }
             // Registra el tiempo para cada Water Power independientemente
@@ -687,7 +689,7 @@ public class GameScreen implements Screen {
 
             // Verifica si ha pasado el tiempo necesario para aumentar el contador
             if (fireCounterDrops > 0) {
-                if(Gdx.input.isKeyPressed(Input.Keys.R) && fire){
+                if (Gdx.input.isKeyPressed(Input.Keys.R) && fire) {
                     fireflagAux = false;
                     if (fireCounterDrops >= 2 && !fireflagAux && fire) {
                         fireauxList.add(elapsedTimeFire);
@@ -712,7 +714,7 @@ public class GameScreen implements Screen {
                             elapsedTimeFire = elapsedTimeFire - fireauxList.get(0);
                             fireauxList.remove(0);
                             fireflagAux = false;
-                        }else{
+                        } else {
                             fireauxList.clear();
                         }
 
@@ -730,7 +732,7 @@ public class GameScreen implements Screen {
 
             // Verifica si ha pasado el tiempo necesario para aumentar el contador
             if (bombCounterDrops > 0) {
-                if(Gdx.input.isKeyPressed(Input.Keys.R) && bomb){
+                if (Gdx.input.isKeyPressed(Input.Keys.R) && bomb) {
                     bombflagAux = false;
                     if (bombCounterDrops >= 2 && !bombflagAux && bomb) {
                         bombauxList.add(elapsedTimeBomb);
@@ -755,7 +757,7 @@ public class GameScreen implements Screen {
                             elapsedTimeBomb = elapsedTimeBomb - bombauxList.get(0);
                             bombauxList.remove(0);
                             bombflagAux = false;
-                        }else{
+                        } else {
                             bombauxList.clear();
                         }
 

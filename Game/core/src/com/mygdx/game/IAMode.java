@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+
 import java.util.Random;
 
 public class IAMode implements Screen {
@@ -71,6 +72,7 @@ public class IAMode implements Screen {
     float speed = 400.0f;
 
     public IAMode(final MainController game, User2 user) {
+        System.out.println(user);
         this.game = game;
         this.user = user;
         screenWidth = Gdx.graphics.getWidth();
@@ -158,7 +160,7 @@ public class IAMode implements Screen {
         returnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new SelectMode(game));
+                //game.changeScreen(new SelectMode(game));
             }
         });
         stage.addActor(returnButton);
@@ -493,33 +495,33 @@ public class IAMode implements Screen {
                 aguilaGodImage.setPosition(x, y);
                 aguilaGodImage.setSize(150, 80);
 
-                    boolean canPlace = true;
-                    for (Image placedImage : randomIA) {
-                        float newX = aguilaGodImage.getX();
-                        float newY = aguilaGodImage.getY();
-                        float newWidth = aguilaGodImage.getWidth();
-                        float newHeight = aguilaGodImage.getHeight();
+                boolean canPlace = true;
+                for (Image placedImage : randomIA) {
+                    float newX = aguilaGodImage.getX();
+                    float newY = aguilaGodImage.getY();
+                    float newWidth = aguilaGodImage.getWidth();
+                    float newHeight = aguilaGodImage.getHeight();
 
-                        float placedX = placedImage.getX();
-                        float placedY = placedImage.getY();
-                        float placedWidth = placedImage.getWidth();
-                        float placedHeight = placedImage.getHeight();
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
 
-                        if (newX < placedX + placedWidth &&
-                                newX + newWidth > placedX &&
-                                newY < placedY + placedHeight &&
-                                newY + newHeight > placedY) {
-                            canPlace = false;
-                            break;
-                        }
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
                     }
+                }
 
-                    if (canPlace) {
-                        stage.addActor(aguilaGodImage);
-                        randomIA.add(aguilaGodImage);
-                        minusEagleCounter();
-                        aguilaGodPlaced = true;
-                    }
+                if (canPlace) {
+                    stage.addActor(aguilaGodImage);
+                    randomIA.add(aguilaGodImage);
+                    minusEagleCounter();
+                    aguilaGodPlaced = true;
+                }
             }
         }
     }
@@ -571,7 +573,7 @@ public class IAMode implements Screen {
     }
 
 
-    private void manualMovement(){
+    private void manualMovement() {
         if (showPlayer) {
             if (playerTexture == null) {
                 playerTexture = new Texture("Idle.png"); // Carga la textura del jugador
@@ -629,7 +631,7 @@ public class IAMode implements Screen {
         }
     }
 
-    private void setupButtonsAttacker(){
+    private void setupButtonsAttacker() {
         Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
         fireButton = new ImageButton(fireChoose);
         fireButton.setPosition(1500, 10);
@@ -688,11 +690,11 @@ public class IAMode implements Screen {
     //------------------------------------------------------------------------------------------------------------------
 
 
-    private Array<Image> getBarriers(){
+    private Array<Image> getBarriers() {
         return randomIA;
     }
 
-    private void Hitbox(){
+    private void Hitbox() {
 
     }
 
@@ -715,7 +717,7 @@ public class IAMode implements Screen {
                 randomMovement(delta);
             }
         }
-        if (!defenderSelected){
+        if (!defenderSelected) {
             manualMovement();
         }
         stage.draw();
