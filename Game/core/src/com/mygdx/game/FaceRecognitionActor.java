@@ -78,6 +78,17 @@ public class FaceRecognitionActor extends Actor {
             return;
         }
 
+        //PRUEBAS ///////////////////////////////////////////////////////////
+        // Obtiene la resolución actual de la cámara
+        double frameWidth = capture.get(Videoio.CAP_PROP_FRAME_WIDTH);
+        double frameHeight = capture.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+
+        // Obtiene el formato de la cámara
+        double fourCC = capture.get(Videoio.CAP_PROP_FOURCC);
+
+        System.out.println("Resolución de la cámara: " + frameWidth + "x" + frameHeight);
+        System.out.println("Formato de la cámara (FourCC): " + fourCC);
+        ////////////////////////////////////////////////////////////////////
         capture.read(frame);
         if (detectFaces) {
             opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
