@@ -49,7 +49,7 @@ public class SelectMode implements Screen {
         button1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new IAMode(game, user, spotifyReference));
+                game.changeScreen(new IAMode(game, user));
             }
         });
 
