@@ -46,11 +46,19 @@ public class FaceRecognitionActor extends Actor {
         int desiredHeight = 240;
 
         // Configura la resolución de captura deseada (320x240)
-        int captureWidth = 320;
-        int captureHeight = 240;
-        capture = new VideoCapture(0);
+        capture = new VideoCapture(0); // Abre la cámara con índice 0 (cámara predeterminada)
+        int nuevoFormato = 1196444237; // Este es el valor numérico para MJPG (MJPEG)
+
+        int captureWidth = 320; // Ancho deseado
+        int captureHeight = 240; // Alto deseado
+
+        // Configura el formato de captura
+        capture.set(Videoio.CAP_PROP_FOURCC, nuevoFormato);
+
+        // Configura la resolución de captura deseada
         capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
         capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);
+
 
         // Configura la resolución del OrthographicCamera y cameraTexture
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
@@ -80,20 +88,18 @@ public class FaceRecognitionActor extends Actor {
             currentUser = recognizer.Predict(grayFrame);
             System.out.println(currentUser);
 
-            //counter barriers
-            CountersBarriers countersBarriers = new CountersBarriers();
-
-            //Spotify
-            Thread spotifyAuthThread = new Thread(() -> {
-                SpotifyAuthenticator spotify = new SpotifyAuthenticator();
-                spotifyReference.set(spotify);
-            });
-
-            spotifyAuthThread.start();
-
             if (user1 == null) {
                 game.changeScreen(new SelectMode(game, user2Manager, currentUser));
             } else {
+                //counter barriers
+                CountersBarriers countersBarriers = new CountersBarriers();
+                //Spotify
+                Thread spotifyAuthThread = new Thread(() -> {
+                    SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                    spotifyReference.set(spotify);
+                });
+
+                spotifyAuthThread.start();
                 game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference));
             }
 
