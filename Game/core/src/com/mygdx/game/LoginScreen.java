@@ -165,8 +165,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
             if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
                 validUser = true;
                 CountersBarriers countersBarriers = new CountersBarriers();
-
-
+                
                 Thread spotifyAuthThread = new Thread(() -> {
                     SpotifyAuthenticator spotify = new SpotifyAuthenticator();
                     spotifyReference.set(spotify);

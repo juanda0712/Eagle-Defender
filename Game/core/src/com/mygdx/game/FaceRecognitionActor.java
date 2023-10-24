@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import com.mygdx.utils.SpotifyAuthenticator;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.*;
@@ -17,6 +18,7 @@ import org.opencv.videoio.Videoio;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FaceRecognitionActor extends Actor {
     private final MainController game;
@@ -31,7 +33,7 @@ public class FaceRecognitionActor extends Actor {
     private Mat grayFrame;
     private User2 currentUser;
     private Frame processedFrame;
-    private CountersBarriers countersBarriers;
+    private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
     public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -73,7 +75,19 @@ public class FaceRecognitionActor extends Actor {
 
             currentUser = recognizer.Predict(grayFrame);
             System.out.println(currentUser);
-            game.changeScreen(new GameScreen(game, user2Manager, currentUser, countersBarriers, null));
+
+            //counter barriers
+            CountersBarriers countersBarriers = new CountersBarriers();
+
+            //Spotify
+            Thread spotifyAuthThread = new Thread(() -> {
+                SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                spotifyReference.set(spotify);
+            });
+
+            spotifyAuthThread.start();
+
+            game.changeScreen(new GameScreen(game, user2Manager, currentUser, countersBarriers, spotifyReference));
             detectFaces = false;
             game.dispose();
         }

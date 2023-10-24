@@ -22,6 +22,7 @@ import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import com.mygdx.utils.SpotifyAuthenticator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +30,7 @@ import lombok.Setter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class FormManagement implements Screen {
@@ -79,6 +81,7 @@ public class FormManagement implements Screen {
     private boolean validPassword = false;
     private boolean isValidDate = false;
     private FileHandle selectedFile;
+    private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
     public FormManagement(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -327,7 +330,15 @@ public class FormManagement implements Screen {
                             System.out.println(user);
                         }
                         CountersBarriers counters = new CountersBarriers();
-                        game.changeScreen(new GameScreen(game, user2Manager, newUser, counters, null));
+
+                        //Spotify
+                        Thread spotifyAuthThread = new Thread(() -> {
+                            SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                            spotifyReference.set(spotify);
+                        });
+
+                        spotifyAuthThread.start();
+                        game.changeScreen(new GameScreen(game, user2Manager, newUser, counters, spotifyReference));
                         dispose();
                     }
                 } else {

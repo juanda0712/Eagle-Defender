@@ -49,7 +49,7 @@ public class GameOverScreen implements Screen {
     //int score,highscore, secondscore, thirdscore, fourthscore, fifthscore, sixthscore, seventhscore, eighthscore, ninthscore, tenthscore;
     //BitmapFont scoreFont;
 
-    public GameOverScreen (MainController game) { //agregar int, score
+    public GameOverScreen(MainController game) { //agregar int, score
         super();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
@@ -63,13 +63,12 @@ public class GameOverScreen implements Screen {
         gameover1.setPosition(0, -50);
         stage.addActor(gameover1);
 
-            initButtons();
+        initButtons();
 
-        }
+    }
 
 
-
-    public void create () {
+    public void create() {
         manager = new AssetManager();
         manager.load("GameOver/Game Over P1.png", Texture.class);
         manager.load("GameOver/Game Over P2.png", Texture.class);
@@ -78,18 +77,19 @@ public class GameOverScreen implements Screen {
         manager.load("GameOver/Game Over P5.png", Texture.class);
         manager.finishLoading();
     }
-    public AssetManager getManager () {
+
+    public AssetManager getManager() {
         return manager;
     }
 
 
-    private void initButtons () {
+    private void initButtons() {
         retry = new TextButton("Retry", skin);
         retry.setSize(200, 60);
         retry.setPosition(850, 300);
         retry.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, user2Manager, user, countersBarriers));
+                ((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, user2Manager, user, countersBarriers, null));
             }
         });
         stage.addActor(retry);
@@ -131,86 +131,87 @@ public class GameOverScreen implements Screen {
         stage.addActor(facebook);
 
     }
-/*
 
-    private Image getImageForPalette(String selectedPalette) {
-        Image gameover = new Image(); // Initialize Image without a drawable
-        TextureRegion gameoverTextureRegion = null;
+    /*
+
+        private Image getImageForPalette(String selectedPalette) {
+            Image gameover = new Image(); // Initialize Image without a drawable
+            TextureRegion gameoverTextureRegion = null;
 
 
 
-    private Image getImageForPalette (String selectedPalette){
-        Image gameover = new Image(gameover1); // Imagen1 inicial (sin filtro)
-        if "Palette 1"{
-            gameoverTextureRegion = gameover1;
-            break;
-            case "Palette 2":
-                gameoverTextureRegion = gameover2;
+        private Image getImageForPalette (String selectedPalette){
+            Image gameover = new Image(gameover1); // Imagen1 inicial (sin filtro)
+            if "Palette 1"{
+                gameoverTextureRegion = gameover1;
                 break;
-            break;
-            case "Palette 3":
-                gameoverTextureRegion = gameover3;
+                case "Palette 2":
+                    gameoverTextureRegion = gameover2;
+                    break;
                 break;
-            case "Palette 4":
-                gameoverTextureRegion = gameover4;
-                break;
-            case "Palette 5":
-                gameoverTextureRegion = gameover5;
-                break;
+                case "Palette 3":
+                    gameoverTextureRegion = gameover3;
+                    break;
+                case "Palette 4":
+                    gameoverTextureRegion = gameover4;
+                    break;
+                case "Palette 5":
+                    gameoverTextureRegion = gameover5;
+                    break;
+            }
+            return gameover;
         }
-        return gameover;
+
+        private void applyImage () {
+            String selectedPalette = user.getSelectedColorPalette();
+            Image gameover = getImageForPalette(selectedPalette);
+
+            gameover.setPosition(0, -50);
+            stage.addActor(gameover);
+        }
+    */
+    @Override
+    public void show() {
     }
 
-    private void applyImage () {
-        String selectedPalette = user.getSelectedColorPalette();
-        Image gameover = getImageForPalette(selectedPalette);
-
-        gameover.setPosition(0, -50);
-        stage.addActor(gameover);
-    }
-*/
-        @Override
-        public void show () {
-        }
-
-        @Override
-        public void render ( float delta){
-            Gdx.gl.glClearColor(0.6f, 0.4f, 0.1f, 0.0f);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            //ScreenUtils.clear(getImageForPalette(selectedPalette));
-            stage.act();
-            stage.draw();
-
-
-        }
-
-        @Override
-        public void resize ( int width, int height){
-
-        }
-
-
-        @Override
-        public void pause () {
-
-        }
-
-        @Override
-        public void resume () {
-
-        }
-
-        @Override
-        public void hide () {
-
-        }
-
-        @Override
-        public void dispose () {
-
-            stage.dispose();
-            skin.dispose();
-        }
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(0.6f, 0.4f, 0.1f, 0.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //ScreenUtils.clear(getImageForPalette(selectedPalette));
+        stage.act();
+        stage.draw();
 
 
     }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+
+        stage.dispose();
+        skin.dispose();
+    }
+
+
+}
