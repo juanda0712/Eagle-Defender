@@ -214,7 +214,7 @@ public class GameScreen implements Screen {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont(); // Configura el estilo de fuente
         timerLabel = new Label("Time: " + remainingTime, labelStyle);
-        timerLabel.setPosition(900, 500); // Posición en la pantalla
+        timerLabel.setPosition(900, 980); // Posición en la pantalla
         stage.addActor(timerLabel);
         isTimerActivelabel = true;
 
@@ -789,13 +789,15 @@ public class GameScreen implements Screen {
             }
         });
 
-        TextButton empezarButton = new TextButton("Empezar", skin);
+        TextButton empezarButton = new TextButton("Start", skin);
         empezarButton.setPosition(900, 940);
         empezarButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 isTimerActive = true;
                 spotifyReference.get().playSong(attackerSongs.get(songPosition));
+                stage.getRoot().removeActor(empezarButton);
+                stage.getRoot().removeActor(timerLabel);
                 timersong ++;
             }
         });
@@ -1047,10 +1049,14 @@ public class GameScreen implements Screen {
                 if (remainingTime <= 0) {
                     isTimerActivelabel = false; // El tiempo ha finalizado
                 }
-                timerLabel.setText("Time: " + remainingTime);
-                timerLabel.setPosition(900, 980);
-                stage.addActor(timerLabel);
-                elapsedTimeWater = 0; // Reiniciar el contador de tiempo transcurrido
+                if (timersong == 0){
+                    timerLabel.setText("Time: " + remainingTime);
+                    timerLabel.setPosition(900, 980);
+                    stage.addActor(timerLabel);
+                    elapsedTimeWater = 0; // Reiniciar el contador de tiempo transcurrido
+                }else {
+                    stage.getRoot().removeActor(timerLabel);
+                }
             }
         }
 
