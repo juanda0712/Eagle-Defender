@@ -23,6 +23,7 @@ import com.kotcrab.vis.ui.VisUI;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.mygdx.models.SongInfo;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
@@ -122,6 +123,7 @@ public class GameScreen implements Screen {
     private Array<Image> steelPVP;
     private Array<Image> cementPVP;
     private IAMode iaMode;
+    private boolean songInfoFlag = false;
 
     @Getter
     private boolean placingEnabled = false;
@@ -149,7 +151,7 @@ public class GameScreen implements Screen {
     private int firePowerCount = 2;
     private int bombPowerCount = 4;
     private float timer = 0; // Inicializa el temporizador en 0 segundos
-    private final float resetInterval = 30.0f;
+    private float resetInterval = 30.0f;
     private float waterCounterTimer = 0; // Contador para el WaterCounter
     private int waterCounterDrops = 0; // Contador de caídas del WaterCounter
     private int fireCounterDrops = 0; // Contador de caídas del WaterCounter
@@ -167,7 +169,8 @@ public class GameScreen implements Screen {
     private List<Float> fireCounterDropsTimes = new ArrayList<>();
     private List<Float> bombCounterDropsTimes = new ArrayList<>();
 
-    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+    private SongInfo songInfo;
+
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
         System.out.println(user);
@@ -207,8 +210,12 @@ public class GameScreen implements Screen {
             public void run() {
                 isTimerActive = true;
 
+
+
+                spotifyReference.get().playSong("billi+jean");
+
             }
-        }, 5); // 60 segundos (1 minuto)
+        }, 15); // 60 segundos (1 minuto)
 
         setupUIElements();
 
@@ -972,10 +979,11 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         //Ejemplo reproduccion de una cancion
-        /*
-        if (this.spotifyReference.get() != null) {
-            this.spotifyReference.get().getSongInfo("billi+jean");
-        }*/
+        if (this.spotifyReference.get() != null && !songInfoFlag) {
+            songInfo = this.spotifyReference.get().getSongInfo("billi+jean");
+            System.out.println(songInfo);
+            songInfoFlag = true;
+        }
 
         String selectedPalette = user.getSelectedColorPalette();
         timer += Gdx.graphics.getDeltaTime();
@@ -1012,6 +1020,7 @@ public class GameScreen implements Screen {
             elapsedTimeWater += delta;
             elapsedTimeFire += delta;
             elapsedTimeBomb += delta;
+            resetInterval = (float) (30 / songInfo.getDuration()) * 60;
 
             // Verifica si ha pasado el tiempo necesario para aumentar el contador
             if (waterCounterDrops > 0) {
@@ -1174,7 +1183,7 @@ public class GameScreen implements Screen {
             if (bulletX < -bulletSprite.getWidth()) {
                 isShooting = false;
             }
-        }else{
+        } else {
             Actions.removeActor(bulletImage);
         }
 
@@ -1189,7 +1198,7 @@ public class GameScreen implements Screen {
         Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
 
         for (Image barrierImage : woodPVP) {
-            if(bulletCollided){
+            if (bulletCollided) {
                 break;
             }
             float barrierX = barrierImage.getX();
@@ -1239,7 +1248,7 @@ public class GameScreen implements Screen {
         }
 
         for (Image barrierImage : cementPVP) {
-            if(bulletCollidedcement){
+            if (bulletCollidedcement) {
                 break;
             }
             float barrierX = barrierImage.getX();
@@ -1276,14 +1285,14 @@ public class GameScreen implements Screen {
                 Integer currentCountercement = barrierCounterscement.get(barrierBounds);
 
                 if (currentCountercement != null && currentCountercement > 0) {
-                    if(bomb) {
+                    if (bomb) {
                         barrierCounterscement.put(barrierBounds, currentCountercement - 3);
                         System.out.println(currentCountercement);
                         cementPVP.removeValue(barrierImage, true);
                         barrierImage.remove();
                         barrierCounterscement.remove(barrierBounds);
-                    } else if(fire){
-                        if(currentCountercement == 3) {
+                    } else if (fire) {
+                        if (currentCountercement == 3) {
                             barrierCounterscement.put(barrierBounds, currentCountercement - 2);
                         } else if (currentCountercement < 3) {
                             barrierCounterscement.put(barrierBounds, currentCountercement - 2);
@@ -1292,8 +1301,8 @@ public class GameScreen implements Screen {
                             barrierCounterscement.remove(barrierBounds);
                         }
 
-                    }else if(water){
-                        if(currentCountercement == 3 || currentCountercement == 2) {
+                    } else if (water) {
+                        if (currentCountercement == 3 || currentCountercement == 2) {
                             barrierCounterscement.put(barrierBounds, currentCountercement - 1);
                         } else if (currentCountercement == 1) {
                             barrierCounterscement.put(barrierBounds, currentCountercement - 1);
@@ -1312,7 +1321,7 @@ public class GameScreen implements Screen {
         }
 
         for (Image barrierImage : steelPVP) {
-            if(bulletCollidedSteel){
+            if (bulletCollidedSteel) {
                 break;
             }
             float barrierX = barrierImage.getX();
@@ -1349,19 +1358,19 @@ public class GameScreen implements Screen {
                 Integer currentCounterSteel = barrierCountersSteel.get(barrierBounds);
 
                 if (currentCounterSteel != null && currentCounterSteel > 0) {
-                    if(bomb) {
+                    if (bomb) {
                         barrierCountersSteel.put(barrierBounds, currentCounterSteel - 2);
                         System.out.println(currentCounterSteel);
                         steelPVP.removeValue(barrierImage, true);
                         barrierImage.remove();
                         barrierCountersSteel.remove(barrierBounds);
-                    } else if(fire) {
+                    } else if (fire) {
                         barrierCountersSteel.put(barrierBounds, currentCounterSteel - 2);
                         steelPVP.removeValue(barrierImage, true);
                         barrierImage.remove();
                         barrierCountersSteel.remove(barrierBounds);
-                    }else if(water){
-                        if(currentCounterSteel == 2) {
+                    } else if (water) {
+                        if (currentCounterSteel == 2) {
                             barrierCountersSteel.put(barrierBounds, currentCounterSteel - 1);
                         } else if (currentCounterSteel == 1) {
                             barrierCountersSteel.put(barrierBounds, currentCounterSteel - 1);
