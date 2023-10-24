@@ -35,6 +35,9 @@ import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mygdx.utils.JSONDataManager;
 
+import java.util.Random;
+
+
 public class IAMode implements Screen {
     private final MainController game;
     private final Stage stage;
@@ -109,6 +112,7 @@ public class IAMode implements Screen {
 
 
     public IAMode(final MainController game, User2 user) {
+        System.out.println(user);
         this.game = game;
         this.user = user;
         screenWidth = Gdx.graphics.getWidth();
@@ -143,7 +147,7 @@ public class IAMode implements Screen {
                 Attacker.remove();
                 if (defenderSelected) {
                     setupButtonsDefender();
-                    goblin = new Image(new Texture("SSF6.png"));
+                    goblin = new Image(new Texture("Idle.png"));
                     float goblinWidth = 70;
                     float goblinHeight = 87;
                     float minGoblinY = 120;
@@ -214,7 +218,7 @@ public class IAMode implements Screen {
         returnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new SelectMode(game));
+                //game.changeScreen(new SelectMode(game));
             }
         });
         stage.addActor(returnButton);
@@ -709,6 +713,7 @@ public class IAMode implements Screen {
 
                 boolean canPlace = true;
                 for (Image placedImage : woodSP) {
+
                     float newX = aguilaGodImage.getX();
                     float newY = aguilaGodImage.getY();
                     float newWidth = aguilaGodImage.getWidth();
@@ -747,6 +752,7 @@ public class IAMode implements Screen {
                         break;
                     }
                 }
+
 
                 for (Image placedImage : steelSP) {
                     float newX = aguilaGodImage.getX();
@@ -829,6 +835,7 @@ public class IAMode implements Screen {
             return;
         }
 
+
         if (playerImage == null) {
             Texture playerTexture = new Texture(Gdx.files.internal(playerTexturePath));
             playerImage = new Image(playerTexture);
@@ -889,6 +896,7 @@ public class IAMode implements Screen {
             }
         }
 
+
         for (Image barrierSteel : steelSP) {
             float barrierX = barrierSteel.getX();
             float barrierY = barrierSteel.getY();
@@ -933,7 +941,6 @@ public class IAMode implements Screen {
                 }
             }
         }
-
 
         for (Image barrierImage : cementSP) {
             float barrierX = barrierImage.getX();
@@ -1060,6 +1067,15 @@ public class IAMode implements Screen {
     }
     //------------------------------------------------------------------------------------------------------------------
 
+
+    private Array<Image> getBarriers() {
+        return randomIA;
+    }
+
+    private void Hitbox() {
+
+    }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -1078,6 +1094,7 @@ public class IAMode implements Screen {
                 randomMovement(delta);
             }
         }
+
         if (!defenderSelected){
             wasdPJ();
             if (isShooting) {

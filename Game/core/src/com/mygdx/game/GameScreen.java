@@ -34,22 +34,50 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 
 public class GameScreen implements Screen {
+
+
     //private List<Barrera> barreras = new ArrayList<>();
     private final MainController game;
     private List<Rectangle> placedRectangles = new ArrayList<>();
     Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
     List<Rectangle> barrierRectangles = new ArrayList<>();
+    private List<Float> waterPowerTimers = new ArrayList<>();
+    private List<Float> firePowerTimers = new ArrayList<>();
+    private List<Float> bombPowerTimers = new ArrayList<>();
+
+    private int maxWaterPowerCount = 3;
+    private int maxBombPowerCount = 4;
+
+    private int maxFirePowerCount = 2;
+
+
+    private List<Float> auxList = new ArrayList<Float>();
+    private List<Float> fireauxList = new ArrayList<Float>();
+    private List<Float> bombauxList = new ArrayList<Float>();
+
     private final Stage stage;
     private final OrthographicCamera camera;
     private JSONDataManager<User2> user2Manager;
 
     private boolean isTimerActive = false;
     private boolean isTimerActivelabel = false;
-    private float elapsedTime;
+    private float elapsedTimeWater;
+    private float elapsedTimeFire;
+    private float elapsedTimeBomb;
+
+    private boolean flagAux = false;
+    private boolean fireflagAux = false;
+
+
+    private boolean bombflagAux = false;
 
     private User2 user;
+    private User2 user2;
     private Label usernameLabel;
     private Label fullNameLabel;
 
@@ -106,15 +134,43 @@ public class GameScreen implements Screen {
     private Label steelCounterLabel;
     private Label eagleCounterLabel;
     private CountersBarriers countersBarriers;
+
     private int contadorBullet;
+    private int waterPowerCount = 3;
+    private int firePowerCount = 2;
+    private int bombPowerCount = 4;
+    private float timer = 0; // Inicializa el temporizador en 0 segundos
+    private final float resetInterval = 30.0f;
+    private float waterCounterTimer = 0; // Contador para el WaterCounter
+    private int waterCounterDrops = 0; // Contador de caídas del WaterCounter
+    private int fireCounterDrops = 0; // Contador de caídas del WaterCounter
+    private int bombCounterDrops = 0; // Contador de caídas del WaterCounter
     private AtomicReference<SpotifyAuthenticator> spotifyReference;
 
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
+    private Boolean fire = false;
+    private Boolean water = false;
+    private Boolean bomb = false;
+
+    private Label waterCounterLabel;
+    private Label fireCounterLabel;
+    private Label bombCounterLabel;
+    private List<Float> waterCounterDropsTimes = new ArrayList<>();
+    private List<Float> fireCounterDropsTimes = new ArrayList<>();
+    private List<Float> bombCounterDropsTimes = new ArrayList<>();
+
+    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
+        System.out.println(user);
+        System.out.println(user2);
         this.game = game;
         this.spotifyReference = spotifyReference;
-        this.elapsedTime = 0;
+        this.elapsedTimeWater = 0;
+        this.elapsedTimeFire = 0;
+        this.elapsedTimeBomb = 0;
         this.user2Manager = user2Manager;
         this.user = user;
+        this.user2 = user2;
         this.countersBarriers = countersBarriers;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
@@ -142,9 +198,10 @@ public class GameScreen implements Screen {
             public void run() {
                 isTimerActive = true;
             }
-        }, 60); // 60 segundos (1 minuto)
+        }, 5); // 60 segundos (1 minuto)
 
         setupUIElements();
+
     }
 
     public void setupButtonsDefender() {
@@ -634,6 +691,9 @@ public class GameScreen implements Screen {
                 } else {
                     waterButton.setChecked(false);
                     bombButton.setChecked(false);
+                    bomb = false;
+                    water = false;
+                    fire = true;
                     attackEnabled = true;
                 }
             }
@@ -652,6 +712,9 @@ public class GameScreen implements Screen {
                 } else {
                     fireButton.setChecked(false);
                     bombButton.setChecked(false);
+                    bomb = false;
+                    water = true;
+                    fire = false;
                     attackEnabled = true;
                 }
             }
@@ -670,6 +733,9 @@ public class GameScreen implements Screen {
                 } else {
                     fireButton.setChecked(false);
                     waterButton.setChecked(false);
+                    bomb = true;
+                    water = false;
+                    fire = false;
                     attackEnabled = true;
                 }
             }
@@ -692,7 +758,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Cambiar la pantalla a LoginScreen
-                game.setScreen(new LoginScreen(game, user2Manager));
+                //game.setScreen(new LoginScreen(game, user2Manager));
             }
         });
         fullNameLabel = new Label(user.getFullName(), skin);
@@ -708,26 +774,27 @@ public class GameScreen implements Screen {
         Label player2Name = new Label("Unknown player 2", skin);
         player2Name.setColor(Color.BLACK);
         player2Name.setPosition(1500, 950);
-        Label defenderLabel = new Label("Defender", skin);
-        defenderLabel.setColor(Color.BLACK);
-        defenderLabel.setPosition(1200, 550);
-        Label attackerLabel = new Label("Attacker", skin);
-        attackerLabel.setColor(Color.BLACK);
-        attackerLabel.setPosition(1200, 200);
         Label fullnameLabel = new Label("Fullname: ", skin);
         fullnameLabel.setColor(Color.BLACK);
         fullnameLabel.setPosition(200, 1000);
         Label usernameLabel = new Label("Username: ", skin);
         usernameLabel.setColor(Color.BLACK);
         usernameLabel.setPosition(200, 980);
+        waterCounterLabel = new Label("Water Power: " + waterPowerCount, skin);
+        waterCounterLabel.setPosition(700, 980);
+        stage.addActor(waterCounterLabel);
+        fireCounterLabel = new Label("Fire Power: " + firePowerCount, skin);
+        fireCounterLabel.setPosition(900, 980);
+        stage.addActor(fireCounterLabel);
 
+        bombCounterLabel = new Label("Bomb Power: " + firePowerCount, skin);
+        bombCounterLabel.setPosition(500, 980);
+        stage.addActor(bombCounterLabel);
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
         stage.addActor(backButton);
         stage.addActor(userInfo);
         stage.addActor(player2Name);
-        stage.addActor(defenderLabel);
-        stage.addActor(attackerLabel);
         stage.addActor(fullnameLabel);
         stage.addActor(usernameLabel);
 
@@ -761,7 +828,7 @@ public class GameScreen implements Screen {
         lineaRecta = new Texture("negro2.jpg");
         Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
-        playerTexture = new Texture("SSF6.png");
+        playerTexture = new Texture("Idle.png");
         fireTexture = new Texture("fire1.PNG");
         waterTexture = new Texture("Water12.png");
         bombTexture = new Texture("Bomb1.png");
@@ -774,11 +841,6 @@ public class GameScreen implements Screen {
         playerImage.setPosition(1300, 500);
         bulletImage = new Image(bulletSprite);
 
-        Image image1 = new Image(eagleTexture);
-        image1.setPosition(1000, 600);
-
-        Image image2 = new Image(goblinTexture);
-        image2.setPosition(1000, 200);
 
         Image userImage = new Image(userimageTexture);
         Image maskImage = new Image(circulo);
@@ -801,8 +863,6 @@ public class GameScreen implements Screen {
         maskImage.setSize(userImage.getWidth(), userImage.getHeight());
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
-        stage.addActor(image1);
-        stage.addActor(image2);
         stage.addActor(userImage);
         stage.addActor(lineaHorizontal);
         //stage.addActor(maskImage);
@@ -852,6 +912,12 @@ public class GameScreen implements Screen {
         steelCounterLabel.setText("steel barriers: " + countersBarriers.getSteelCounter());
         eagleCounterLabel.setColor(Color.RED);
         eagleCounterLabel.setText("Eagle: " + countersBarriers.getEagleCounter());
+        waterCounterLabel.setColor(Color.RED);
+        waterCounterLabel.setText("Water Power: " + waterPowerCount);
+        fireCounterLabel.setColor(Color.RED);
+        fireCounterLabel.setText("Fire Power: " + firePowerCount);
+        bombCounterLabel.setColor(Color.RED);
+        bombCounterLabel.setText("Bomb Power: " + bombPowerCount);
     }
 
 
@@ -896,11 +962,14 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         //Ejemplo reproduccion de una cancion
-        /*if (this.spotifyReference.get() != null) {
+        /*
+        if (this.spotifyReference.get() != null) {
             this.spotifyReference.get().getSongInfo("billi+jean");
         }*/
 
         String selectedPalette = user.getSelectedColorPalette();
+        timer += Gdx.graphics.getDeltaTime();
+
         //Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
         //ScreenUtils.clear(backgroundColor);
         ScreenUtils.clear(getColorFilterForPalette(selectedPalette));
@@ -911,18 +980,21 @@ public class GameScreen implements Screen {
         usernameLabel.setText(user.getUsername());
         fullNameLabel.setText(user.getFullName());
         updateCounterLabel();
+
+
         if (isTimerActivelabel) {
-            elapsedTime += delta;
-            if (elapsedTime >= 1.0f) {  // Actualizar cada segundo
+            elapsedTimeWater += delta;
+            if (elapsedTimeWater >= 1.0f) {  // Actualizar cada segundo
                 remainingTime--;
                 if (remainingTime <= 0) {
                     isTimerActivelabel = false; // El tiempo ha finalizado
                 }
                 timerLabel.setText("Time: " + remainingTime);
-                elapsedTime = 0; // Reiniciar el contador de tiempo transcurrido
+                timerLabel.setPosition(500, 980);
+                stage.addActor(timerLabel);
+                elapsedTimeWater = 0; // Reiniciar el contador de tiempo transcurrido
             }
         }
-
 
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
@@ -941,6 +1013,144 @@ public class GameScreen implements Screen {
             if (bulletX < -bulletSprite.getWidth()) {
                 isShooting = false;
             }
+        }
+
+        if (isTimerActive) {
+
+            elapsedTimeWater += delta;
+            elapsedTimeFire += delta;
+            elapsedTimeBomb += delta;
+
+            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+            if (waterCounterDrops > 0) {
+                if (Gdx.input.isKeyPressed(Input.Keys.R) && water) {
+                    flagAux = false;
+                    if (waterCounterDrops >= 2 && !flagAux && water) {
+                        auxList.add(elapsedTimeWater);
+                        flagAux = true;
+                    }
+                }
+
+                if (elapsedTimeWater >= resetInterval && waterPowerCount < maxWaterPowerCount) {
+                    // Aumenta el contador en 1
+                    waterPowerCount++;
+                    updateCounterLabel();
+
+                    // Registra el tiempo actual en el temporizador de este Water Power
+                    waterPowerTimers.add(elapsedTimeWater);
+
+                    waterCounterDrops--; // Reduce la cantidad de caídas pendientes
+
+                    if (auxList.isEmpty()) {
+                        elapsedTimeWater = 0;
+                    } else {
+                        if (waterPowerCount < 3) {
+                            elapsedTimeWater = elapsedTimeWater - auxList.get(0);
+                            auxList.remove(0);
+                            flagAux = false;
+                        } else {
+                            auxList.clear();
+                        }
+
+                    }
+                }
+
+            }
+            // Registra el tiempo para cada Water Power independientemente
+            for (int i = 0; i < waterPowerTimers.size(); i++) {
+                waterPowerTimers.set(i, waterPowerTimers.get(i) + delta);
+                if (waterPowerTimers.get(i) >= 5.0f) {
+                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                }
+            }
+
+            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+            if (fireCounterDrops > 0) {
+                if (Gdx.input.isKeyPressed(Input.Keys.R) && fire) {
+                    fireflagAux = false;
+                    if (fireCounterDrops >= 2 && !fireflagAux && fire) {
+                        fireauxList.add(elapsedTimeFire);
+                        fireflagAux = true;
+                    }
+                }
+
+                if (elapsedTimeFire >= resetInterval && firePowerCount < maxFirePowerCount) {
+                    // Aumenta el contador en 1
+                    firePowerCount++;
+                    updateCounterLabel();
+
+                    // Registra el tiempo actual en el temporizador de este Water Power
+                    firePowerTimers.add(elapsedTimeFire);
+
+                    fireCounterDrops--; // Reduce la cantidad de caídas pendientes
+
+                    if (fireauxList.isEmpty()) {
+                        elapsedTimeFire = 0;
+                    } else {
+                        if (firePowerCount < 2) {
+                            elapsedTimeFire = elapsedTimeFire - fireauxList.get(0);
+                            fireauxList.remove(0);
+                            fireflagAux = false;
+                        } else {
+                            fireauxList.clear();
+                        }
+
+                    }
+                }
+
+            }
+            // Registra el tiempo para cada Water Power independientemente
+            for (int i = 0; i < firePowerTimers.size(); i++) {
+                firePowerTimers.set(i, firePowerTimers.get(i) + delta);
+                if (firePowerTimers.get(i) >= 5.0f) {
+                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                }
+            }
+
+            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+            if (bombCounterDrops > 0) {
+                if (Gdx.input.isKeyPressed(Input.Keys.R) && bomb) {
+                    bombflagAux = false;
+                    if (bombCounterDrops >= 2 && !bombflagAux && bomb) {
+                        bombauxList.add(elapsedTimeBomb);
+                        bombflagAux = true;
+                    }
+                }
+
+                if (elapsedTimeBomb >= resetInterval && bombPowerCount < maxBombPowerCount) {
+                    // Aumenta el contador en 1
+                    bombPowerCount++;
+                    updateCounterLabel();
+
+                    // Registra el tiempo actual en el temporizador de este Water Power
+                    bombPowerTimers.add(elapsedTimeBomb);
+
+                    bombCounterDrops--; // Reduce la cantidad de caídas pendientes
+
+                    if (bombauxList.isEmpty()) {
+                        elapsedTimeBomb = 0;
+                    } else {
+                        if (bombPowerCount < 4) {
+                            elapsedTimeBomb = elapsedTimeBomb - bombauxList.get(0);
+                            bombauxList.remove(0);
+                            bombflagAux = false;
+                        } else {
+                            bombauxList.clear();
+                        }
+
+                    }
+                }
+
+            }
+            // Registra el tiempo para cada Water Power independientemente
+            for (int i = 0; i < bombPowerTimers.size(); i++) {
+                bombPowerTimers.set(i, bombPowerTimers.get(i) + delta);
+                if (bombPowerTimers.get(i) >= 5.0f) {
+                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                }
+            }
+
+
         }
 
         if (isCollide) {
@@ -1007,9 +1217,28 @@ public class GameScreen implements Screen {
         if (isTimerActive) {
             if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
                 // Inicia el disparo de la bala desde la posición del player.
-                bulletX = playerX + playerSprite.getWidth();
-                bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
-                isShooting = true;
+                if (waterPowerCount > 0 && water) {
+                    bulletX = playerX + playerSprite.getWidth();
+                    bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
+                    waterPowerCount--;
+                    waterCounterDrops++;
+                    waterCounterDropsTimes.add(elapsedTimeWater);
+                    isShooting = true;
+                } else if (firePowerCount > 0 && fire) {
+                    bulletX = playerX + playerSprite.getWidth();
+                    bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
+                    firePowerCount--;
+                    fireCounterDrops++;
+                    fireCounterDropsTimes.add(elapsedTimeFire);
+                    isShooting = true;
+                } else if (bombPowerCount > 0 && bomb) {
+                    bulletX = playerX + playerSprite.getWidth();
+                    bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
+                    bombPowerCount--;
+                    bombCounterDrops++;
+                    bombCounterDropsTimes.add(elapsedTimeFire);
+                    isShooting = true;
+                }
             }
 
 
@@ -1017,18 +1246,18 @@ public class GameScreen implements Screen {
                 System.out.println("W");
                 if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
                     playerY += speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkR1.png");
-                    playerSprite.setTexture(new Texture("WalkR1.png"));
+                    player = new Texture("Back1.png");
+                    playerSprite.setTexture(new Texture("Back1.png"));
                     playerImage.setPosition(playerX, playerY);
                 }
             }
 
 
-            if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY >= 110) {
                 System.out.println("S");
                 playerY -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR2.png");
-                playerSprite.setTexture(new Texture("WalkR2.png"));
+                player = new Texture("Front2.png");
+                playerSprite.setTexture(new Texture("Front2.png"));
                 playerImage.setPosition(playerX, playerY);
             }
 
@@ -1038,8 +1267,8 @@ public class GameScreen implements Screen {
                 float centerX = Gdx.graphics.getWidth() / 2.0f;
                 if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
                     playerX -= speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkR3.png");
-                    playerSprite.setTexture(new Texture("WalkR3.png"));
+                    player = new Texture("WalkL3.png");
+                    playerSprite.setTexture(new Texture("WalkL3.png"));
                     playerImage.setPosition(playerX, playerY);
                 }
             }
@@ -1048,15 +1277,15 @@ public class GameScreen implements Screen {
                 System.out.println("D");
                 playerX += speed * Gdx.graphics.getDeltaTime();
 
-                player = new Texture("WalkR4.png");
-                playerSprite.setTexture(new Texture("WalkR4.png"));
+                player = new Texture("WalkR3.png");
+                playerSprite.setTexture(new Texture("WalkR3.png"));
                 playerImage.setPosition(playerX, playerY);
 
             }
 
             if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-                player = new Texture("SSF6.png");
-                playerSprite.setTexture(new Texture("SSF6.png"));
+                player = new Texture("Idle.png");
+                playerSprite.setTexture(new Texture("Idle.png"));
             }
         }
 

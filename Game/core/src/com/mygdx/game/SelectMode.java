@@ -12,6 +12,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
+import com.mygdx.utils.SpotifyAuthenticator;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SelectMode implements Screen {
     private final MainController game;
@@ -22,14 +25,17 @@ public class SelectMode implements Screen {
     private TextButton button4;
     private JSONDataManager<User2> user2Manager;
     private User2 user;
+    private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
     //CountersBarriers counters = new CountersBarriers();
     //game.changeScreen(new GameScreen(game, user2Manager, user,counters));
 
-    public SelectMode(final MainController game) {
+    public SelectMode(final MainController game, final JSONDataManager<User2> user2Manager, User2 user) {
         this.game = game;
         this.stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+        this.user2Manager = user2Manager;
+        this.user = user;
 
         setupUIElements();
     }
@@ -37,9 +43,9 @@ public class SelectMode implements Screen {
     private void setupUIElements() {
         Skin skin = VisUI.getSkin();
         CountersBarriers countersBarriers = new CountersBarriers();
-        final GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers, null);
+        //final GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers, null);
 
-        button1 = new TextButton("Button 1", skin);
+        button1 = new TextButton("Player vs Computer", skin);
         button1.setPosition(100, 300);
         button1.addListener(new ClickListener() {
             @Override
@@ -48,14 +54,12 @@ public class SelectMode implements Screen {
             }
         });
 
-        button2 = new TextButton("Button 2", skin);
+        button2 = new TextButton("Player vs Player", skin);
         button2.setPosition(100, 200);
         button2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //
-
-                //game.changeScreen(new GameScreen(game, user2Manager, user,counters));
+                game.changeScreen(new LoginScreen(game, user2Manager, user, null));
             }
         });
 
