@@ -224,7 +224,7 @@ public class GameScreen implements Screen {
                 //spotifyReference.get().playSong("Billie+jean");
 
             }
-        }, 15); // 60 segundos (1 minuto)
+        }, 60); // 60 segundos (1 minuto)
 
         setupUIElements();
 
@@ -875,9 +875,6 @@ public class GameScreen implements Screen {
         Image user2Image = new Image(user2imageTexture);
         Image maskImage = new Image(circulo);
 
-        Image lineaVertical = new Image(lineaRecta);
-        lineaVertical.setPosition((float) Gdx.graphics.getWidth() / 2, 0);
-        lineaVertical.setSize(2, 920);
 
         lineaHorizontal = new Image(lineaRecta);
         lineaHorizontal.setPosition(0, 920);
@@ -901,7 +898,7 @@ public class GameScreen implements Screen {
         stage.addActor(lineaHorizontal);
 
 
-        stage.addActor(lineaVertical);
+
         stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
     }
@@ -927,7 +924,7 @@ public class GameScreen implements Screen {
             }
         });
 
-        Texture desertTexture = new Texture(Gdx.files.internal("assets/desert.png"));
+        Texture desertTexture = new Texture(Gdx.files.internal("assets/desertHighway.png"));
         Image imageBG = new Image(desertTexture);
         imageBG.setPosition(0, 110);
 
