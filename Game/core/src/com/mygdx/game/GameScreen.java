@@ -55,6 +55,8 @@ public class GameScreen implements Screen {
     List<Rectangle> barrierRectangles = new ArrayList<>();
     List<Rectangle> barrierRectanglescement = new ArrayList<>();
 
+    List<String> attackerSongs = new ArrayList<>();
+
     List<Rectangle> barrierRectanglesSteel = new ArrayList<>();
     private List<Float> waterPowerTimers = new ArrayList<>();
     private List<Float> firePowerTimers = new ArrayList<>();
@@ -94,6 +96,10 @@ public class GameScreen implements Screen {
     private final Array<Actor> arrayGUIElements = new Array<>();
     private int remainingTime = 60;
     private Label timerLabel;
+
+    Random random = new Random();
+
+    private int songPosition;
 
     Sprite playerSprite;
     Sprite bulletSprite;
@@ -184,6 +190,10 @@ public class GameScreen implements Screen {
         this.user = user;
         this.user2 = user2;
         this.countersBarriers = countersBarriers;
+        this.attackerSongs.add(user2.getSong1().replace(" ", "+"));
+        this.attackerSongs.add(user2.getSong2().replace(" ", "+"));
+        this.attackerSongs.add(user2.getSong3().replace(" ", "+"));
+        songPosition = random.nextInt(3);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1720, 1080);
         stage = new Stage();
@@ -209,10 +219,8 @@ public class GameScreen implements Screen {
             @Override
             public void run() {
                 isTimerActive = true;
-
-
-
-                spotifyReference.get().playSong("billi+jean");
+                spotifyReference.get().playSong(attackerSongs.get(songPosition));
+                //spotifyReference.get().playSong("Billie+jean");
 
             }
         }, 15); // 60 segundos (1 minuto)
@@ -980,10 +988,13 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         //Ejemplo reproduccion de una cancion
         if (this.spotifyReference.get() != null && !songInfoFlag) {
-            songInfo = this.spotifyReference.get().getSongInfo("billi+jean");
+            //songInfo = this.spotifyReference.get().getSongInfo("Billie+jean");
+            songInfo = this.spotifyReference.get().getSongInfo(attackerSongs.get(songPosition));
             System.out.println(songInfo);
+
             songInfoFlag = true;
         }
+        System.out.println(attackerSongs);
 
         String selectedPalette = user.getSelectedColorPalette();
         timer += Gdx.graphics.getDeltaTime();
