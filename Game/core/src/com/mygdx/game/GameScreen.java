@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -68,6 +69,7 @@ public class GameScreen implements Screen {
     private int maxBombPowerCount = 4;
 
     private int maxFirePowerCount = 2;
+    private Sound explosionSound;
 
 
     private List<Float> auxList = new ArrayList<Float>();
@@ -206,6 +208,7 @@ public class GameScreen implements Screen {
         woodPVP = new Array<>();
         steelPVP = new Array<>();
         cementPVP = new Array<>();
+        explosionSound = Gdx.audio.newSound(Gdx.files.internal("audExplosion.mp3"));
         setupButtonsDefender();
         setupButtonsAttacker();
         //gameScreenFeatures = new GameScreenFeatures(stage, woodPVP, steelPVP, cementPVP, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
@@ -779,15 +782,6 @@ public class GameScreen implements Screen {
 
     private void setUpLabels() {
         Skin skin = VisUI.getSkin();
-        TextButton backButton = new TextButton("Back", skin);
-        backButton.setPosition(1600, 0);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Cambiar la pantalla a LoginScreen
-                //game.setScreen(new LoginScreen(game, user2Manager));
-            }
-        });
 
         TextButton empezarButton = new TextButton("Start", skin);
         empezarButton.setPosition(900, 940);
@@ -841,7 +835,7 @@ public class GameScreen implements Screen {
         stage.addActor(bombCounterLabel);
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
-        stage.addActor(backButton);
+
         stage.addActor(empezarButton);
         stage.addActor(userInfo);
         stage.addActor(user2Info);
@@ -1276,6 +1270,7 @@ public class GameScreen implements Screen {
                 isShooting = false; // Desactivar la bala
                 isCollide = true;
                 bulletCollided = true;
+                explosionSound.play();
                 stage.getRoot().removeActor(bulletImage);
 
                 Integer currentCounter = barrierCounters.get(barrierBounds);
@@ -1326,6 +1321,7 @@ public class GameScreen implements Screen {
                 isShooting = false; // Desactivar la bala
                 isCollide = true;
                 bulletCollidedcement = true;
+                explosionSound.play();
                 stage.getRoot().removeActor(bulletImage);
 
                 Integer currentCountercement = barrierCounterscement.get(barrierBounds);
@@ -1399,6 +1395,7 @@ public class GameScreen implements Screen {
                 isShooting = false; // Desactivar la bala
                 isCollide = true;
                 bulletCollidedSteel = true;
+                explosionSound.play();
                 stage.getRoot().removeActor(bulletImage);
 
                 Integer currentCounterSteel = barrierCountersSteel.get(barrierBounds);

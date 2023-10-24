@@ -167,6 +167,7 @@ public class IAMode implements Screen {
     private boolean songInfoFlag = false;
     private SongInfo songInfo;
 
+
     public IAMode(final MainController game, User2 user, AtomicReference<SpotifyAuthenticator> spotifyReference) {
         System.out.println(user);
         this.game = game;
