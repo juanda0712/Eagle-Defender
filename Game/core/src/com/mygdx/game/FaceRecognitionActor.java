@@ -42,22 +42,22 @@ public class FaceRecognitionActor extends Actor {
         this.user2Manager = user2Manager;
         this.user1 = user1;
         this.user2 = user2;
-        int desiredWidth = 320;
-        int desiredHeight = 240;
+        int desiredWidth = 640;
+        int desiredHeight = 360;
 
         // Configura la resolución de captura deseada (320x240)
         capture = new VideoCapture(0); // Abre la cámara con índice 0 (cámara predeterminada)
         int nuevoFormato = 1196444237; // Este es el valor numérico para MJPG (MJPEG)
         capture.set(Videoio.CAP_PROP_FOURCC, nuevoFormato);
 
-        int captureWidth = 320; // Ancho deseado
-        int captureHeight = 240; // Alto deseado
+        int captureWidth = 640; // Ancho deseado
+        int captureHeight = 360; // Alto deseado
 
         // Configura el formato de captura
 
-        /*// Configura la resolución de captura deseada
+        // Configura la resolución de captura deseada
         capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
-        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);*/
+        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);
 
 
         // Configura la resolución del OrthographicCamera y cameraTexture
@@ -126,8 +126,8 @@ public class FaceRecognitionActor extends Actor {
         float screenHeight = Gdx.graphics.getHeight();
         float leftTableWidth = screenWidth / 2;
         float leftTableHeight = screenHeight;
-        float camerax = (leftTableWidth - 320) / 2;
-        float cameray = (leftTableHeight - 240) / 2;
+        float camerax = (leftTableWidth - 640) / 2;
+        float cameray = (leftTableHeight - 360) / 2;
         batch.draw(cameraTexture, camerax + 30, cameray, cameraTexture.getWidth(), cameraTexture.getHeight(), 0, 0, cameraTexture.getWidth(), cameraTexture.getHeight(), false, true);
     }
 
