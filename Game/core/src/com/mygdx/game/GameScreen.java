@@ -73,6 +73,7 @@ public class GameScreen implements Screen {
     private boolean flagAux = false;
     private boolean fireflagAux = false;
 
+
     private boolean bombflagAux = false;
 
     private User2 user;
@@ -97,27 +98,27 @@ public class GameScreen implements Screen {
     private Texture lineaRecta;
     Image playerImage;
     Image bulletImage;
-
     private SpriteBatch batch;
     float playerX = 1300;
     float playerY = 500;
     float speed = 400.0f;
     float bulletX;
     float bulletY;
-
     boolean isShooting = false;
     float bulletSpeed = 800.0f;
     int contador = 0;
     int contador2 = 0;
     private Array<Image> placedImages;
-
-    private GameScreenFeatures gameScreenFeatures;
+    private Array<Image> woodPVP;
+    private Array<Image> steelPVP;
+    private Array<Image> cementPVP;
     private IAMode iaMode;
 
     @Getter
     private boolean placingEnabled = false;
+    private boolean aguilaGodPlaced = false;
+    private boolean barriersEnabled = false;
     private boolean attackEnabled = false;
-
     boolean isCollide = false;
     private ImageButton woodenButton;
     private ImageButton cementButton;
@@ -133,6 +134,8 @@ public class GameScreen implements Screen {
     private Label steelCounterLabel;
     private Label eagleCounterLabel;
     private CountersBarriers countersBarriers;
+
+    private int contadorBullet;
     private int waterPowerCount = 3;
     private int firePowerCount = 2;
     private int bombPowerCount = 4;
@@ -142,7 +145,6 @@ public class GameScreen implements Screen {
     private int waterCounterDrops = 0; // Contador de caídas del WaterCounter
     private int fireCounterDrops = 0; // Contador de caídas del WaterCounter
     private int bombCounterDrops = 0; // Contador de caídas del WaterCounter
-
     private AtomicReference<SpotifyAuthenticator> spotifyReference;
 
     private Boolean fire = false;
@@ -174,10 +176,12 @@ public class GameScreen implements Screen {
         camera.setToOrtho(false, 1720, 1080);
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        placedImages = new Array<>();
+        woodPVP = new Array<>();
+        steelPVP = new Array<>();
+        cementPVP = new Array<>();
         setupButtonsDefender();
         setupButtonsAttacker();
-        gameScreenFeatures = new GameScreenFeatures(stage, placedImages, this, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
+        //gameScreenFeatures = new GameScreenFeatures(stage, woodPVP, steelPVP, cementPVP, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
         // Crea la etiqueta (Label) para mostrar el tiempo restante
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -294,6 +298,385 @@ public class GameScreen implements Screen {
         eagleCounterLabel.setPosition(460, 90);
         stage.addActor(eagleCounterLabel);
     }
+
+    private void addWood(float x, float y) {
+        if (countersBarriers.getWoodCounter() > 0 && woodenButton.isChecked()) {
+            String selectedTexture = user.getTexture();
+            String imagePath = "assets/wood.jpg";
+            float maxY = stage.getHeight() - 120;
+            float minY = 120;
+            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+                if ("Smooth".equals(selectedTexture)) {
+                    imagePath = "assets/woodSQ.jpg";
+                } else if ("Rocky".equals(selectedTexture)) {
+                    imagePath = "assets/woodST.jpg";
+                } else if ("Bricked".equals(selectedTexture)) {
+                    imagePath = "assets/woodBR.jpg";
+                }
+                Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
+                Image newImage = new Image(newImageTexture);
+                newImage.setPosition(x, y);
+
+                boolean canPlace = true;
+                for (Image placedImage : woodPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : steelPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    stage.addActor(newImage);
+                    woodPVP.add(newImage);
+                    minusWoodCounter();
+                }
+            }
+        }
+    }
+
+    private void minusWoodCounter() {
+        if (countersBarriers.getWoodCounter() > 0) {
+            countersBarriers.setWoodCounter(countersBarriers.getWoodCounter() - 1);
+            //gameScreen.updateCounterLabel();
+        }
+    }
+
+    //Barreras de cemento y su contador
+    private void addCement(float x, float y) {
+        if (countersBarriers.getCementCounter() > 0 && cementButton.isChecked()) {
+            String selectedTexture = user.getTexture();
+            String imagePath = "assets/cement.jpg";
+            float maxY = stage.getHeight() - 120;
+            float minY = 120;
+            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+                if ("Smooth".equals(selectedTexture)) {
+                    imagePath = "assets/cementSQ.jpg";
+                } else if ("Rocky".equals(selectedTexture)) {
+                    imagePath = "assets/cementST.jpg";
+                } else if ("Bricked".equals(selectedTexture)) {
+                    imagePath = "assets/cementBR.jpg";
+                }
+                Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
+                Image newImage = new Image(newImageTexture);
+                newImage.setPosition(x, y);
+
+                boolean canPlace = true;
+                for (Image placedImage : woodPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : steelPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    stage.addActor(newImage);
+                    cementPVP.add(newImage);
+                    minusCementCounter();
+                }
+            }
+        }
+    }
+
+    private void minusCementCounter() {
+        if (countersBarriers.getCementCounter() > 0) {
+            countersBarriers.setCementCounter(countersBarriers.getCementCounter() - 1);
+            //gameScreen.updateCounterLabel();
+        }
+    }
+
+    //Barreras de acero y su contador
+    private void addSteel(float x, float y) {
+        if (countersBarriers.getSteelCounter() > 0 && steelButton.isChecked()) {
+            String selectedTexture = user.getTexture();
+            String imagePath = "assets/steel.jpg";
+            float maxY = stage.getHeight() - 120;
+            float minY = 120;
+            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+                if ("Smooth".equals(selectedTexture)) {
+                    imagePath = "assets/steelSQ.jpg";
+                } else if ("Rocky".equals(selectedTexture)) {
+                    imagePath = "assets/steelST.jpg";
+                } else if ("Bricked".equals(selectedTexture)) {
+                    imagePath = "assets/steelBR.jpg";
+                }
+                Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
+                Image newImage = new Image(newImageTexture);
+                newImage.setPosition(x, y);
+
+                boolean canPlace = true;
+                for (Image placedImage : woodPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : steelPVP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    stage.addActor(newImage);
+                    steelPVP.add(newImage);
+                    minusSteelCounter();
+                }
+            }
+        }
+    }
+
+    private void minusSteelCounter() {
+        if (countersBarriers.getSteelCounter() > 0) {
+            countersBarriers.setSteelCounter(countersBarriers.getSteelCounter() - 1);
+            //gameScreen.updateCounterLabel();
+        }
+    }
+
+    private void addEagle(float x, float y) {
+        if (countersBarriers.getEagleCounter() > 0 && eagleButton.isChecked()) {
+            if (!aguilaGodPlaced) {
+                float maxY = stage.getHeight() - 120;
+                float minY = 120;
+                if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+                    Texture aguilaGodTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
+                    Image aguilaGodImage = new Image(aguilaGodTexture);
+                    aguilaGodImage.setSize(80, 80);
+                    aguilaGodImage.setPosition(x - (aguilaGodImage.getWidth() / 2), y - (aguilaGodImage.getHeight() / 2));
+                    aguilaGodImage.setSize(aguilaGodImage.getWidth(), aguilaGodImage.getHeight());
+
+                    boolean canPlace = true;
+                    for (Image placedImage : woodPVP) {
+                        float newX = aguilaGodImage.getX();
+                        float newY = aguilaGodImage.getY();
+                        float newWidth = aguilaGodImage.getWidth();
+                        float newHeight = aguilaGodImage.getHeight();
+
+                        float placedX = placedImage.getX();
+                        float placedY = placedImage.getY();
+                        float placedWidth = placedImage.getWidth();
+                        float placedHeight = placedImage.getHeight();
+
+                        if (newX < placedX + placedWidth &&
+                                newX + newWidth > placedX &&
+                                newY < placedY + placedHeight &&
+                                newY + newHeight > placedY) {
+                            canPlace = false;
+                            break;
+                        }
+                    }
+
+                    for (Image placedImage : cementPVP) {
+                        float newX = aguilaGodImage.getX();
+                        float newY = aguilaGodImage.getY();
+                        float newWidth = aguilaGodImage.getWidth();
+                        float newHeight = aguilaGodImage.getHeight();
+
+                        float placedX = placedImage.getX();
+                        float placedY = placedImage.getY();
+                        float placedWidth = placedImage.getWidth();
+                        float placedHeight = placedImage.getHeight();
+
+                        if (newX < placedX + placedWidth &&
+                                newX + newWidth > placedX &&
+                                newY < placedY + placedHeight &&
+                                newY + newHeight > placedY) {
+                            canPlace = false;
+                            break;
+                        }
+                    }
+
+                    for (Image placedImage : steelPVP) {
+                        float newX = aguilaGodImage.getX();
+                        float newY = aguilaGodImage.getY();
+                        float newWidth = aguilaGodImage.getWidth();
+                        float newHeight = aguilaGodImage.getHeight();
+
+                        float placedX = placedImage.getX();
+                        float placedY = placedImage.getY();
+                        float placedWidth = placedImage.getWidth();
+                        float placedHeight = placedImage.getHeight();
+
+                        if (newX < placedX + placedWidth &&
+                                newX + newWidth > placedX &&
+                                newY < placedY + placedHeight &&
+                                newY + newHeight > placedY) {
+                            canPlace = false;
+                            break;
+                        }
+                    }
+
+                    if (canPlace) {
+                        stage.addActor(aguilaGodImage);
+                        woodPVP.add(aguilaGodImage);
+                        //minusEagleCounter();
+                        aguilaGodPlaced = true;
+                    }
+                }
+            }
+        }
+    }
+
+    /*private void minusEagleCounter() {
+        if (countersBarriers.getEagleCounter() > 0) {
+            countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
+            //gameScreen.updateCounterLabel();
+        }
+    }*/
+
 
     public void setupButtonsAttacker() {
         Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
@@ -424,13 +807,13 @@ public class GameScreen implements Screen {
                 if (button == Input.Buttons.LEFT) {
                     // Maneja el clic izquierdo como lo hacías anteriormente.
                     if (woodenButton.isChecked()) {
-                        gameScreenFeatures.addWood(x, y);
+                        addWood(x, y);
                     } else if (cementButton.isChecked()) {
-                        gameScreenFeatures.addCement(x, y);
+                        addCement(x, y);
                     } else if (steelButton.isChecked()) {
-                        gameScreenFeatures.addSteel(x, y);
+                        addSteel(x, y);
                     } else if (eagleButton.isChecked()) {
-                        gameScreenFeatures.addEagle(x, y);
+                        addEagle(x, y);
                     }
                 }
                 return true;
@@ -497,13 +880,13 @@ public class GameScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
                     if (woodenButton.isChecked()) {
-                        gameScreenFeatures.addWood(x, y);
+                        addWood(x, y);
                     } else if (cementButton.isChecked()) {
-                        gameScreenFeatures.addCement(x, y);
+                        addCement(x, y);
                     } else if (steelButton.isChecked()) {
-                        gameScreenFeatures.addSteel(x, y);
+                        addSteel(x, y);
                     } else if (eagleButton.isChecked()) {
-                        gameScreenFeatures.addEagle(x, y);
+                        addEagle(x, y);
                     }
                 }
                 return true;
@@ -566,15 +949,11 @@ public class GameScreen implements Screen {
         String selectedPalette = user.getSelectedColorPalette();
         Color filter = getColorFilterForPalette(selectedPalette);
 
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
         batch.begin();
         batch.setColor(filter);
-
-
         batch.setColor(Color.WHITE);
         batch.end();
     }
@@ -587,7 +966,6 @@ public class GameScreen implements Screen {
         if (this.spotifyReference.get() != null) {
             this.spotifyReference.get().getSongInfo("billi+jean");
         }*/
-
 
         String selectedPalette = user.getSelectedColorPalette();
         timer += Gdx.graphics.getDeltaTime();
@@ -632,7 +1010,6 @@ public class GameScreen implements Screen {
                 stage.addActor(bulletImage);
             }
 
-            // Si la bala salió de la pantalla la elimina
             if (bulletX < -bulletSprite.getWidth()) {
                 isShooting = false;
             }
@@ -799,7 +1176,7 @@ public class GameScreen implements Screen {
 
         Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
 
-        for (Image barrierImage : gameScreenFeatures.getBarrierImages()) {
+        for (Image barrierImage : woodPVP) {
             float barrierX = barrierImage.getX();
             float barrierY = barrierImage.getY();
             float barrierWidth = barrierImage.getWidth();

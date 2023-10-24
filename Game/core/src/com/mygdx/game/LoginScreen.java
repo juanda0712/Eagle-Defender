@@ -187,13 +187,13 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
                 }
 
                 //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));
+
                 dispose();
                 break;
             }
         }
         return validUser;
     }
-
 
     public void render(float delta) {
         ScreenUtils.clear(1, 2, 1, 2);

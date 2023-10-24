@@ -3,19 +3,28 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+//import com.badlogic.gdx.maps.Map;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.*;
+import java.util.List;
+
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,9 +32,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.models.User2;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.mygdx.utils.JSONDataManager;
 
 import java.util.Random;
+
 
 public class IAMode implements Screen {
     private final MainController game;
@@ -35,6 +46,10 @@ public class IAMode implements Screen {
     int screenHeight;
     private User2 user;
     private Array<Image> randomIA;
+    private Array<Image> woodSP;
+    private Array<Image> cementSP;
+    private Array<Image> steelSP;
+    private Array<Image> bullets;
     private Image goblin;
     private float goblinTimer;
     private float goblinX, goblinY;
@@ -61,15 +76,40 @@ public class IAMode implements Screen {
     private boolean aguilaGodPlaced = false;
     private boolean defenderSelected = false;
     private boolean showPlayer = false;
+    private int BombCollide = 0;
+    private int fireCollide = 0;
+    //private int waterCollide = 0;
     private ImageButton Defender;
     private ImageButton Attacker;
     SpriteBatch batch;
-    Texture player;
-    Texture playerTexture;
-    Image playerImage;
-    float playerX = 1300;
-    float playerY = 500;
-    float speed = 400.0f;
+    private String playerTexturePath = "SSF6.png";
+    private Image playerImage;
+    private float playerX = 0, playerY = 0;
+    private float speed = 400.0f;
+    private Sound explosionSound;
+    private int fireCount = 0;
+    private int waterCount = 0;
+    private int bombCount = 0;
+    private final int maxFire = 10;
+    private final int maxWater = 10;
+    private final int maxBomb = 10;
+    private float goblinWaitTimer = 30.0f;
+    Map<Rectangle, Integer> barrierCounters = new HashMap<>();
+    private Map<Image, Integer> waterCollide = new HashMap<>();
+    List<Rectangle> barrierRectangles = new ArrayList<>();
+    Sprite bulletSprite;
+    Texture bulletTexture;
+    Texture fireTexture;
+    Texture waterTexture;
+    Texture bombTexture;
+    Image bulletImage;
+    float bulletX;
+    float bulletY;
+    boolean isShooting = false;
+    boolean isCollide = false;
+    float bulletSpeed = 500.0f;
+    private Texture currentBulletTexture;
+
 
     public IAMode(final MainController game, User2 user) {
         System.out.println(user);
@@ -83,6 +123,11 @@ public class IAMode implements Screen {
         Gdx.input.setInputProcessor(stage);
         goblinTimer = 0;
         randomIA = new Array<>();
+        bullets = new Array<>();
+        woodSP = new Array<>();
+        cementSP = new Array<>();
+        steelSP = new Array<>();
+        explosionSound = Gdx.audio.newSound(Gdx.files.internal("audExplosion.mp3"));
         batch = new SpriteBatch();
         setupMode();
         setupUIElements();
@@ -93,7 +138,7 @@ public class IAMode implements Screen {
         // ImageButton Defender en el centro de la mitad izquierda de la pantalla
         Drawable defenderImage = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/sideD.png"))));
         Defender = new ImageButton(defenderImage);
-        Defender.setPosition(0, screenHeight / 2 - Defender.getHeight() / 2);
+        Defender.setPosition(0, (screenHeight - Defender.getHeight()) / 2);
         Defender.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -119,7 +164,7 @@ public class IAMode implements Screen {
         // ImageButton Attacker en el centro de la mitad derecha de la pantalla
         Drawable attackerImage = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/sideA.png"))));
         Attacker = new ImageButton(attackerImage);
-        Attacker.setPosition(screenWidth / 2, screenHeight / 2 - Attacker.getHeight() / 2);
+        Attacker.setPosition(screenWidth / 2 + 2, (screenHeight - Attacker.getHeight()) / 2);
         Attacker.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -128,25 +173,38 @@ public class IAMode implements Screen {
                 Attacker.remove();
                 if (!defenderSelected) {
                     setupButtonsAttacker();
-                    showPlayer = true;
+                    //showPlayer = true;
                     float halfScreenWidth = screenWidth / 2;
                     Texture aguilagodTexture = new Texture("aguilagod.png");
                     TextureRegion aguilagodRegion = new TextureRegion(aguilagodTexture);
                     TextureRegionDrawable aguilagodDrawable = new TextureRegionDrawable(aguilagodRegion);
                     aguilagodImage = new Image(aguilagodDrawable);
-                    aguilagodImage.setSize(150, 80);
+                    aguilagodImage.setSize(80, 80);
                     float aguilagodY;
                     float minY = 120;
                     float maxY = screenHeight - 120 - aguilagodImage.getHeight();
                     aguilagodY = MathUtils.random(minY, maxY);
                     aguilagodImage.setPosition(0, aguilagodY);
                     stage.addActor(aguilagodImage);
-                    int totalRandomIAPerType = 10;
-                    for (int i = 0; i < totalRandomIAPerType; i++) {
+                    woodSP.add(aguilagodImage);
+                    int totalWoodSP = 10;
+                    int totalCementSP = 10;
+                    int totalSteelSP = 10;
+                    for (int i = 0; i < totalWoodSP; i++) {
                         addRandomImageIA("wood.jpg", aguilagodImage, halfScreenWidth, screenHeight);
+                    }
+                    for (int i = 0; i < totalCementSP; i++) {
                         addRandomImageIA("cement.jpg", aguilagodImage, halfScreenWidth, screenHeight);
+                    }
+                    for (int i = 0; i < totalSteelSP; i++) {
                         addRandomImageIA("steel.jpg", aguilagodImage, halfScreenWidth, screenHeight);
                     }
+                    bulletTexture = new Texture("bala.PNG");
+                    fireTexture = new Texture("Fire1.PNG");
+                    waterTexture = new Texture("Water12.png");
+                    bombTexture = new Texture("Bomb1.png");
+                    bulletSprite = new Sprite(bulletTexture);
+                    bulletImage = new Image(bulletSprite);
                 }
             }
         });
@@ -181,12 +239,41 @@ public class IAMode implements Screen {
         boolean overlapped;
         float randomX, randomY;
 
+        String imageType = "unknown";
+        if (imageFileName.equals("wood.jpg")) {
+            imageType = "wood";
+        } else if (imageFileName.equals("cement.jpg")) {
+            imageType = "cement";
+        } else if (imageFileName.equals("steel.jpg")) {
+            imageType = "steel";
+        }
+
         do {
             overlapped = false;
             randomX = MathUtils.random(referenceImage.getX() + referenceImage.getWidth(), halfScreenWidth - image.getWidth());
             randomY = MathUtils.random(120, screenHeight - 120 - image.getHeight());
 
-            for (Image existingImage : randomIA) {
+            for (Image existingImage : woodSP) {
+                if (existingImage.getX() < randomX + image.getWidth() &&
+                        randomX < existingImage.getX() + existingImage.getWidth() &&
+                        existingImage.getY() < randomY + image.getHeight() &&
+                        randomY < existingImage.getY() + existingImage.getHeight()) {
+                    overlapped = true;
+                    break;
+                }
+            }
+
+            for (Image existingImage : cementSP) {
+                if (existingImage.getX() < randomX + image.getWidth() &&
+                        randomX < existingImage.getX() + existingImage.getWidth() &&
+                        existingImage.getY() < randomY + image.getHeight() &&
+                        randomY < existingImage.getY() + existingImage.getHeight()) {
+                    overlapped = true;
+                    break;
+                }
+            }
+
+            for (Image existingImage : steelSP) {
                 if (existingImage.getX() < randomX + image.getWidth() &&
                         randomX < existingImage.getX() + existingImage.getWidth() &&
                         existingImage.getY() < randomY + image.getHeight() &&
@@ -198,9 +285,18 @@ public class IAMode implements Screen {
         } while (overlapped);
 
         image.setPosition(randomX, randomY);
+        image.setName(imageFileName);
         stage.addActor(image);
-        randomIA.add(image);
+
+        if (imageType.equals("wood")) {
+            woodSP.add(image);
+        } else if (imageType.equals("cement")) {
+            cementSP.add(image);
+        } else if (imageType.equals("steel")) {
+            steelSP.add(image);
+        }
     }
+
 
     private void setupButtonsDefender() {
         Skin skin = VisUI.getSkin();
@@ -339,7 +435,47 @@ public class IAMode implements Screen {
                 newImage.setPosition(x, y);
 
                 boolean canPlace = true;
-                for (Image placedImage : randomIA) {
+                for (Image placedImage : woodSP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementSP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : steelSP) {
                     float newX = newImage.getX();
                     float newY = newImage.getY();
                     float newWidth = newImage.getWidth();
@@ -361,7 +497,7 @@ public class IAMode implements Screen {
 
                 if (canPlace) {
                     stage.addActor(newImage);
-                    randomIA.add(newImage);
+                    woodSP.add(newImage);
                     minusWoodCounter();
                 }
             }
@@ -394,7 +530,47 @@ public class IAMode implements Screen {
                 newImage.setPosition(x, y);
 
                 boolean canPlace = true;
-                for (Image placedImage : randomIA) {
+                for (Image placedImage : woodSP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementSP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : steelSP) {
                     float newX = newImage.getX();
                     float newY = newImage.getY();
                     float newWidth = newImage.getWidth();
@@ -416,7 +592,7 @@ public class IAMode implements Screen {
 
                 if (canPlace) {
                     stage.addActor(newImage);
-                    randomIA.add(newImage);
+                    cementSP.add(newImage);
                     minusCementCounter();
                 }
             }
@@ -449,7 +625,47 @@ public class IAMode implements Screen {
                 newImage.setPosition(x, y);
 
                 boolean canPlace = true;
-                for (Image placedImage : randomIA) {
+                for (Image placedImage : woodSP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementSP) {
+                    float newX = newImage.getX();
+                    float newY = newImage.getY();
+                    float newWidth = newImage.getWidth();
+                    float newHeight = newImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : steelSP) {
                     float newX = newImage.getX();
                     float newY = newImage.getY();
                     float newWidth = newImage.getWidth();
@@ -471,7 +687,7 @@ public class IAMode implements Screen {
 
                 if (canPlace) {
                     stage.addActor(newImage);
-                    randomIA.add(newImage);
+                    steelSP.add(newImage);
                     minusSteelCounter();
                 }
             }
@@ -493,10 +709,52 @@ public class IAMode implements Screen {
                 Texture aguilaGodTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
                 aguilaGodImage = new Image(aguilaGodTexture);
                 aguilaGodImage.setPosition(x, y);
-                aguilaGodImage.setSize(150, 80);
+                aguilaGodImage.setSize(80, 80);
 
                 boolean canPlace = true;
-                for (Image placedImage : randomIA) {
+                for (Image placedImage : woodSP) {
+
+                    float newX = aguilaGodImage.getX();
+                    float newY = aguilaGodImage.getY();
+                    float newWidth = aguilaGodImage.getWidth();
+                    float newHeight = aguilaGodImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                for (Image placedImage : cementSP) {
+                    float newX = aguilaGodImage.getX();
+                    float newY = aguilaGodImage.getY();
+                    float newWidth = aguilaGodImage.getWidth();
+                    float newHeight = aguilaGodImage.getHeight();
+
+                    float placedX = placedImage.getX();
+                    float placedY = placedImage.getY();
+                    float placedWidth = placedImage.getWidth();
+                    float placedHeight = placedImage.getHeight();
+
+                    if (newX < placedX + placedWidth &&
+                            newX + newWidth > placedX &&
+                            newY < placedY + placedHeight &&
+                            newY + newHeight > placedY) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+
+                for (Image placedImage : steelSP) {
                     float newX = aguilaGodImage.getX();
                     float newY = aguilaGodImage.getY();
                     float newWidth = aguilaGodImage.getWidth();
@@ -518,13 +776,14 @@ public class IAMode implements Screen {
 
                 if (canPlace) {
                     stage.addActor(aguilaGodImage);
-                    randomIA.add(aguilaGodImage);
+                    woodSP.add(aguilaGodImage);
                     minusEagleCounter();
                     aguilaGodPlaced = true;
                 }
             }
         }
     }
+
 
     private void minusEagleCounter() {
         if (eagleCounter > 0) {
@@ -538,7 +797,6 @@ public class IAMode implements Screen {
     }
 
     //----------------------------------------------attacker side--------------------------------------------------
-    private float goblinWaitTimer = 30.0f;
 
     private void randomMovement(float delta) {
         float halfScreenWidth = screenWidth / 2;
@@ -566,73 +824,193 @@ public class IAMode implements Screen {
             }
 
             goblinX = MathUtils.random(halfScreenWidth, screenWidth - goblinWidth);
-
             goblin.setPosition(goblinX, goblinY);
             goblinTimer = 2.0f;
         }
     }
 
 
-    private void manualMovement() {
-        if (showPlayer) {
-            if (playerTexture == null) {
-                playerTexture = new Texture("Idle.png"); // Carga la textura del jugador
-            }
+    private void wasdPJ() {
+        if (!showPlayer) {
+            return;
+        }
 
-            Sprite playerSprite = new Sprite(playerTexture);
-            playerSprite.setPosition(playerX, playerY);
-            playerImage = new Image(playerSprite);
-            playerImage.setPosition(1300, 500);
+
+        if (playerImage == null) {
+            Texture playerTexture = new Texture(Gdx.files.internal(playerTexturePath));
+            playerImage = new Image(playerTexture);
+            playerImage.setSize(70, 87);
             stage.addActor(playerImage);
+            playerX = 1300;
+            playerY = 500;
+        }
+        float maxY = stage.getHeight() - 120;
+        float minY = 120;
+        float centerX = stage.getWidth() / 2;
+        float playerHeight = 87;
+        float playerWidth = 70;
 
-            if (Gdx.input.isKeyPressed(Input.Keys.W) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
-                System.out.println("W");
-                if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
-                    playerY += speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("Back1.png");
-                    playerSprite.setTexture(new Texture("Back11.png"));
-                    playerImage.setPosition(playerX, playerY);
+        Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
+
+        for (Image barrierImage : woodSP) {
+            float barrierX = barrierImage.getX();
+            float barrierY = barrierImage.getY();
+            float barrierWidth = barrierImage.getWidth();
+            float barrierHeight = barrierImage.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            boolean containsBarrier = false;
+            for (Rectangle existingBarrier : barrierRectangles) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight) {
+                    containsBarrier = true;
+                    break;
                 }
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
-                System.out.println("S");
-                playerY -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("Front2.png");
-                playerSprite.setTexture(new Texture("Front2.png"));
-                playerImage.setPosition(playerX, playerY);
+            if (!containsBarrier) {
+                barrierRectangles.add(barrierBounds);
+                barrierCounters.put(barrierBounds, 3);
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.A) && playerX > 0) {
-                System.out.println("A");
-                float centerX = Gdx.graphics.getWidth() / 2.0f;
-                if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
-                    playerX -= speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkL3.png");
-                    playerSprite.setTexture(new Texture("WalkL3.png"));
-                    playerImage.setPosition(playerX, playerY);
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                isShooting = false;
+                isCollide = true;
+
+                if (bulletImage.getDrawable() instanceof TextureRegionDrawable) {
+                    TextureRegionDrawable drawable = (TextureRegionDrawable) bulletImage.getDrawable();
+                    Texture texture = drawable.getRegion().getTexture();
+
+                    if (texture == fireTexture || texture == bombTexture || texture == waterTexture) {
+                        woodSP.removeValue(barrierImage, true);
+                        barrierImage.remove();
+                        Actions.removeActor(bulletImage);
+                    }
                 }
-            }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.D) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
-                System.out.println("D");
-                playerX += speed * Gdx.graphics.getDeltaTime();
-
-                player = new Texture("WalkR3.png");
-                playerSprite.setTexture(new Texture("WalkR3.png"));
-                playerImage.setPosition(playerX, playerY);
-
-            }
-
-            if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-                player = new Texture("Idle.png");
-                playerSprite.setTexture(new Texture("Idle.png"));
+                Integer currentCounter = barrierCounters.get(barrierBounds);
+                if (currentCounter != null && currentCounter > 0) {
+                    barrierCounters.put(barrierBounds, currentCounter - 1);
+                    System.out.println(currentCounter);
+                }
             }
         }
+
+
+        for (Image barrierSteel : steelSP) {
+            float barrierX = barrierSteel.getX();
+            float barrierY = barrierSteel.getY();
+            float barrierWidth = barrierSteel.getWidth();
+            float barrierHeight = barrierSteel.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            boolean containsBarrier = false;
+            for (Rectangle existingBarrier : barrierRectangles) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight) {
+                    containsBarrier = true;
+                    break;
+                }
+            }
+
+            if (!containsBarrier) {
+                barrierRectangles.add(barrierBounds);
+                barrierCounters.put(barrierBounds, 3);
+            }
+
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                isShooting = false;
+                isCollide = true;
+
+                if (currentBulletTexture == waterTexture) {
+                    waterCount++;
+
+                    if (waterCount >= 2) {
+                        steelSP.removeValue(barrierSteel, true);
+                        barrierSteel.remove();
+                    }
+                } else if (currentBulletTexture == fireTexture || currentBulletTexture == bombTexture) {
+                    steelSP.removeValue(barrierSteel, true);
+                    barrierSteel.remove();
+                }
+
+                Integer currentCounter = barrierCounters.get(barrierBounds);
+                if (currentCounter != null && currentCounter > 0) {
+                    barrierCounters.put(barrierBounds, currentCounter - 1);
+                    System.out.println(currentCounter);
+                }
+            }
+        }
+
+        for (Image barrierImage : cementSP) {
+            float barrierX = barrierImage.getX();
+            float barrierY = barrierImage.getY();
+            float barrierWidth = barrierImage.getWidth();
+            float barrierHeight = barrierImage.getHeight();
+
+            Rectangle barrierBounds = new Rectangle(barrierX, barrierY, barrierWidth, barrierHeight);
+
+            boolean containsBarrier = false;
+            for (Rectangle existingBarrier : barrierRectangles) {
+                if (existingBarrier.width == barrierWidth && existingBarrier.height == barrierHeight) {
+                    containsBarrier = true;
+                    break;
+                }
+            }
+            if (!containsBarrier) {
+                barrierRectangles.add(barrierBounds);
+                barrierCounters.put(barrierBounds, 3);
+            }
+            if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                isShooting = false;
+                isCollide = true;
+                Integer currentCounter = barrierCounters.get(barrierBounds);
+                if (currentCounter != null && currentCounter > 0) {
+                    barrierCounters.put(barrierBounds, currentCounter - 1);
+                    System.out.println(currentCounter);
+                }
+            }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R) && !isShooting) {
+            bulletX = playerX + playerImage.getWidth();
+            bulletY = playerY + playerImage.getHeight()/ 2 - bulletSprite.getHeight() / 2;
+            isShooting = true;
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            if (playerY + playerHeight + speed * Gdx.graphics.getDeltaTime() <= maxY) {
+                playerY += speed * Gdx.graphics.getDeltaTime();
+                playerTexturePath = "WalkR1.png";
+            }
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            if (playerY >= minY) {
+                playerY -= speed * Gdx.graphics.getDeltaTime();
+                playerTexturePath = "WalkR2.png";
+            }
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.A) && playerX > centerX) {
+            if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
+                playerX -= speed * Gdx.graphics.getDeltaTime();
+                playerTexturePath = "WalkR3.png";
+            }
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            if (playerX + playerWidth + speed * Gdx.graphics.getDeltaTime() <= stage.getWidth()) {
+                playerX += speed * Gdx.graphics.getDeltaTime();
+                playerTexturePath = "WalkR4.png";
+            }
+        } else {
+            playerTexturePath = "SSF6.png";
+        }
+        playerImage.setDrawable(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(playerTexturePath)))));
+        playerImage.setPosition(playerX, playerY);
     }
 
-    private void setupButtonsAttacker() {
-        Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
+
+    private void setupButtonsAttacker(){
+        showPlayer = true;
+        Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Fire1.png"))));
         fireButton = new ImageButton(fireChoose);
         fireButton.setPosition(1500, 10);
 
@@ -710,15 +1088,41 @@ public class IAMode implements Screen {
             if (goblinTimer > 0) {
                 goblinTimer -= delta;
             }
-
             if (goblinTimer <= 0) {
                 goblin.setPosition(-goblin.getWidth(), -goblin.getHeight());
                 goblinTimer = 2.0f;
                 randomMovement(delta);
             }
         }
-        if (!defenderSelected) {
-            manualMovement();
+
+        if (!defenderSelected){
+            wasdPJ();
+            if (isShooting) {
+                bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();
+                bulletImage.setPosition(bulletX, bulletY);
+                Texture currentBulletTexture = bulletSprite.getTexture();
+                if (fireButton.isChecked()) {
+                    bulletSprite.setTexture(fireTexture);
+                    stage.addActor(bulletImage);
+                } else if (waterButton.isChecked()) {
+                    bulletSprite.setTexture(waterTexture);
+                    stage.addActor(bulletImage);
+                    waterCount++;
+
+                } else if (bombButton.isChecked()) {
+                    bulletSprite.setTexture(bombTexture);
+                    stage.addActor(bulletImage);
+                }
+
+                if (bulletX < -bulletSprite.getWidth()) {
+                    isShooting = false;
+                }
+            }
+            if (isCollide) {
+                if (bulletX < -bulletSprite.getWidth()) {
+                    isShooting = false;
+                }
+            }
         }
         stage.draw();
     }
