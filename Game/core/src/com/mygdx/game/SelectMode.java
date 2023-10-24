@@ -43,10 +43,9 @@ public class SelectMode implements Screen {
     private void setupUIElements() {
         Skin skin = VisUI.getSkin();
         CountersBarriers countersBarriers = new CountersBarriers();
-        //final GameScreen gameScreen = new GameScreen(game, user2Manager, user, countersBarriers, null);
 
         button1 = new TextButton("Player vs Computer", skin);
-        button1.setPosition(100, 300);
+        button1.setPosition((stage.getWidth() - button1.getWidth()) / 2, stage.getHeight() / 2 + 100);
         button1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -55,7 +54,7 @@ public class SelectMode implements Screen {
         });
 
         button2 = new TextButton("Player vs Player", skin);
-        button2.setPosition(100, 200);
+        button2.setPosition((stage.getWidth() - button2.getWidth()) / 2, stage.getHeight() / 2);
         button2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -64,20 +63,20 @@ public class SelectMode implements Screen {
         });
 
         button3 = new TextButton("Button 3", skin);
-        button3.setPosition(100, 100);
+        button3.setPosition((stage.getWidth() - button3.getWidth()) / 2, stage.getHeight() / 2 - 100);
         button3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                // Agrega la lógica para el botón 3
             }
         });
 
         button4 = new TextButton("Button 4", skin);
-        button4.setPosition(100, 0);
+        button4.setPosition((stage.getWidth() - button4.getWidth()) / 2, stage.getHeight() / 2 - 200);
         button4.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                // Agrega la lógica para el botón 4
             }
         });
 
@@ -86,6 +85,7 @@ public class SelectMode implements Screen {
         stage.addActor(button3);
         stage.addActor(button4);
     }
+
 
     @Override
     public void render(float delta) {

@@ -65,13 +65,16 @@ public class FormManagement implements Screen {
     private SelectBox<String> choiceBoxTexture;
     private Label paymentMethods;
     private TextButton btnPaymentMethods;
-    private String[] animations = {"Explosions", "Shock", "Transparency"};
-    private String[] textures = {"Wooden", "Concrete", "Steel"};
+    //private String[] animations = {"Explosions", "Shock", "Transparency"};
+    private String[] textures = {"Smooth", "Rocky", "Bricked"};
 
     private Label uploadPfp;
+    private Label pfpLabel;
+    private Image pfpImage;
     private TextButton btnUpload;
     private TextButton btnCreateAccount;
     private TextButton btnReturnLogin;
+    private final Table contentTable = new Table();
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
     private QuestionsForm questionsForm;
@@ -220,8 +223,8 @@ public class FormManagement implements Screen {
         selectAnimation = new Label("Select one animation", skin);
         selectAnimation.setColor(Color.BLACK);
 
-        choiceBoxAnimation = new SelectBox<>(skin);
-        choiceBoxAnimation.setItems(animations);
+        //choiceBoxAnimation = new SelectBox<>(skin);
+        //choiceBoxAnimation.setItems(animations);
 
         selectTexture = new Label("Select one   git wall texture", skin);
         selectTexture.setColor(Color.BLACK);
@@ -255,13 +258,33 @@ public class FormManagement implements Screen {
                 fileChooser.setListener(new FileChooserAdapter() {
                     @Override
                     public void selected(Array<FileHandle> file) {
-                        selectedFile = file.first();
+                        if (file.size > 0) {
+                            selectedFile = file.first();
+                            Texture pfpTexture = new Texture(selectedFile);
+                            TextureRegion pfpRegion = new TextureRegion(pfpTexture);
+                            Image newPfpImage = new Image(pfpRegion);
+
+
+                            if (pfpImage != null) {
+                                Cell pfpCell = contentTable.getCell(pfpImage);
+                                if (pfpCell != null) {
+                                    pfpCell.setActor(newPfpImage);
+                                }
+                            } else {
+                                contentTable.add(newPfpImage).size(180).left().padTop(5).row();
+                            }
+
+                            pfpImage = newPfpImage;
+                        }
                     }
                 });
                 stage.addActor(fileChooser.fadeIn());
                 fileChooser.setVisible(true);
             }
         });
+
+        pfpLabel = new Label("This will be your profile picture",skin);
+        pfpLabel.setColor(Color.BLACK);
         btnCreateAccount = new TextButton("Create account", skin);
         btnCreateAccount.addListener(new ClickListener() {
             @Override
@@ -346,6 +369,7 @@ public class FormManagement implements Screen {
                 }
             }
         });
+        /*
         btnReturnLogin = new TextButton("Return", skin);
         btnReturnLogin.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -353,10 +377,14 @@ public class FormManagement implements Screen {
                 dispose();
             }
         });
+
+         */
     }
 
+
+
     private void setUPGUIElements() {
-        Table contentTable = new Table();
+
         float screenHeight = Gdx.graphics.getHeight();
         float padBottomValue = screenHeight * 0.05f;
         Array<Actor> GUIElements = new Array<>();
@@ -378,7 +406,7 @@ public class FormManagement implements Screen {
                 paymentMethods, btnPaymentMethods,
                 uploadPfp, btnUpload, questionsLabel,
                 btnQuestions,
-                btnCreateAccount, btnReturnLogin
+                btnCreateAccount,pfpLabel,pfpImage
         );
         for (Actor element : GUIElements) {
             contentTable.add(element).left().padBottom(padBottomValue).row();
