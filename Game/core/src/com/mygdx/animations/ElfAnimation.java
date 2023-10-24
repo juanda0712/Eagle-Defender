@@ -64,7 +64,7 @@ public  class ElfAnimation extends InputAdapter implements Screen {
 
         batch = new SpriteBatch();
 
-        playerTexture = new Texture("SSF6.png");
+        playerTexture = new Texture("Idle.png");
         defensorTexture = new Texture("gojo.jpg");
         atacanteTexture = new Texture("sukuna.jpg");
         barreraTexture = new Texture("Brick.png");
@@ -147,8 +147,8 @@ public  class ElfAnimation extends InputAdapter implements Screen {
             System.out.println("W");
             if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
                 playerY += speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR1.png");
-                playerSprite.setTexture(new Texture("WalkR1.png"));
+                player = new Texture("Back1.png");
+                playerSprite.setTexture(new Texture("Back1.png"));
                 playerSprite.setY(playerY);
             }
         }
@@ -157,8 +157,8 @@ public  class ElfAnimation extends InputAdapter implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
             System.out.println("S");
             playerY -= speed * Gdx.graphics.getDeltaTime();
-            player = new Texture("WalkR2.png");
-            playerSprite.setTexture(new Texture("WalkR2.png"));
+            player = new Texture("Front2.png");
+            playerSprite.setTexture(new Texture("Front2.png"));
             playerSprite.setY(playerY);
         }
 
@@ -168,8 +168,8 @@ public  class ElfAnimation extends InputAdapter implements Screen {
             float centerX = Gdx.graphics.getWidth() / 2.0f;
             if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
                 playerX -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR3.png");
-                playerSprite.setTexture(new Texture("WalkR3.png"));
+                player = new Texture("WalkL3.png");
+                playerSprite.setTexture(new Texture("WalkL3.png"));
                 playerSprite.setX(playerX);
             }
         }
@@ -177,14 +177,14 @@ public  class ElfAnimation extends InputAdapter implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.D) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
             System.out.println("D");
             playerX += speed * Gdx.graphics.getDeltaTime();
-            player = new Texture("WalkR4.png");
-            playerSprite.setTexture(new Texture("WalkR4.png"));
+            player = new Texture("WalkR3.png");
+            playerSprite.setTexture(new Texture("WalkR3.png"));
             playerSprite.setX(playerX);
         }
 
         if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            player = new Texture("SSF6.png");
-            playerSprite.setTexture(new Texture("SSF6.png"));
+            player = new Texture("Idle.png");
+            playerSprite.setTexture(new Texture("Idle.png"));
         }
 
         if (contador2 <= 9) {

@@ -100,7 +100,7 @@ public class IAMode implements Screen {
                 Attacker.remove();
                 if (defenderSelected) {
                     setupButtonsDefender();
-                    goblin = new Image(new Texture("SSF6.png"));
+                    goblin = new Image(new Texture("Idle.png"));
                     float goblinWidth = 70;
                     float goblinHeight = 87;
                     float minGoblinY = 120;
@@ -574,7 +574,7 @@ public class IAMode implements Screen {
     private void manualMovement(){
         if (showPlayer) {
             if (playerTexture == null) {
-                playerTexture = new Texture("SSF6.png"); // Carga la textura del jugador
+                playerTexture = new Texture("Idle.png"); // Carga la textura del jugador
             }
 
             Sprite playerSprite = new Sprite(playerTexture);
@@ -587,8 +587,8 @@ public class IAMode implements Screen {
                 System.out.println("W");
                 if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
                     playerY += speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkR1.png");
-                    playerSprite.setTexture(new Texture("WalkR1.png"));
+                    player = new Texture("Back1.png");
+                    playerSprite.setTexture(new Texture("Back11.png"));
                     playerImage.setPosition(playerX, playerY);
                 }
             }
@@ -596,8 +596,8 @@ public class IAMode implements Screen {
             if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY > 0) {
                 System.out.println("S");
                 playerY -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR2.png");
-                playerSprite.setTexture(new Texture("WalkR2.png"));
+                player = new Texture("Front2.png");
+                playerSprite.setTexture(new Texture("Front2.png"));
                 playerImage.setPosition(playerX, playerY);
             }
 
@@ -606,8 +606,8 @@ public class IAMode implements Screen {
                 float centerX = Gdx.graphics.getWidth() / 2.0f;
                 if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
                     playerX -= speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkR3.png");
-                    playerSprite.setTexture(new Texture("WalkR3.png"));
+                    player = new Texture("WalkL3.png");
+                    playerSprite.setTexture(new Texture("WalkL3.png"));
                     playerImage.setPosition(playerX, playerY);
                 }
             }
@@ -616,15 +616,15 @@ public class IAMode implements Screen {
                 System.out.println("D");
                 playerX += speed * Gdx.graphics.getDeltaTime();
 
-                player = new Texture("WalkR4.png");
-                playerSprite.setTexture(new Texture("WalkR4.png"));
+                player = new Texture("WalkR3.png");
+                playerSprite.setTexture(new Texture("WalkR3.png"));
                 playerImage.setPosition(playerX, playerY);
 
             }
 
             if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-                player = new Texture("SSF6.png");
-                playerSprite.setTexture(new Texture("SSF6.png"));
+                player = new Texture("Idle.png");
+                playerSprite.setTexture(new Texture("Idle.png"));
             }
         }
     }

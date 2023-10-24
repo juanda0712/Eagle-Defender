@@ -89,6 +89,7 @@ public class FaceRecognitionActor extends Actor {
 
             game.changeScreen(new GameScreen(game, user2Manager, currentUser, countersBarriers, spotifyReference));
             detectFaces = false;
+            capture.close();
             game.dispose();
         }
 

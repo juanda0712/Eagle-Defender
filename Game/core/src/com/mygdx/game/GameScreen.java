@@ -445,7 +445,7 @@ public class GameScreen implements Screen {
         lineaRecta = new Texture("negro2.jpg");
         Texture circulo = new Texture("blanco.png");
         bulletTexture = new Texture("bala.PNG");
-        playerTexture = new Texture("SSF6.png");
+        playerTexture = new Texture("Idle.png");
         fireTexture = new Texture("fire1.PNG");
         waterTexture = new Texture("Water12.png");
         bombTexture = new Texture("Bomb1.png");
@@ -757,8 +757,8 @@ public class GameScreen implements Screen {
                 System.out.println("W");
                 if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
                     playerY += speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkR1.png");
-                    playerSprite.setTexture(new Texture("WalkR1.png"));
+                    player = new Texture("Back1.png");
+                    playerSprite.setTexture(new Texture("Back1.png"));
                     playerImage.setPosition(playerX, playerY);
                 }
             }
@@ -767,8 +767,8 @@ public class GameScreen implements Screen {
             if (Gdx.input.isKeyPressed(Input.Keys.S) && playerY >= 110) {
                 System.out.println("S");
                 playerY -= speed * Gdx.graphics.getDeltaTime();
-                player = new Texture("WalkR2.png");
-                playerSprite.setTexture(new Texture("WalkR2.png"));
+                player = new Texture("Front2.png");
+                playerSprite.setTexture(new Texture("Front2.png"));
                 playerImage.setPosition(playerX, playerY);
             }
 
@@ -778,8 +778,8 @@ public class GameScreen implements Screen {
                 float centerX = Gdx.graphics.getWidth() / 2.0f;
                 if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
                     playerX -= speed * Gdx.graphics.getDeltaTime();
-                    player = new Texture("WalkR3.png");
-                    playerSprite.setTexture(new Texture("WalkR3.png"));
+                    player = new Texture("WalkL3.png");
+                    playerSprite.setTexture(new Texture("WalkL3.png"));
                     playerImage.setPosition(playerX, playerY);
                 }
             }
@@ -788,15 +788,15 @@ public class GameScreen implements Screen {
                 System.out.println("D");
                 playerX += speed * Gdx.graphics.getDeltaTime();
 
-                player = new Texture("WalkR4.png");
-                playerSprite.setTexture(new Texture("WalkR4.png"));
+                player = new Texture("WalkR3.png");
+                playerSprite.setTexture(new Texture("WalkR3.png"));
                 playerImage.setPosition(playerX, playerY);
 
             }
 
             if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-                player = new Texture("SSF6.png");
-                playerSprite.setTexture(new Texture("SSF6.png"));
+                player = new Texture("Idle.png");
+                playerSprite.setTexture(new Texture("Idle.png"));
             }
         }
 
