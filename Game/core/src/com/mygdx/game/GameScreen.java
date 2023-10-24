@@ -56,6 +56,8 @@ public class GameScreen implements Screen {
     List<Rectangle> barrierRectanglescement = new ArrayList<>();
 
     List<String> attackerSongs = new ArrayList<>();
+    TextButton empezarButton;
+
 
     List<Rectangle> barrierRectanglesSteel = new ArrayList<>();
     private List<Float> waterPowerTimers = new ArrayList<>();
@@ -169,6 +171,8 @@ public class GameScreen implements Screen {
     private Boolean water = false;
     private Boolean bomb = false;
 
+    private int timersong = 0;
+
     private Label waterCounterLabel;
     private Label fireCounterLabel;
     private Label bombCounterLabel;
@@ -210,7 +214,7 @@ public class GameScreen implements Screen {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont(); // Configura el estilo de fuente
         timerLabel = new Label("Time: " + remainingTime, labelStyle);
-        timerLabel.setPosition(500, 500); // Posición en la pantalla
+        timerLabel.setPosition(900, 500); // Posición en la pantalla
         stage.addActor(timerLabel);
         isTimerActivelabel = true;
 
@@ -219,9 +223,12 @@ public class GameScreen implements Screen {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                isTimerActive = true;
-                spotifyReference.get().playSong(attackerSongs.get(songPosition));
-                //spotifyReference.get().playSong("Billie+jean");
+                if(timersong ==0) {
+                    isTimerActive = true;
+                    spotifyReference.get().playSong(attackerSongs.get(songPosition));
+                    stage.getRoot().removeActor(empezarButton);
+                    //spotifyReference.get().playSong("Billie+jean");
+                }
 
             }
         }, 15); // 60 segundos (1 minuto)
@@ -321,8 +328,10 @@ public class GameScreen implements Screen {
         });
         stage.addActor(eagleButton);
         eagleCounterLabel = new Label("Eagle: " + countersBarriers.getEagleCounter(), skin);
-        eagleCounterLabel.setPosition(460, 90);
+        eagleCounterLabel.setPosition(460, 80);
         stage.addActor(eagleCounterLabel);
+
+
     }
 
     private void addWood(float x, float y) {
@@ -699,7 +708,7 @@ public class GameScreen implements Screen {
     public void setupButtonsAttacker() {
         Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
         fireButton = new ImageButton(fireChoose);
-        fireButton.setPosition(1500, 10);
+        fireButton.setPosition(1250, 20);
         fireButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -720,7 +729,7 @@ public class GameScreen implements Screen {
 
         Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
         waterButton = new ImageButton(waterChoose);
-        waterButton.setPosition(1800, 10);
+        waterButton.setPosition(1450, 40);
         waterButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -741,7 +750,7 @@ public class GameScreen implements Screen {
 
         Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
         bombButton = new ImageButton(bombChoose);
-        bombButton.setPosition(1000, 10);
+        bombButton.setPosition(1050, 40);
         bombButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -780,6 +789,17 @@ public class GameScreen implements Screen {
             }
         });
 
+        TextButton empezarButton = new TextButton("Empezar", skin);
+        empezarButton.setPosition(900, 940);
+        empezarButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                isTimerActive = true;
+                spotifyReference.get().playSong(attackerSongs.get(songPosition));
+                timersong ++;
+            }
+        });
+
         usernameLabel = new Label(user.getUsername(), skin);
         usernameLabel.setColor(Color.BLACK);
         usernameLabel.setPosition(280, 1000);
@@ -808,18 +828,19 @@ public class GameScreen implements Screen {
 
 
         waterCounterLabel = new Label("Water Power: " + waterPowerCount, skin);
-        waterCounterLabel.setPosition(700, 980);
+        waterCounterLabel.setPosition(1450, 80);
         stage.addActor(waterCounterLabel);
         fireCounterLabel = new Label("Fire Power: " + firePowerCount, skin);
-        fireCounterLabel.setPosition(900, 980);
+        fireCounterLabel.setPosition(1250, 80);
         stage.addActor(fireCounterLabel);
 
         bombCounterLabel = new Label("Bomb Power: " + firePowerCount, skin);
-        bombCounterLabel.setPosition(500, 980);
+        bombCounterLabel.setPosition(1050, 80);
         stage.addActor(bombCounterLabel);
         //maskImage.setPosition(posX, posY); // Ajusta la posición según tus necesidades
 
         stage.addActor(backButton);
+        stage.addActor(empezarButton);
         stage.addActor(userInfo);
         stage.addActor(user2Info);
         stage.addActor(usernameLabel);
@@ -1027,7 +1048,7 @@ public class GameScreen implements Screen {
                     isTimerActivelabel = false; // El tiempo ha finalizado
                 }
                 timerLabel.setText("Time: " + remainingTime);
-                timerLabel.setPosition(500, 980);
+                timerLabel.setPosition(900, 980);
                 stage.addActor(timerLabel);
                 elapsedTimeWater = 0; // Reiniciar el contador de tiempo transcurrido
             }
