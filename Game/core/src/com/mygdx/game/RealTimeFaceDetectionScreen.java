@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import com.mygdx.utils.Recognizer;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.*;

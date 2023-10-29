@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
+import com.mygdx.models.CountersBarriers;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.mygdx.utils.SpotifyAuthenticator;
@@ -49,7 +50,7 @@ public class SelectMode implements Screen {
         button1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new IAMode(game, user, spotifyReference));
+                game.changeScreen(new IAMode(game, user));
             }
         });
 

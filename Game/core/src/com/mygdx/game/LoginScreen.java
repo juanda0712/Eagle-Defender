@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextField;
+import com.mygdx.models.CountersBarriers;
 import com.mygdx.models.User2;
 import com.mygdx.utils.*;
 import com.badlogic.gdx.utils.Array;
@@ -63,7 +64,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
         Gdx.input.setInputProcessor(stage);
 
-        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager, user1, user2);
+        //faceRecognitionActor = new FaceRecognitionActor(game, user2Manager, user1, user2);
 
         setupUIElements();
     }
@@ -96,7 +97,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new FormManagement(game, user2Manager));
+                game.changeScreen(new Register(game, user2Manager));
                 dispose();
             }
         });

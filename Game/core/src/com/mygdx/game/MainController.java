@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import com.mygdx.utils.Recognizer;
 
 public class MainController extends Game {
 

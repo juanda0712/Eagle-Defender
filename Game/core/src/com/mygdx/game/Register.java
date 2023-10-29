@@ -21,6 +21,7 @@ import com.kotcrab.vis.ui.widget.VisTextField;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
+import com.mygdx.models.CountersBarriers;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.utils.SpotifyAuthenticator;
 import lombok.Getter;
@@ -33,7 +34,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
-public class FormManagement implements Screen {
+public class Register implements Screen {
     final MainController game;
     private final Stage stage;
     private final OrthographicCamera camera;
@@ -59,13 +60,11 @@ public class FormManagement implements Screen {
     private ImageButton btnPalette4;
     private ImageButton btnPalette5;
 
-    private Label selectAnimation;
-    private SelectBox<String> choiceBoxAnimation;
     private Label selectTexture;
     private SelectBox<String> choiceBoxTexture;
     private Label paymentMethods;
     private TextButton btnPaymentMethods;
-    //private String[] animations = {"Explosions", "Shock", "Transparency"};
+
     private String[] textures = {"Smooth", "Rocky", "Bricked"};
 
     private Label uploadPfp;
@@ -86,7 +85,7 @@ public class FormManagement implements Screen {
     private FileHandle selectedFile;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
-    public FormManagement(final MainController game, final JSONDataManager<User2> user2Manager) {
+    public Register(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
         this.user2Manager = user2Manager;
 
@@ -220,13 +219,8 @@ public class FormManagement implements Screen {
             }
         });
 
-        selectAnimation = new Label("Select one animation", skin);
-        selectAnimation.setColor(Color.BLACK);
 
-        //choiceBoxAnimation = new SelectBox<>(skin);
-        //choiceBoxAnimation.setItems(animations);
-
-        selectTexture = new Label("Select one   git wall texture", skin);
+        selectTexture = new Label("Select one wall texture", skin);
         selectTexture.setColor(Color.BLACK);
 
         choiceBoxTexture = new SelectBox<>(skin);
@@ -309,7 +303,7 @@ public class FormManagement implements Screen {
                         String song2 = searchField2.getText();
                         String song3 = searchField3.getText();
                         String selectedColorPalette = getSelectedColorPalette();
-                        String animation = choiceBoxAnimation.getSelected();
+
                         String texture = choiceBoxTexture.getSelected();
                         String image = selectedFile.name();
                         String petName = questionsArray.get(0);
@@ -329,7 +323,6 @@ public class FormManagement implements Screen {
                         newUser.setSong2(song2);
                         newUser.setSong3(song3);
                         newUser.setSelectedColorPalette(selectedColorPalette);
-                        newUser.setAnimation(animation);
                         newUser.setTexture(texture);
                         newUser.setImage(image);
                         newUser.setPetName(petName);
@@ -401,7 +394,6 @@ public class FormManagement implements Screen {
                 searchField1, searchField2, searchField3,
                 selectPreferedPalette,
                 btnPalette1, btnPalette2, btnPalette3, btnPalette4, btnPalette5,
-                selectAnimation, choiceBoxAnimation,
                 selectTexture, choiceBoxTexture,
                 paymentMethods, btnPaymentMethods,
                 uploadPfp, btnUpload, questionsLabel,

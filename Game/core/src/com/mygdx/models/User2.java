@@ -13,7 +13,6 @@ public class User2 {
     private String song2;
     private String song3;
     private String selectedColorPalette;
-    private String animation;
     private String texture;
     private String image;
     private String petName;
