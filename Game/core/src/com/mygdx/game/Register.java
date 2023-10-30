@@ -347,13 +347,6 @@ public class Register implements Screen {
                         }
                         CountersBarriers counters = new CountersBarriers();
 
-                        //Spotify
-                        Thread spotifyAuthThread = new Thread(() -> {
-                            SpotifyAuthenticator spotify = new SpotifyAuthenticator();
-                            spotifyReference.set(spotify);
-                        });
-
-                        spotifyAuthThread.start();
                         game.changeScreen(new SelectMode(game, user2Manager, newUser));
                         dispose();
                     }

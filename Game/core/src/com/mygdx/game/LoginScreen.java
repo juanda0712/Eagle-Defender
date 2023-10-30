@@ -64,7 +64,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
         Gdx.input.setInputProcessor(stage);
 
-        //faceRecognitionActor = new FaceRecognitionActor(game, user2Manager, user1, user2);
+        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager, user1, user2);
 
         setupUIElements();
     }
