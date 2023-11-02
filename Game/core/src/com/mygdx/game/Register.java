@@ -54,6 +54,7 @@ public class Register implements Screen {
     private boolean isValidDate = false;
     private FileHandle selectedFile;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
+    private CameraPictureActor cameraPictureActor;
 
     public Register(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -65,12 +66,9 @@ public class Register implements Screen {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         SceneComposerStageBuilder builder = new SceneComposerStageBuilder();
         builder.build(stage, skin, Gdx.files.internal("register.json"));
-
-
+        cameraPictureActor = new CameraPictureActor(game, user2Manager, null, null);
         createGUIElements();
         //setUPGUIElements();
-
-
     }
 
     private void createGUIElements() {
@@ -266,7 +264,10 @@ public class Register implements Screen {
 
         TextButton btnTakePic = stage.getRoot().findActor("btnTakePic");
 
+        Table table = stage.getRoot().findActor("TableFaceCam");
+        table.add(cameraPictureActor);
     }
+
     private void getQuestions() {
         questionsArray = questionsForm.getQuestions();
     }

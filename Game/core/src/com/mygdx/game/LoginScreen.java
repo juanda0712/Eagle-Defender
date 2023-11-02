@@ -91,7 +91,6 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 faceRecognitionActor.startFaceDetection();
-                dispose();
             }
         });
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
@@ -226,6 +225,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
 
     @Override
     public void dispose() {
+        faceRecognitionActor.remove();
     }
 
 
