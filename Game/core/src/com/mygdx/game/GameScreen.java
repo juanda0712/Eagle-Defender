@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -78,6 +79,8 @@ public class GameScreen implements Screen {
 
     private final Stage stage;
     private final OrthographicCamera camera;
+    int screenWidth;
+    int screenHeight;
     private JSONDataManager<User2> user2Manager;
 
     private boolean isTimerActive = false;
@@ -201,8 +204,10 @@ public class GameScreen implements Screen {
         this.attackerSongs.add(user2.getSong2().replace(" ", "+"));
         this.attackerSongs.add(user2.getSong3().replace(" ", "+"));
         songPosition = random.nextInt(3);
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 1720, 1080);
+        camera.setToOrtho(false, screenWidth, screenHeight);
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         woodPVP = new Array<>();
@@ -352,15 +357,13 @@ public class GameScreen implements Screen {
                     imagePath = "assets/woodBR.jpg";
                 }
                 Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
-                Image newImage = new Image(newImageTexture);
-                newImage.setPosition(x, y);
 
                 boolean canPlace = true;
                 for (Image placedImage : woodPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -377,10 +380,10 @@ public class GameScreen implements Screen {
                 }
 
                 for (Image placedImage : cementPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -397,10 +400,10 @@ public class GameScreen implements Screen {
                 }
 
                 for (Image placedImage : steelPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -417,6 +420,20 @@ public class GameScreen implements Screen {
                 }
 
                 if (canPlace) {
+                    Image newImage = new Image(newImageTexture);
+                    newImage.setPosition(x, y);
+
+                    newImage.addListener(new InputListener() {
+                        @Override
+                        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                            if (button == Input.Buttons.LEFT) {
+                                newImage.setOrigin(newImage.getWidth() / 2, newImage.getHeight() / 2);
+                                newImage.rotateBy(45);
+                            }
+                            return true;
+                        }
+                    });
+
                     stage.addActor(newImage);
                     woodPVP.add(newImage);
                     minusWoodCounter();
@@ -424,6 +441,7 @@ public class GameScreen implements Screen {
             }
         }
     }
+
 
     private void minusWoodCounter() {
         if (countersBarriers.getWoodCounter() > 0) {
@@ -448,15 +466,13 @@ public class GameScreen implements Screen {
                     imagePath = "assets/cementBR.jpg";
                 }
                 Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
-                Image newImage = new Image(newImageTexture);
-                newImage.setPosition(x, y);
 
                 boolean canPlace = true;
                 for (Image placedImage : woodPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -473,10 +489,10 @@ public class GameScreen implements Screen {
                 }
 
                 for (Image placedImage : cementPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -493,10 +509,10 @@ public class GameScreen implements Screen {
                 }
 
                 for (Image placedImage : steelPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -513,6 +529,20 @@ public class GameScreen implements Screen {
                 }
 
                 if (canPlace) {
+                    Image newImage = new Image(newImageTexture);
+                    newImage.setPosition(x, y);
+
+                    newImage.addListener(new InputListener() {
+                        @Override
+                        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                            if (button == Input.Buttons.LEFT) {
+                                newImage.setOrigin(newImage.getWidth() / 2, newImage.getHeight() / 2);
+                                newImage.rotateBy(45);
+                            }
+                            return true;
+                        }
+                    });
+
                     stage.addActor(newImage);
                     cementPVP.add(newImage);
                     minusCementCounter();
@@ -544,15 +574,13 @@ public class GameScreen implements Screen {
                     imagePath = "assets/steelBR.jpg";
                 }
                 Texture newImageTexture = new Texture(Gdx.files.internal(imagePath));
-                Image newImage = new Image(newImageTexture);
-                newImage.setPosition(x, y);
 
                 boolean canPlace = true;
                 for (Image placedImage : woodPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -569,10 +597,10 @@ public class GameScreen implements Screen {
                 }
 
                 for (Image placedImage : cementPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -589,10 +617,10 @@ public class GameScreen implements Screen {
                 }
 
                 for (Image placedImage : steelPVP) {
-                    float newX = newImage.getX();
-                    float newY = newImage.getY();
-                    float newWidth = newImage.getWidth();
-                    float newHeight = newImage.getHeight();
+                    float newX = x;
+                    float newY = y;
+                    float newWidth = newImageTexture.getWidth();
+                    float newHeight = newImageTexture.getHeight();
 
                     float placedX = placedImage.getX();
                     float placedY = placedImage.getY();
@@ -609,6 +637,20 @@ public class GameScreen implements Screen {
                 }
 
                 if (canPlace) {
+                    Image newImage = new Image(newImageTexture);
+                    newImage.setPosition(x, y);
+
+                    newImage.addListener(new InputListener() {
+                        @Override
+                        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                            if (button == Input.Buttons.LEFT) {
+                                newImage.setOrigin(newImage.getWidth() / 2, newImage.getHeight() / 2);
+                                newImage.rotateBy(45);
+                            }
+                            return true;
+                        }
+                    });
+
                     stage.addActor(newImage);
                     steelPVP.add(newImage);
                     minusSteelCounter();
@@ -922,25 +964,6 @@ public class GameScreen implements Screen {
 
     private void setUpBackground() {
 
-
-        stage.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (button == Input.Buttons.LEFT) {
-                    if (woodenButton.isChecked()) {
-                        addWood(x, y);
-                    } else if (cementButton.isChecked()) {
-                        addCement(x, y);
-                    } else if (steelButton.isChecked()) {
-                        addSteel(x, y);
-                    } else if (eagleButton.isChecked()) {
-                        addEagle(x, y);
-                    }
-                }
-                return true;
-            }
-        });
-
         Texture desertTexture = new Texture(Gdx.files.internal("assets/desertHighway.png"));
         Image imageBG = new Image(desertTexture);
         imageBG.setPosition(0, 110);
@@ -1204,25 +1227,41 @@ public class GameScreen implements Screen {
         }
 
         if (isShooting) {
-            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
+            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();
             bulletImage.setPosition(bulletX, bulletY);
-            if (fireButton.isChecked()) {
-                bulletSprite.setTexture(fireTexture);
-                stage.addActor(bulletImage);
-            } else if (waterButton.isChecked()) {
-                bulletSprite.setTexture(waterTexture);
-                stage.addActor(bulletImage);
-            } else if (bombButton.isChecked()) {
-                bulletSprite.setTexture(bombTexture);
-                stage.addActor(bulletImage);
-            }
+            float targetX = Gdx.input.getX();
+            float targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-            if (bulletX < -bulletSprite.getWidth()) {
-                isShooting = false;
+            if (targetX <= Gdx.graphics.getWidth() / 2) {
+                float deltaX = targetX - bulletX;
+                float deltaY = targetY - bulletY;
+                float length = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                float directionX = deltaX / length;
+                float directionY = deltaY / length;
+                bulletX += directionX * bulletSpeed * Gdx.graphics.getDeltaTime();
+                bulletY += directionY * bulletSpeed * Gdx.graphics.getDeltaTime();
+                bulletImage.setPosition(bulletX, bulletY);
+
+                if (fireButton.isChecked()) {
+                    bulletSprite.setTexture(fireTexture);
+                    stage.addActor(bulletImage);
+                } else if (waterButton.isChecked()) {
+                    bulletSprite.setTexture(waterTexture);
+                    stage.addActor(bulletImage);
+                } else if (bombButton.isChecked()) {
+                    bulletSprite.setTexture(bombTexture);
+                    stage.addActor(bulletImage);
+                }
+
+                if (bulletX < -bulletSprite.getWidth()) {
+                    isShooting = false;
+                }
             }
         } else {
             Actions.removeActor(bulletImage);
         }
+
+
 
         handleInput();
         stage.draw();
@@ -1230,7 +1269,6 @@ public class GameScreen implements Screen {
 
 
     public void handleInput() {
-
 
         Rectangle bulletBounds = new Rectangle(bulletX, bulletY, bulletSprite.getWidth(), bulletSprite.getHeight());
 
@@ -1428,9 +1466,8 @@ public class GameScreen implements Screen {
 
         }
 
-
         if (isTimerActive) {
-            if (Gdx.input.isKeyPressed(Input.Keys.R) && !isShooting) {
+            if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && !isShooting) {
                 bulletCollided = false;
                 bulletCollidedcement = false;
                 bulletCollidedSteel = false;
@@ -1509,6 +1546,24 @@ public class GameScreen implements Screen {
                 playerSprite.setTexture(new Texture("Idle.png"));
             }
         }
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    if (woodenButton.isChecked()) {
+                        addWood(x, y);
+                    } else if (cementButton.isChecked()) {
+                        addCement(x, y);
+                    } else if (steelButton.isChecked()) {
+                        addSteel(x, y);
+                    } else if (eagleButton.isChecked()) {
+                        addEagle(x, y);
+                    }
+                }
+                return true;
+            }
+        });
 
     }
 
