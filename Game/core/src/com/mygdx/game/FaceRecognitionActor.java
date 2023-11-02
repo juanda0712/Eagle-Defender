@@ -48,17 +48,14 @@ public class FaceRecognitionActor extends Actor {
 
         // Configura la resolución de captura deseada (320x240)
         capture = new VideoCapture(0); // Abre la cámara con índice 0 (cámara predeterminada)
-        int nuevoFormato = 1196444237; // Este es el valor numérico para MJPG (MJPEG)
-        capture.set(Videoio.CAP_PROP_FOURCC, nuevoFormato);
-
-        int captureWidth = 640; // Ancho deseado
+        /*int captureWidth = 640; // Ancho deseado
         int captureHeight = 360; // Alto deseado
 
         // Configura el formato de captura
 
         // Configura la resolución de captura deseada
         capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
-        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);
+        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);*/
 
 
         // Configura la resolución del OrthographicCamera y cameraTexture
@@ -80,9 +77,9 @@ public class FaceRecognitionActor extends Actor {
         }
 
         capture.read(frame);
+        Size newSizeFrame = new Size(640, 360);
+        opencv_imgproc.resize(frame, frame, newSizeFrame);
         if (detectFaces) {
-            Size newSizeFrame = new Size(320, 240);
-            opencv_imgproc.resize(frame, frame, newSizeFrame);
             opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
 
             Size newSize = new Size(640, 360);
