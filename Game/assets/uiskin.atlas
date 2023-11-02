@@ -1,0 +1,76 @@
+
+uiskin.png
+size: 256, 256
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+font-export
+  rotate: false
+  xy: 1, 168
+  size: 83, 84
+  orig: 83, 84
+  offset: 0, 0
+  index: -1
+Color 1
+  rotate: false
+  xy: 63, 115
+  size: 50, 51
+  orig: 50, 51
+  offset: 0, 0
+  index: -1
+Color 2
+  rotate: false
+  xy: 148, 201
+  size: 52, 51
+  orig: 52, 51
+  offset: 0, 0
+  index: -1
+Color 3
+  rotate: false
+  xy: 63, 62
+  size: 50, 51
+  orig: 50, 51
+  offset: 0, 0
+  index: -1
+Color 4
+  rotate: false
+  xy: 202, 201
+  size: 52, 51
+  orig: 52, 51
+  offset: 0, 0
+  index: -1
+Color 5
+  rotate: false
+  xy: 63, 9
+  size: 50, 51
+  orig: 50, 51
+  offset: 0, 0
+  index: -1
+Color 6
+  rotate: false
+  xy: 115, 139
+  size: 48, 51
+  orig: 48, 51
+  offset: 0, 0
+  index: -1
+cement
+  rotate: false
+  xy: 1, 106
+  size: 60, 60
+  orig: 60, 60
+  offset: 0, 0
+  index: -1
+cementBR
+  rotate: false
+  xy: 1, 44
+  size: 60, 60
+  orig: 60, 60
+  offset: 0, 0
+  index: -1
+cementST
+  rotate: false
+  xy: 86, 192
+  size: 60, 60
+  orig: 60, 60
+  offset: 0, 0
+  index: -1

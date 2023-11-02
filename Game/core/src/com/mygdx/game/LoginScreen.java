@@ -25,8 +25,8 @@ import com.badlogic.gdx.utils.Array;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
-{
+public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
+
 
     private final MainController game;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);

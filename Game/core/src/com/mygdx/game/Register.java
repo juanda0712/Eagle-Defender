@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
@@ -24,6 +25,7 @@ import com.mygdx.models.User2;
 import com.mygdx.models.CountersBarriers;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.utils.SpotifyAuthenticator;
+import com.ray3k.stripe.scenecomposer.SceneComposerStageBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,41 +40,9 @@ public class Register implements Screen {
     final MainController game;
     private final Stage stage;
     private final OrthographicCamera camera;
-    private Label welcomeLabel;
-    private Label infoLabel;
-    private VisTextField nameField;
-    private VisTextField usernameField;
-    private Label questionsLabel;
-    private Button btnQuestions;
 
-    private VisTextField birthDateField;
-    private VisTextField emailField;
-    private VisTextField passwordField;
-    private VisTextField confirmPasswordField;
-    private Label searchSongs;
-    private VisTextField searchField1;
-    private VisTextField searchField2;
-    private VisTextField searchField3;
-    private Label selectPreferedPalette;
-    private ImageButton btnPalette1;
-    private ImageButton btnPalette2;
-    private ImageButton btnPalette3;
-    private ImageButton btnPalette4;
-    private ImageButton btnPalette5;
-
-    private Label selectTexture;
-    private SelectBox<String> choiceBoxTexture;
-    private Label paymentMethods;
-    private TextButton btnPaymentMethods;
-
-    private String[] textures = {"Smooth", "Rocky", "Bricked"};
-
-    private Label uploadPfp;
-    private Label pfpLabel;
+    private Skin skin = VisUI.getSkin();
     private Image pfpImage;
-    private TextButton btnUpload;
-    private TextButton btnCreateAccount;
-    private TextButton btnReturnLogin;
     private final Table contentTable = new Table();
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
@@ -92,38 +62,154 @@ public class Register implements Screen {
         camera = new OrthographicCamera();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        SceneComposerStageBuilder builder = new SceneComposerStageBuilder();
+        builder.build(stage, skin, Gdx.files.internal("register.json"));
+
+
         createGUIElements();
-        setUPGUIElements();
+        //setUPGUIElements();
+
+
     }
 
     private void createGUIElements() {
         questionsForm = new QuestionsForm();
         final CardDataForm cardDataForm = new CardDataForm();
-        Skin skin = VisUI.getSkin();
-        BitmapFont font = new BitmapFont();
-        TextureRegionDrawable underlineDrawable = new TextureRegionDrawable(new Texture("underline2.png"));
 
-        VisTextField.VisTextFieldStyle style = new VisTextField.VisTextFieldStyle();
-        style.font = font;
-        style.fontColor = Color.BLACK;
-        style.background = underlineDrawable;
+        TextField nameField = stage.getRoot().findActor("nameField");
+        TextField usernameField = stage.getRoot().findActor("usernameField");
+        TextField emailField = stage.getRoot().findActor("emailField");
+        TextField passwordField = stage.getRoot().findActor("passwordField");
+        TextField confirmPasswordField = stage.getRoot().findActor("confirmField");
 
-        welcomeLabel = new Label("Welcome!", skin);
-        welcomeLabel.setColor(Color.BLACK);
+        TextField songField1 = stage.getRoot().findActor("Song1");
+        TextField songField2 = stage.getRoot().findActor("Song2");
+        TextField songField3 = stage.getRoot().findActor("Song3");
 
-        infoLabel = new Label("Create your account by entering your personal info", skin);
-        infoLabel.setColor(Color.BLACK);
+        ImageButton textureSmooth = stage.getRoot().findActor("textureSmooth");
+        ImageButton textureRocky = stage.getRoot().findActor("textureRocky");
+        ImageButton textureBricked = stage.getRoot().findActor("textureBricked");
+        TextButton btnCreateAccount = stage.getRoot().findActor("CreateAccount");
 
-        nameField = new VisTextField("", style);
-        nameField.setMessageText("Name");
+        btnCreateAccount.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
 
-        usernameField = new VisTextField("", style);
-        usernameField.setMessageText("Username");
+                passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
+                //isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
+                if (isValidDate && validPassword) {
+                    getQuestions();
+                    for (String question : questionsArray) {
+                        System.out.println(question);
+                    }
 
-        questionsLabel = new Label("Please answer these questions", skin);
-        questionsLabel.setColor(Color.BLACK);
+                    String fullName = nameField.getText();
+                    String username = usernameField.getText();
+                    String password = passwordField.getText();
+                    String email = emailField.getText();
+                    //String birthDate = birthDateField.getText();
+                    String song1 = songField1.getText();
+                    String song2 = songField2.getText();
+                    String song3 = songField3.getText();
+                    String selectedColorPalette = getSelectedColorPalette();
 
-        btnQuestions = new TextButton("Go to questions", skin);
+                    String image = selectedFile.name();
+                    String petName = questionsArray.get(0);
+                    String favTeacher = questionsArray.get(1);
+                    String favTeam = questionsArray.get(2);
+                    String childhoodNickname = questionsArray.get(3);
+                    String favPlace = questionsArray.get(4);
+
+
+                    User2 newUser = new User2();
+                    newUser.setFullName(fullName);
+                    newUser.setUsername(username);
+                    newUser.setPassword(password);
+                    newUser.setEmail(email);
+                    //newUser.setBirthDate(birthDate);
+                    newUser.setSong1(song1);
+                    newUser.setSong2(song2);
+                    newUser.setSong3(song3);
+                    newUser.setSelectedColorPalette(selectedColorPalette);
+                    //newUser.setTexture();
+                    newUser.setImage(image);
+                    newUser.setPetName(petName);
+                    newUser.setFavTeacherLastnamne(favTeacher);
+                    newUser.setFavTeam(favTeam);
+                    newUser.setChildhoodNickName(childhoodNickname);
+                    newUser.setFavPlace(favPlace);
+
+                    user2Manager.create(newUser);
+
+                    if (selectedFile != null) {
+                        String destinoPath = "data/imgs/" + selectedFile.name();
+                        selectedFile.copyTo(Gdx.files.local(destinoPath));
+                        System.out.println("Imagen guardada en " + destinoPath);
+                    } else {
+                        System.out.println("No se ha seleccionado ninguna imagen.");
+                    }
+
+                    Array<User2> users = user2Manager.read();
+                    for (User2 user : users) {
+                        System.out.println(user);
+                    }
+                    CountersBarriers counters = new CountersBarriers();
+
+                    game.changeScreen(new SelectMode(game, user2Manager, newUser));
+                    dispose();
+
+                } else {
+                    System.out.println("not valid");
+                }
+            }
+        });
+
+        ImageButton btnColor1 = stage.getRoot().findActor("Color1");
+        btnColor1.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Color1");
+            }
+        });
+        ImageButton btnColor2 = stage.getRoot().findActor("Color2");
+        btnColor2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Color2");
+            }
+        });
+        ImageButton btnColor3 = stage.getRoot().findActor("Color3");
+        btnColor3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Color3");
+            }
+        });
+        ImageButton btnColor4 = stage.getRoot().findActor("Color4");
+        btnColor4.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Color4");
+            }
+        });
+        ImageButton btnColor5 = stage.getRoot().findActor("Color5");
+        btnColor5.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Color5");
+            }
+        });
+        ImageButton btnColor6 = stage.getRoot().findActor("Color6");
+        btnColor6.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColorPalette("Color6");
+            }
+        });
+
+
+        TextButton btnQuestions = stage.getRoot().findActor("btnQuestions");
         btnQuestions.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -131,106 +217,10 @@ public class Register implements Screen {
                     stage.addActor(questionsForm);
                     questionsForm.fadeIn();
                 }
-
             }
         });
-        birthDateField = new VisTextField("", style);
-        birthDateField.setMessageText("Birth Date");
-
-        emailField = new VisTextField("", style);
-        emailField.setMessageText("Email");
-
-        passwordField = new VisTextField("", style);
-        passwordField.setMessageText("Password");
-        passwordField.setPasswordMode(true);
-        passwordField.setPasswordCharacter('*');
-
-        confirmPasswordField = new VisTextField("", style);
-        confirmPasswordField.setMessageText("Confirm password");
-        confirmPasswordField.setPasswordMode(true);
-        confirmPasswordField.setPasswordCharacter('*');
-
-
-        searchSongs = new Label("Write 3 favorite songs", skin);
-        searchSongs.setColor(Color.BLACK);
-
-        searchField1 = new VisTextField("", style);
-        searchField1.setMessageText("Song 1");
-
-        searchField2 = new VisTextField("", style);
-        searchField2.setMessageText("Song 2");
-
-        searchField3 = new VisTextField("", style);
-        searchField3.setMessageText("Song 3");
-
-        selectPreferedPalette = new Label("Select your preferred color palette", skin);
-        selectPreferedPalette.setColor(Color.BLACK);
-
-        ImageButton.ImageButtonStyle style1 = new ImageButton.ImageButtonStyle();
-        style1.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 1.png"))));
-        btnPalette1 = new ImageButton(style1);
-        btnPalette1.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Palette 1");
-            }
-        });
-
-        ImageButton.ImageButtonStyle style2 = new ImageButton.ImageButtonStyle();
-        style2.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 2.png"))));
-        btnPalette2 = new ImageButton(style2);
-        btnPalette2.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Palette 2");
-            }
-        });
-
-
-        ImageButton.ImageButtonStyle style3 = new ImageButton.ImageButtonStyle();
-        style3.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 3.png"))));
-        btnPalette3 = new ImageButton(style3);
-        btnPalette3.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Palette 3");
-            }
-        });
-
-
-        ImageButton.ImageButtonStyle style4 = new ImageButton.ImageButtonStyle();
-        style4.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 4.png"))));
-        btnPalette4 = new ImageButton(style4);
-        btnPalette4.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Palette 4");
-            }
-        });
-
-
-        ImageButton.ImageButtonStyle style5 = new ImageButton.ImageButtonStyle();
-        style5.imageUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Colors/Palette 5.png"))));
-        btnPalette5 = new ImageButton(style5);
-        btnPalette5.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Palette 5");
-            }
-        });
-
-
-        selectTexture = new Label("Select one wall texture", skin);
-        selectTexture.setColor(Color.BLACK);
-
-        choiceBoxTexture = new SelectBox<>(skin);
-        choiceBoxTexture.setItems(textures);
-
-        paymentMethods = new Label("Payment options", skin);
-        paymentMethods.setColor(Color.BLACK);
-
-        btnPaymentMethods = new TextButton("Go to payment methods", skin);
-        btnPaymentMethods.addListener(new ClickListener() {
+        TextButton btnCardInfo = stage.getRoot().findActor("btnCardInfo");
+        btnCardInfo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (cardDataForm.isVisible()) {
@@ -239,12 +229,9 @@ public class Register implements Screen {
                 }
             }
         });
-
-        uploadPfp = new Label("Please upload your profile picture", skin);
-        uploadPfp.setColor(Color.BLACK);
-
-        btnUpload = new TextButton("Upload", skin);
-        btnUpload.addListener(new ClickListener() {
+        TextButton btnBrowse = stage.getRoot().findActor("btnBrowse");
+        System.out.println(btnBrowse);
+        btnBrowse.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
@@ -277,140 +264,9 @@ public class Register implements Screen {
             }
         });
 
-        pfpLabel = new Label("This will be your profile picture",skin);
-        pfpLabel.setColor(Color.BLACK);
-        btnCreateAccount = new TextButton("Create account", skin);
-        btnCreateAccount.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-                passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
-                isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
-                if (isValidDate && validPassword) {
-                    if (!nameField.isEmpty() && !usernameField.isEmpty() && !birthDateField.isEmpty() && !emailField.isEmpty() && !passwordField.isEmpty()
-                            && !confirmPasswordField.isEmpty()) {
-                        getQuestions();
-                        for (String question : questionsArray) {
-                            System.out.println(question);
-                        }
-
-                        String fullName = nameField.getText();
-                        String username = usernameField.getText();
-                        String password = passwordField.getText();
-                        String email = emailField.getText();
-                        String birthDate = birthDateField.getText();
-                        String song1 = searchField1.getText();
-                        String song2 = searchField2.getText();
-                        String song3 = searchField3.getText();
-                        String selectedColorPalette = getSelectedColorPalette();
-
-                        String texture = choiceBoxTexture.getSelected();
-                        String image = selectedFile.name();
-                        String petName = questionsArray.get(0);
-                        String favTeacher = questionsArray.get(1);
-                        String favTeam = questionsArray.get(2);
-                        String childhoodNickname = questionsArray.get(3);
-                        String favPlace = questionsArray.get(4);
-
-
-                        User2 newUser = new User2();
-                        newUser.setFullName(fullName);
-                        newUser.setUsername(username);
-                        newUser.setPassword(password);
-                        newUser.setEmail(email);
-                        newUser.setBirthDate(birthDate);
-                        newUser.setSong1(song1);
-                        newUser.setSong2(song2);
-                        newUser.setSong3(song3);
-                        newUser.setSelectedColorPalette(selectedColorPalette);
-                        newUser.setTexture(texture);
-                        newUser.setImage(image);
-                        newUser.setPetName(petName);
-                        newUser.setFavTeacherLastnamne(favTeacher);
-                        newUser.setFavTeam(favTeam);
-                        newUser.setChildhoodNickName(childhoodNickname);
-                        newUser.setFavPlace(favPlace);
-
-                        user2Manager.create(newUser);
-
-                        if (selectedFile != null) {
-                            String destinoPath = "data/imgs/" + selectedFile.name();
-                            selectedFile.copyTo(Gdx.files.local(destinoPath));
-                            System.out.println("Imagen guardada en " + destinoPath);
-                        } else {
-                            System.out.println("No se ha seleccionado ninguna imagen.");
-                        }
-
-                        Array<User2> users = user2Manager.read();
-                        for (User2 user : users) {
-                            System.out.println(user);
-                        }
-                        CountersBarriers counters = new CountersBarriers();
-
-                        game.changeScreen(new SelectMode(game, user2Manager, newUser));
-                        dispose();
-                    }
-                } else {
-                    System.out.println("not valid");
-                }
-            }
-        });
-        /*
-        btnReturnLogin = new TextButton("Return", skin);
-        btnReturnLogin.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new LoginScreen(game, user2Manager, null, null));
-                dispose();
-            }
-        });
-
-         */
-    }
-
-
-
-    private void setUPGUIElements() {
-
-        float screenHeight = Gdx.graphics.getHeight();
-        float padBottomValue = screenHeight * 0.05f;
-        Array<Actor> GUIElements = new Array<>();
-        GUIElements.addAll(
-                welcomeLabel,
-                infoLabel,
-                nameField,
-                usernameField,
-                birthDateField,
-                emailField,
-                passwordField,
-                confirmPasswordField,
-                searchSongs,
-                searchField1, searchField2, searchField3,
-                selectPreferedPalette,
-                btnPalette1, btnPalette2, btnPalette3, btnPalette4, btnPalette5,
-                selectTexture, choiceBoxTexture,
-                paymentMethods, btnPaymentMethods,
-                uploadPfp, btnUpload, questionsLabel,
-                btnQuestions,
-                btnCreateAccount,pfpLabel,pfpImage
-        );
-        for (Actor element : GUIElements) {
-            contentTable.add(element).left().padBottom(padBottomValue).row();
-        }
-        contentTable.padBottom(padBottomValue * 2);
-
-
-        ScrollPane scrollPane = new ScrollPane(contentTable);
-
-        Table table = new Table();
-        table.setFillParent(true);
-
-        table.add(scrollPane).expandX().fillX().pad(padBottomValue).row();
-
-        stage.addActor(table);
+        TextButton btnTakePic = stage.getRoot().findActor("btnTakePic");
 
     }
-
-
     private void getQuestions() {
         questionsArray = questionsForm.getQuestions();
     }
@@ -505,7 +361,7 @@ public class Register implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(1, 2, 1, 2);
+        ScreenUtils.clear(1, 1, 1, 1);
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
