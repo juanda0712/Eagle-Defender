@@ -80,14 +80,17 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
 
         //GRAPHIC ELEMENTS
         Label welcomeLabel = GraphicElements.createLabel("Eagle Defender", skin, Color.BLACK);
+        welcomeLabel.setFontScale((float) 1.4);
         Label infoLabel = GraphicElements.createLabel("Please enter your personal info", skin, Color.BLACK);
+        Label faceLabel = GraphicElements.createLabel("Already have an account? LogIn Here", skin, Color.BLACK);
+        faceLabel.setFontScale((float) 1.4);
 
         final VisTextField usernameField = GraphicElements.createTextField("Username", textFieldStyle);
         final VisTextField passwordField = GraphicElements.createTextField("Password", textFieldStyle);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
 
-        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> Facial Recognition <", checkBoxStyle, new ClickListener() {
+        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> LOGIN <", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 faceRecognitionActor.startFaceDetection();
@@ -141,8 +144,12 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
         Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        leftTable.add(faceRecognitionActor);
-        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 10).center().row();
+        leftTable.add(faceRecognitionActor).center().row();
+        leftTable.add(faceLabel).padTop(screenHeight / 6).padBottom(screenHeight / 37).center().row();
+        leftTable.add(btnFacialRecognition).center().row();
+        leftTable.row(); // Cambiar a la siguiente fila
+        leftTable.add().expandY();
+        leftTable.setDebug(true);
 
 
         Table rightTable = new Table();
