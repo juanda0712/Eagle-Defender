@@ -318,7 +318,7 @@ public class GameScreen implements Screen {
 
         //ImageButton de Eagle, y su label de contador
         Drawable buttonUpEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/head.jpg"))));
-        Drawable buttonDownEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/head.jpg"))));
+        Drawable buttonDownEagle = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/headD.jpg"))));
         eagleButton = new ImageButton(buttonUpEagle, buttonDownEagle);
         eagleButton.setPosition(460, 10);
         eagleButton.addListener(new ClickListener() {
@@ -346,9 +346,11 @@ public class GameScreen implements Screen {
         if (countersBarriers.getWoodCounter() > 0 && woodenButton.isChecked()) {
             String selectedTexture = user.getTexture();
             String imagePath = "assets/wood.jpg";
-            float maxY = stage.getHeight() - 120;
+            float imageWidth = 60;
+            float maxX = stage.getWidth() / 2 - imageWidth;
+            float maxY = stage.getHeight() - 205;
             float minY = 120;
-            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+            if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
                     imagePath = "assets/woodSQ.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
@@ -455,9 +457,11 @@ public class GameScreen implements Screen {
         if (countersBarriers.getCementCounter() > 0 && cementButton.isChecked()) {
             String selectedTexture = user.getTexture();
             String imagePath = "assets/cement.jpg";
-            float maxY = stage.getHeight() - 120;
+            float imageWidth = 60;
+            float maxX = stage.getWidth() / 2 - imageWidth;
+            float maxY = stage.getHeight() - 205;
             float minY = 120;
-            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+            if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
                     imagePath = "assets/cementSQ.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
@@ -563,9 +567,11 @@ public class GameScreen implements Screen {
         if (countersBarriers.getSteelCounter() > 0 && steelButton.isChecked()) {
             String selectedTexture = user.getTexture();
             String imagePath = "assets/steel.jpg";
-            float maxY = stage.getHeight() - 120;
+            float imageWidth = 60;
+            float maxX = stage.getWidth() / 2 - imageWidth;
+            float maxY = stage.getHeight() - 205;
             float minY = 120;
-            if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+            if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
                     imagePath = "assets/steelSQ.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
@@ -669,9 +675,11 @@ public class GameScreen implements Screen {
     private void addEagle(float x, float y) {
         if (countersBarriers.getEagleCounter() > 0 && eagleButton.isChecked()) {
             if (!aguilaGodPlaced) {
-                float maxY = stage.getHeight() - 120;
+                float imageWidth = 80;
+                float maxX = stage.getWidth() / 2 - imageWidth;
+                float maxY = stage.getHeight() - 205;
                 float minY = 120;
-                if (x < stage.getWidth() / 2 && y >= minY && y <= maxY) {
+                if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                     Texture aguilaGodTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
                     Image aguilaGodImage = new Image(aguilaGodTexture);
                     aguilaGodImage.setSize(80, 80);
@@ -752,7 +760,8 @@ public class GameScreen implements Screen {
 
     public void setupButtonsAttacker() {
         Drawable fireChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1.png"))));
-        fireButton = new ImageButton(fireChoose);
+        Drawable fireChooseD = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/fire1d.png"))));
+        fireButton = new ImageButton(fireChoose, fireChooseD);
         fireButton.setPosition(1250, 20);
         fireButton.addListener(new ClickListener() {
             @Override
@@ -773,7 +782,8 @@ public class GameScreen implements Screen {
         stage.addActor(fireButton);
 
         Drawable waterChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12.png"))));
-        waterButton = new ImageButton(waterChoose);
+        Drawable waterChooseD = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Water12d.png"))));
+        waterButton = new ImageButton(waterChoose, waterChooseD);
         waterButton.setPosition(1450, 40);
         waterButton.addListener(new ClickListener() {
             @Override
@@ -794,7 +804,8 @@ public class GameScreen implements Screen {
         stage.addActor(waterButton);
 
         Drawable bombChoose = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1.png"))));
-        bombButton = new ImageButton(bombChoose);
+        Drawable bombChooseD = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/Bomb1d.png"))));
+        bombButton = new ImageButton(bombChoose, bombChooseD);
         bombButton.setPosition(1050, 40);
         bombButton.addListener(new ClickListener() {
             @Override
@@ -976,11 +987,11 @@ public class GameScreen implements Screen {
 
     public void updateCounterLabel() {
         woodCounterLabel.setColor(Color.RED);
-        woodCounterLabel.setText("wood barriers: " + countersBarriers.getWoodCounter());
+        woodCounterLabel.setText("Wood barriers: " + countersBarriers.getWoodCounter());
         cementCounterLabel.setColor(Color.RED);
-        cementCounterLabel.setText("cement barriers: " + countersBarriers.getCementCounter());
+        cementCounterLabel.setText("Cement barriers: " + countersBarriers.getCementCounter());
         steelCounterLabel.setColor(Color.RED);
-        steelCounterLabel.setText("steel barriers: " + countersBarriers.getSteelCounter());
+        steelCounterLabel.setText("Steel barriers: " + countersBarriers.getSteelCounter());
         eagleCounterLabel.setColor(Color.RED);
         eagleCounterLabel.setText("Eagle: " + countersBarriers.getEagleCounter());
         waterCounterLabel.setColor(Color.RED);
