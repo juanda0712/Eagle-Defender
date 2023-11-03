@@ -80,7 +80,8 @@ public class Register implements Screen {
         createGUIElements();
 
     }
-    private void createTextFields (){
+
+    private void createTextFields() {
         nameField = stage.getRoot().findActor("nameField");
         usernameField = stage.getRoot().findActor("usernameField");
         emailField = stage.getRoot().findActor("emailField");
@@ -95,23 +96,23 @@ public class Register implements Screen {
 
     }
 
-    private void createImageButtons (){
+    private void createImageButtons() {
         ImageButton btnSmoothTexture = stage.getRoot().findActor("textureSmooth");
-        btnSmoothTexture.addListener(new ClickListener(){
+        btnSmoothTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Smooth");
             }
         });
         ImageButton btnRockyTexture = stage.getRoot().findActor("textureRocky");
-        btnRockyTexture.addListener(new ClickListener(){
+        btnRockyTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Rocky");
             }
         });
         ImageButton btnBrickedTexture = stage.getRoot().findActor("textureBricked");
-        btnBrickedTexture.addListener(new ClickListener(){
+        btnBrickedTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Bricked");
@@ -160,10 +161,18 @@ public class Register implements Screen {
             }
         });
     }
-    private boolean isTextFieldEmpty(TextField textField){
-        String text = textField.getText().trim();
-        return text.isEmpty();
+
+
+    public boolean areTextFieldsEmpty(TextField... textFields) {
+        for (TextField textField : textFields) {
+            String text = textField.getText().trim();
+            if (text.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
+
 
     private void createGUIElements() {
         Table tablePfp = stage.getRoot().findActor("TablePfp");
@@ -181,81 +190,82 @@ public class Register implements Screen {
             public void clicked(InputEvent event, float x, float y) {
 
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
-                //isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
-                if (validPassword) {
-                    getQuestions();
-                    for (String question : questionsArray) {
-                        System.out.println(question);
-                    }
-                    pictureSlug = generateUniqueFilename("imagen", "png");
-                    String fullName = nameField.getText();
-                    String username = usernameField.getText();
-                    String password = passwordField.getText();
-                    String email = emailField.getText();
-                    //String birthDate = birthDateField.getText();
-                    String song1 = songField1.getText();
-                    String song2 = songField2.getText();
-                    String song3 = songField3.getText();
-                    String selectedColor = getSelectedColor();
+                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, emailField, songField1, songField2, songField3)) {
+                    if (validPassword) {
+                        getQuestions();
+                        for (String question : questionsArray) {
+                            System.out.println(question);
+                        }
+                        pictureSlug = generateUniqueFilename("imagen", "png");
+                        String fullName = nameField.getText();
+                        String username = usernameField.getText();
+                        String password = passwordField.getText();
+                        String email = emailField.getText();
+                        //String birthDate = birthDateField.getText();
+                        String song1 = songField1.getText();
+                        String song2 = songField2.getText();
+                        String song3 = songField3.getText();
+                        String selectedColor = getSelectedColor();
 
-                    //String image = selectedFile.name();
-                    String petName = questionsArray.get(0);
-                    String favTeacher = questionsArray.get(1);
-                    String favTeam = questionsArray.get(2);
-                    String childhoodNickname = questionsArray.get(3);
-                    String favPlace = questionsArray.get(4);
+                        //String image = selectedFile.name();
+                        String petName = questionsArray.get(0);
+                        String favTeacher = questionsArray.get(1);
+                        String favTeam = questionsArray.get(2);
+                        String childhoodNickname = questionsArray.get(3);
+                        String favPlace = questionsArray.get(4);
 
 
-                    User2 newUser = new User2();
-                    newUser.setFullName(fullName);
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-                    newUser.setEmail(email);
-                    //newUser.setBirthDate(birthDate);
-                    newUser.setSong1(song1);
-                    newUser.setSong2(song2);
-                    newUser.setSong3(song3);
+                        User2 newUser = new User2();
+                        newUser.setFullName(fullName);
+                        newUser.setUsername(username);
+                        newUser.setPassword(password);
+                        newUser.setEmail(email);
+                        //newUser.setBirthDate(birthDate);
+                        newUser.setSong1(song1);
+                        newUser.setSong2(song2);
+                        newUser.setSong3(song3);
 
-                    newUser.setSelectedColor(selectedColor);
-                    newUser.setTexture(getSelectedTexture());
-                    //newUser.setImage(image);
+                        newUser.setSelectedColor(selectedColor);
+                        newUser.setTexture(getSelectedTexture());
+                        //newUser.setImage(image);
 
-                    newUser.setSelectedColor(selectedColor);
-                    //newUser.setTexture();
-                    newUser.setImage(pictureSlug);
+                        newUser.setSelectedColor(selectedColor);
+                        //newUser.setTexture();
+                        newUser.setImage(pictureSlug);
 
-                    newUser.setPetName(petName);
-                    newUser.setTeacherLastname(favTeacher);
-                    newUser.setFavTeam(favTeam);
-                    newUser.setChildhoodNickName(childhoodNickname);
-                    newUser.setFavPlace(favPlace);
+                        newUser.setPetName(petName);
+                        newUser.setTeacherLastname(favTeacher);
+                        newUser.setFavTeam(favTeam);
+                        newUser.setChildhoodNickName(childhoodNickname);
+                        newUser.setFavPlace(favPlace);
 
-                    user2Manager.create(newUser);
-                    savePicture(pictureSlug);
+                        user2Manager.create(newUser);
+                        savePicture(pictureSlug);
 
-                    if (selectedFile != null) {
-                        String destinoPath = "data/imgs/" + selectedFile.name();
-                        selectedFile.copyTo(Gdx.files.local(destinoPath));
-                        System.out.println("Imagen guardada en " + destinoPath);
+                        if (selectedFile != null) {
+                            String destinoPath = "data/imgs/" + selectedFile.name();
+                            selectedFile.copyTo(Gdx.files.local(destinoPath));
+                            System.out.println("Imagen guardada en " + destinoPath);
+                        } else {
+                            System.out.println("No se ha seleccionado ninguna imagen.");
+                        }
+
+                        Array<User2> users = user2Manager.read();
+                        for (User2 user : users) {
+                            System.out.println(user);
+                        }
+                        CountersBarriers counters = new CountersBarriers();
+
+                        game.changeScreen(new SelectMode(game, user2Manager, newUser));
+                        dispose();
+
                     } else {
-                        System.out.println("No se ha seleccionado ninguna imagen.");
+                        System.out.println("not valid");
                     }
-
-                    Array<User2> users = user2Manager.read();
-                    for (User2 user : users) {
-                        System.out.println(user);
-                    }
-                    CountersBarriers counters = new CountersBarriers();
-
-                    game.changeScreen(new SelectMode(game, user2Manager, newUser));
-                    dispose();
-
-                } else {
-                    System.out.println("not valid");
                 }
+
             }
         });
-
         TextButton btnQuestions = stage.getRoot().findActor("btnQuestions");
         btnQuestions.addListener(new ClickListener() {
             @Override

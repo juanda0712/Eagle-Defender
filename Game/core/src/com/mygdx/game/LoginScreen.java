@@ -90,7 +90,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
 
-        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> LOGIN <", checkBoxStyle, new ClickListener() {
+        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> LOGIN with FACE ID <", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 faceRecognitionActor.startFaceDetection();
@@ -149,7 +149,6 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
         leftTable.add(btnFacialRecognition).center().row();
         leftTable.row(); // Cambiar a la siguiente fila
         leftTable.add().expandY();
-        leftTable.setDebug(true);
 
 
         Table rightTable = new Table();
