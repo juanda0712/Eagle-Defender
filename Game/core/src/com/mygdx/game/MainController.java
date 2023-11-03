@@ -23,7 +23,7 @@ public class MainController extends Game {
         VisUI.load();
         batch = new SpriteBatch();
         login = new LoginScreen(this, user2Manager, null, null);
-        pauseScreen = new PauseScreen(this, user2Manager, null);
+        //pauseScreen = new PauseScreen(this, user2Manager, null);
         this.setScreen(login);
     }
 

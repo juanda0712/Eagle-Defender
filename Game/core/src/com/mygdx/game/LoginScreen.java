@@ -189,7 +189,6 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
 
                     spotifyAuthThread.start();
                     game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference));
-                    dispose();
                 }
 
                 //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));

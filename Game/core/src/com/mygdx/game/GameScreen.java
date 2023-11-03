@@ -350,7 +350,7 @@ public class GameScreen implements Screen {
             float minY = 120;
             if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
-                    imagePath = "assets/woodSQ.jpg";
+                    imagePath = "assets/wood.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
                     imagePath = "assets/woodST.jpg";
                 } else if ("Bricked".equals(selectedTexture)) {
@@ -461,7 +461,7 @@ public class GameScreen implements Screen {
             float minY = 120;
             if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
-                    imagePath = "assets/cementSQ.jpg";
+                    imagePath = "assets/cement.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
                     imagePath = "assets/cementST.jpg";
                 } else if ("Bricked".equals(selectedTexture)) {
@@ -571,7 +571,7 @@ public class GameScreen implements Screen {
             float minY = 120;
             if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                 if ("Smooth".equals(selectedTexture)) {
-                    imagePath = "assets/steelSQ.jpg";
+                    imagePath = "assets/steel.jpg";
                 } else if ("Rocky".equals(selectedTexture)) {
                     imagePath = "assets/steelST.jpg";
                 } else if ("Bricked".equals(selectedTexture)) {
@@ -676,7 +676,7 @@ public class GameScreen implements Screen {
                 float imageWidth = 80;
                 float maxX = stage.getWidth() / 2 - imageWidth;
                 float maxY = stage.getHeight() - 205;
-                float minY = 120;
+                float minY = 160;
                 if (x >= 0 && x <= maxX && y >= minY && y <= maxY) {
                     Texture aguilaGodTexture = new Texture(Gdx.files.internal("assets/aguilagod.png"));
                     Image aguilaGodImage = new Image(aguilaGodTexture);
@@ -1227,7 +1227,7 @@ public class GameScreen implements Screen {
                 isShooting = false;
             }
         }
-
+/*
         if (isShooting) {
             bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();
             bulletImage.setPosition(bulletX, bulletY);
@@ -1263,6 +1263,26 @@ public class GameScreen implements Screen {
             Actions.removeActor(bulletImage);
         }
 
+ */if (isShooting) {
+            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
+            bulletImage.setPosition(bulletX, bulletY);
+            if (fireButton.isChecked()) {
+                bulletSprite.setTexture(fireTexture);
+                stage.addActor(bulletImage);
+            } else if (waterButton.isChecked()) {
+                bulletSprite.setTexture(waterTexture);
+                stage.addActor(bulletImage);
+            } else if (bombButton.isChecked()) {
+                bulletSprite.setTexture(bombTexture);
+                stage.addActor(bulletImage);
+            }
+
+            if (bulletX < -bulletSprite.getWidth()) {
+                isShooting = false;
+            }
+        } else {
+            Actions.removeActor(bulletImage);
+        }
 
 
         handleInput();
