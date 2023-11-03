@@ -16,6 +16,7 @@ public class MainController extends Game {
     private Recognizer recognizer;
     private RealTimeFaceDetectionScreen faceScreen;
     private PauseScreen pauseScreen;
+
     @Override
     public void create() {
         user2Manager = new JSONDataManager<>("data/users2.json", User2.class);

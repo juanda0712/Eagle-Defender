@@ -45,14 +45,15 @@ public class SelectMode implements Screen {
         Skin skin = VisUI.getSkin();
         CountersBarriers countersBarriers = new CountersBarriers();
 
-        button1 = new TextButton("Player vs Computer", skin);
+        /*button1 = new TextButton("Player vs Computer", skin);
         button1.setPosition((stage.getWidth() - button1.getWidth()) / 2, stage.getHeight() / 2 + 100);
         button1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.changeScreen(new IAMode(game, user));
+                stage.dispose();
             }
-        });
+        });*/
 
         button2 = new TextButton("Player vs Player", skin);
         button2.setPosition((stage.getWidth() - button2.getWidth()) / 2, stage.getHeight() / 2);
@@ -60,10 +61,11 @@ public class SelectMode implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.changeScreen(new LoginScreen(game, user2Manager, user, null));
+                dispose();
             }
         });
 
-        button3 = new TextButton("Button 3", skin);
+        /*button3 = new TextButton("Button 3", skin);
         button3.setPosition((stage.getWidth() - button3.getWidth()) / 2, stage.getHeight() / 2 - 100);
         button3.addListener(new ClickListener() {
             @Override
@@ -79,12 +81,12 @@ public class SelectMode implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 // Agrega la lógica para el botón 4
             }
-        });
+        });*/
 
-        stage.addActor(button1);
+        //stage.addActor(button1);
         stage.addActor(button2);
-        stage.addActor(button3);
-        stage.addActor(button4);
+        /*stage.addActor(button3);
+        stage.addActor(button4);*/
     }
 
 

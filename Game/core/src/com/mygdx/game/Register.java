@@ -444,6 +444,12 @@ public class Register implements Screen {
 
     @Override
     public void dispose() {
+        if (cameraPictureActor != null) {
+            cameraPictureActor.remove();
+            cameraPictureActor = null;
+        }
+        stage.dispose();
     }
 }
+
 
