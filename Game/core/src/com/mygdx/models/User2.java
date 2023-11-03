@@ -12,12 +12,11 @@ public class User2 {
     private String song1;
     private String song2;
     private String song3;
-    private String selectedColorPalette;
-    private String animation;
+    private String selectedColor;
     private String texture;
     private String image;
     private String petName;
-    private String favTeacherLastnamne;
+    private String teacherLastname;
     private String favTeam;
     private String childhoodNickName;
     private String favPlace;

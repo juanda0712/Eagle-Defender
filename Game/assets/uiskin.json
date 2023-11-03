@@ -1,0 +1,101 @@
+{
+"com.badlogic.gdx.graphics.g2d.BitmapFont": {
+	"font1": {
+		"file": "font-export.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	}
+},
+"com.badlogic.gdx.graphics.Color": {
+	"blackColor": {
+		"r": 0.24705882,
+		"g": 0.21176471,
+		"b": 0.21176471,
+		"a": 1
+	},
+	"blueColor": {
+		"r": 0.2627451,
+		"g": 0.46666667,
+		"b": 0.8980392,
+		"a": 1
+	},
+	"RGBA_222_199_199_255": {
+		"r": 0.3019608,
+		"g": 0.3254902,
+		"b": 0.3764706,
+		"a": 1
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"default": {
+		"imageUp": "cement",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	},
+	"rocky": {
+		"imageUp": "cementST",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 5
+	},
+	"bricked": {
+		"imageUp": "cementBR",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 5
+	},
+	"color1": {
+		"imageUp": "Color 1",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	},
+	"color2": {
+		"imageUp": "Color 2",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	},
+	"color3": {
+		"imageUp": "Color 3",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	},
+	"color4": {
+		"imageUp": "Color 4",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	},
+	"color5": {
+		"imageUp": "Color 5",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	},
+	"color6": {
+		"imageUp": "Color 6",
+		"pressedOffsetX": 1,
+		"pressedOffsetY": 10
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+	"default": {
+		"font": "font1",
+		"fontColor": "blackColor"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+	"default": {
+		"font": "font1",
+		"fontColor": "blueColor",
+		"downFontColor": "RGBA_222_199_199_255"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
+	"default": {
+		"font": "font1",
+		"fontColor": "blueColor"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+}
+}

@@ -71,5 +71,7 @@ project(":core") {
 
         implementation "org.json:json:20210307"
         implementation 'com.github.scribejava:scribejava-apis:8.3.3'
+        implementation 'com.github.raeleus:stripe:master-SNAPSHOT'
+        implementation 'com.github.raeleus.TenPatch:tenpatch:5.0.0'
     }
 }

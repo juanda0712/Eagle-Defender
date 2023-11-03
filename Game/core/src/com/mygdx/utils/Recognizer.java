@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
@@ -40,24 +40,27 @@ public class Recognizer {
         MatVector images = new MatVector();
 
         int rows = data.size;
-        System.out.println(rows);
-        Mat labels = new Mat(rows, 1, opencv_core.CV_32SC1);
-        IntBuffer labelsBuffer = labels.createBuffer();
+        if (rows > 0){
+            System.out.println(rows);
+            Mat labels = new Mat(rows, 1, opencv_core.CV_32SC1);
+            IntBuffer labelsBuffer = labels.createBuffer();
 
-        for (User2 user : data) {
-            FileHandle fileHandle = Gdx.files.internal(directoryPath + user.getImage());
-            String filePath = fileHandle.file().getAbsolutePath();
-            Mat img = opencv_imgcodecs.imread(filePath, opencv_imgcodecs.IMREAD_GRAYSCALE);
-            Size newSize = new Size(640, 360);
-            opencv_imgproc.resize(img, img, newSize);
-            images.push_back(img);
+            for (User2 user : data) {
+                FileHandle fileHandle = Gdx.files.internal(directoryPath + user.getImage());
+                String filePath = fileHandle.file().getAbsolutePath();
+                Mat img = opencv_imgcodecs.imread(filePath, opencv_imgcodecs.IMREAD_GRAYSCALE);
+                Size newSize = new Size(640, 360);
+                opencv_imgproc.resize(img, img, newSize);
+                images.push_back(img);
+            }
+
+            for (int i = 0; i < images.size(); i++) {
+                labelsBuffer.put(i, i);
+            }
+            model.train(images, labels);
+            }
         }
 
-        for (int i = 0; i < images.size(); i++) {
-            labelsBuffer.put(i, i);
-        }
-        model.train(images, labels);
-    }
 
     public User2 Predict(Mat newImg) {
         //String filePath3 = Gdx.files.local("data/imgs/juan.png").path();

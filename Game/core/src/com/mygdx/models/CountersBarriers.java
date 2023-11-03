@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.models;
 
 public class CountersBarriers {
     private int woodCounter = 10;

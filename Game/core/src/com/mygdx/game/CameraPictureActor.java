@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,110 +13,78 @@ import com.mygdx.utils.Recognizer;
 import com.mygdx.utils.SpotifyAuthenticator;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_videoio.VideoCapture;
-import org.opencv.videoio.Videoio;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FaceRecognitionActor extends Actor {
+public class CameraPictureActor extends Actor {
     private final MainController game;
+    private final Register register;
     private VideoCapture capture;
     private OrthographicCamera camera;
     private SpriteBatch spriteBatch;
     private Texture cameraTexture;
     private Recognizer recognizer;
     private JSONDataManager<User2> user2Manager;
-    private boolean detectFaces = false;
-    private Mat frame;
-    private Mat grayFrame;
-    private User2 currentUser;
+    private boolean takePicture = false;
+    private Mat nativeFrame;
+    private Mat displayFrame;
+    private Mat picture;
     private Frame processedFrame;
-    private User2 user1;
-    private User2 user2;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
-    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager, User2 user1, User2 user2) {
+    public CameraPictureActor(final MainController game, JSONDataManager<User2> user2Manager, final Register register) {
         this.game = game;
+        this.register = register;
         this.user2Manager = user2Manager;
-        this.user1 = user1;
-        this.user2 = user2;
-        int desiredWidth = 640;
-        int desiredHeight = 360;
+        int desiredWidth = 320;
+        int desiredHeight = 240;
 
         // Configura la resolución de captura deseada (320x240)
         capture = new VideoCapture(0); // Abre la cámara con índice 0 (cámara predeterminada)
-        /*int captureWidth = 640; // Ancho deseado
-        int captureHeight = 360; // Alto deseado
-
-        // Configura el formato de captura
-
-        // Configura la resolución de captura deseada
-        capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
-        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);*/
-
-
-        // Configura la resolución del OrthographicCamera y cameraTexture
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
         cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
         spriteBatch = new SpriteBatch();
         recognizer = new Recognizer(user2Manager);
 
-        frame = new Mat();
-        grayFrame = new Mat();
+        nativeFrame = new Mat();
+        displayFrame = new Mat();
         processedFrame = new Frame();
     }
 
     @Override
     public void act(float delta) {
         if (!capture.isOpened()) {
-            Gdx.app.error("RealTimeFaceDetectionActor", "Error al abrir la cámara");
+            Gdx.app.error("CameraPictureActor", "Error al abrir la cámara");
             return;
         }
 
-        capture.read(frame);
-        Size newSizeFrame = new Size(640, 360);
-        opencv_imgproc.resize(frame, frame, newSizeFrame);
-        if (detectFaces) {
-            opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
-
-            Size newSize = new Size(640, 360);
-            opencv_imgproc.resize(grayFrame, grayFrame, newSize);
-
-            currentUser = recognizer.Predict(grayFrame);
-            System.out.println(currentUser);
-
-            if (user1 == null) {
-                game.changeScreen(new SelectMode(game, user2Manager, currentUser));
-            } else {
-                //counter barriers
-                CountersBarriers countersBarriers = new CountersBarriers();
-                //Spotify
-                Thread spotifyAuthThread = new Thread(() -> {
-                    SpotifyAuthenticator spotify = new SpotifyAuthenticator();
-                    spotifyReference.set(spotify);
-                });
-
-                spotifyAuthThread.start();
-                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference));
-            }
-
-            //game.changeScreen(new SelectMode(game, user2Manager, currentUser));
-            detectFaces = false;
-            capture.close();
-            game.dispose();
+        capture.read(nativeFrame);
+        displayFrame = nativeFrame;
+        Size newSizeFrame = new Size(320, 240);
+        opencv_imgproc.resize(displayFrame, displayFrame, newSizeFrame);
+        if (takePicture) {
+            register.setPicture(nativeFrame.clone());
+            takePicture = false;
         }
-
         if (processedFrame != null) {
             processedFrame.close();
         }
-        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(frame));
+        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(displayFrame));
         cameraTexture.draw(toPixmap(processedFrame), 0, 0);
-        frame.release();
-        grayFrame.release();
+        displayFrame.release();
+        nativeFrame.release();
+    }
+
+    public void takePicture() {
+        takePicture = true;
     }
 
     @Override
@@ -124,17 +93,9 @@ public class FaceRecognitionActor extends Actor {
         float screenHeight = Gdx.graphics.getHeight();
         float leftTableWidth = screenWidth / 2;
         float leftTableHeight = screenHeight;
-        float camerax = (leftTableWidth - 640) / 2;
-        float cameray = (leftTableHeight - 360) / 2;
+        float camerax = (leftTableWidth / 12);
+        float cameray = (leftTableHeight / 8);
         batch.draw(cameraTexture, camerax + 30, cameray, cameraTexture.getWidth(), cameraTexture.getHeight(), 0, 0, cameraTexture.getWidth(), cameraTexture.getHeight(), false, true);
-    }
-
-    public void startFaceDetection() {
-        detectFaces = true;
-    }
-
-    public User2 getUser() {
-        return currentUser;
     }
 
     private BufferedImage toBufferedImage(Mat mat) {

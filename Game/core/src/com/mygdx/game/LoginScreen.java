@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextField;
+import com.mygdx.models.CountersBarriers;
 import com.mygdx.models.User2;
 import com.mygdx.utils.*;
 import com.badlogic.gdx.utils.Array;
@@ -24,8 +25,8 @@ import com.badlogic.gdx.utils.Array;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
-{
+public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
+
 
     private final MainController game;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
@@ -79,24 +80,26 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
         //GRAPHIC ELEMENTS
         Label welcomeLabel = GraphicElements.createLabel("Eagle Defender", skin, Color.BLACK);
+        welcomeLabel.setFontScale((float) 1.4);
         Label infoLabel = GraphicElements.createLabel("Please enter your personal info", skin, Color.BLACK);
+        Label faceLabel = GraphicElements.createLabel("Already have an account? LogIn Here", skin, Color.BLACK);
+        faceLabel.setFontScale((float) 1.4);
 
         final VisTextField usernameField = GraphicElements.createTextField("Username", textFieldStyle);
         final VisTextField passwordField = GraphicElements.createTextField("Password", textFieldStyle);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
 
-        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> Facial Recognition <", checkBoxStyle, new ClickListener() {
+        TextButton btnFacialRecognition = GraphicElements.createCustomButton("> LOGIN with FACE ID <", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 faceRecognitionActor.startFaceDetection();
-                dispose();
             }
         });
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new FormManagement(game, user2Manager));
+                game.changeScreen(new Register(game, user2Manager));
                 dispose();
             }
         });
@@ -141,8 +144,11 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
         Table leftTable = new Table();
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
-        leftTable.add(faceRecognitionActor).size(320, 240).center().row();
-        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 15).center().row();
+        leftTable.add(faceRecognitionActor).center().row();
+        leftTable.add(faceLabel).padTop(screenHeight / 6).padBottom(screenHeight / 37).center().row();
+        leftTable.add(btnFacialRecognition).center().row();
+        leftTable.row(); // Cambiar a la siguiente fila
+        leftTable.add().expandY();
 
 
         Table rightTable = new Table();
@@ -225,6 +231,7 @@ public class LoginScreen implements Screen //QuestionsForm2.DialogCallback {
 
     @Override
     public void dispose() {
+        faceRecognitionActor.remove();
     }
 
 

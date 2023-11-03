@@ -2,7 +2,6 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -89,7 +88,7 @@ public class QuestionsForm2 extends VisWindow {
                 User2 foundUser = null;
 
                 for (User2 user : data) {
-                    if (questionsArray().get(0).equals(user.getPetName()) && questionsArray().get(1).equals(user.getFavTeacherLastnamne())
+                    if (questionsArray().get(0).equals(user.getPetName()) && questionsArray().get(1).equals(user.getTeacherLastname())
                             && questionsArray().get(2).equals(user.getFavTeam()) && questionsArray().get(3).equals(user.getChildhoodNickName())
                             && questionsArray().get(4).equals(user.getFavPlace())) {
                         foundUser = user;
