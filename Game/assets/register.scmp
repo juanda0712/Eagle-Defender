@@ -5080,52 +5080,6 @@ sceneComposer: {
 			class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTable
 			cells: [
 				{
-					child: null
-					row: 0
-					column: 0
-					padLeft: 0
-					padRight: 0
-					padTop: 0
-					padBottom: 0
-					spaceLeft: 0
-					spaceRight: 0
-					spaceTop: 0
-					spaceBottom: 0
-					expandX: false
-					expandY: false
-					fillX: false
-					fillY: false
-					growX: false
-					growY: false
-					alignment: 1
-					minWidth: -1
-					minHeight: -1
-					maxWidth: -1
-					maxHeight: -1
-					preferredWidth: -1
-					preferredHeight: -1
-					uniformX: false
-					uniformY: false
-					colSpan: 1
-				}
-			]
-			name: null
-			background: null
-			color: null
-			padLeft: 0
-			padRight: 30
-			padTop: 20
-			padBottom: 0
-			paddingEnabled: true
-			alignment: 18
-			fillParent: true
-			touchable: childrenOnly
-			visible: true
-		}
-		{
-			class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTable
-			cells: [
-				{
 					child: {
 						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTextButton
 						name: CreateAccount
@@ -7849,6 +7803,52 @@ sceneComposer: {
 			padBottom: -141
 			paddingEnabled: true
 			alignment: 1
+			fillParent: true
+			touchable: childrenOnly
+			visible: true
+		}
+		{
+			class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTable
+			cells: [
+				{
+					child: null
+					row: 0
+					column: 0
+					padLeft: 0
+					padRight: 0
+					padTop: 0
+					padBottom: 0
+					spaceLeft: 0
+					spaceRight: 0
+					spaceTop: 0
+					spaceBottom: 0
+					expandX: false
+					expandY: false
+					fillX: false
+					fillY: false
+					growX: false
+					growY: false
+					alignment: 1
+					minWidth: -1
+					minHeight: -1
+					maxWidth: -1
+					maxHeight: -1
+					preferredWidth: -1
+					preferredHeight: -1
+					uniformX: false
+					uniformY: false
+					colSpan: 1
+				}
+			]
+			name: TablePfp
+			background: null
+			color: null
+			padLeft: 0
+			padRight: 100
+			padTop: 50
+			padBottom: 0
+			paddingEnabled: true
+			alignment: 18
 			fillParent: true
 			touchable: childrenOnly
 			visible: true

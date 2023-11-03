@@ -142,7 +142,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
         leftTable.setSize(leftTableWidth, leftTableHeight);
         leftTable.setBackground(backgroundDrawable);
         leftTable.add(faceRecognitionActor);
-        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 15).center().row();
+        leftTable.add(btnFacialRecognition).padBottom(padBottomValue * 10).center().row();
 
 
         Table rightTable = new Table();

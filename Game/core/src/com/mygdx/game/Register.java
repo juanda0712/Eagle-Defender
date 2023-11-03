@@ -3,22 +3,16 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisTextField;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
@@ -41,15 +35,25 @@ public class Register implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
 
-    private Skin skin = VisUI.getSkin();
     private Image pfpImage;
-    private final Table contentTable = new Table();
+    private TextField nameField;
+    private TextField usernameField;
+    private TextField emailField;
+    private TextField passwordField;
+    private TextField confirmPasswordField;
+    private TextField songField1;
+    private TextField songField2;
+    private TextField songField3;
     private final JSONDataManager<User2> user2Manager;
     private Array<String> questionsArray;
     private QuestionsForm questionsForm;
     @Getter
     @Setter
-    private String selectedColorPalette = "";
+    private String selectedColor = "";
+
+    @Getter
+    @Setter
+    private String selectedTexture = "";
     private boolean validPassword = false;
     private boolean isValidDate = false;
     private FileHandle selectedFile;
@@ -63,31 +67,97 @@ public class Register implements Screen {
         camera = new OrthographicCamera();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         SceneComposerStageBuilder builder = new SceneComposerStageBuilder();
         builder.build(stage, skin, Gdx.files.internal("register.json"));
         cameraPictureActor = new CameraPictureActor(game, user2Manager, null, null);
         createGUIElements();
-        //setUPGUIElements();
+    }
+    private void createTextFields (){
+        nameField = stage.getRoot().findActor("nameField");
+        usernameField = stage.getRoot().findActor("usernameField");
+        emailField = stage.getRoot().findActor("emailField");
+        passwordField = stage.getRoot().findActor("passwordField");
+        confirmPasswordField = stage.getRoot().findActor("confirmField");
+        songField1 = stage.getRoot().findActor("Song1");
+        songField2 = stage.getRoot().findActor("Song2");
+        songField3 = stage.getRoot().findActor("Song3");
     }
 
+    private void createImageButtons (){
+        ImageButton btnSmoothTexture = stage.getRoot().findActor("textureSmooth");
+        btnSmoothTexture.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedTexture("Smooth");
+            }
+        });
+        ImageButton btnRockyTexture = stage.getRoot().findActor("textureRocky");
+        btnRockyTexture.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedTexture("Rocky");
+            }
+        });
+        ImageButton btnBrickedTexture = stage.getRoot().findActor("textureBricked");
+        btnBrickedTexture.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedTexture("Bricked");
+            }
+        });
+        ImageButton btnColor1 = stage.getRoot().findActor("Color1");
+        btnColor1.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColor("Color1");
+            }
+        });
+        ImageButton btnColor2 = stage.getRoot().findActor("Color2");
+        btnColor2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColor("Color2");
+            }
+        });
+        ImageButton btnColor3 = stage.getRoot().findActor("Color3");
+        btnColor3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColor("Color3");
+            }
+        });
+        ImageButton btnColor4 = stage.getRoot().findActor("Color4");
+        btnColor4.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColor("Color4");
+            }
+        });
+        ImageButton btnColor5 = stage.getRoot().findActor("Color5");
+        btnColor5.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColor("Color5");
+            }
+        });
+        ImageButton btnColor6 = stage.getRoot().findActor("Color6");
+        btnColor6.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setSelectedColor("Color6");
+            }
+        });
+    }
     private void createGUIElements() {
+        Table tablePfp = stage.getRoot().findActor("TablePfp");
+        createTextFields();
+        createImageButtons();
+
         questionsForm = new QuestionsForm();
         final CardDataForm cardDataForm = new CardDataForm();
 
-        TextField nameField = stage.getRoot().findActor("nameField");
-        TextField usernameField = stage.getRoot().findActor("usernameField");
-        TextField emailField = stage.getRoot().findActor("emailField");
-        TextField passwordField = stage.getRoot().findActor("passwordField");
-        TextField confirmPasswordField = stage.getRoot().findActor("confirmField");
 
-        TextField songField1 = stage.getRoot().findActor("Song1");
-        TextField songField2 = stage.getRoot().findActor("Song2");
-        TextField songField3 = stage.getRoot().findActor("Song3");
-
-        ImageButton textureSmooth = stage.getRoot().findActor("textureSmooth");
-        ImageButton textureRocky = stage.getRoot().findActor("textureRocky");
-        ImageButton textureBricked = stage.getRoot().findActor("textureBricked");
         TextButton btnCreateAccount = stage.getRoot().findActor("CreateAccount");
 
         btnCreateAccount.addListener(new ClickListener() {
@@ -96,7 +166,7 @@ public class Register implements Screen {
 
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
                 //isValidDateFormat(birthDateField.getText(), "yyyy-MM-dd");
-                if (isValidDate && validPassword) {
+                if (validPassword) {
                     getQuestions();
                     for (String question : questionsArray) {
                         System.out.println(question);
@@ -110,7 +180,7 @@ public class Register implements Screen {
                     String song1 = songField1.getText();
                     String song2 = songField2.getText();
                     String song3 = songField3.getText();
-                    String selectedColorPalette = getSelectedColorPalette();
+                    String selectedColor = getSelectedColor();
 
                     String image = selectedFile.name();
                     String petName = questionsArray.get(0);
@@ -129,11 +199,11 @@ public class Register implements Screen {
                     newUser.setSong1(song1);
                     newUser.setSong2(song2);
                     newUser.setSong3(song3);
-                    newUser.setSelectedColorPalette(selectedColorPalette);
-                    //newUser.setTexture();
+                    newUser.setSelectedColor(selectedColor);
+                    newUser.setTexture(getSelectedTexture());
                     newUser.setImage(image);
                     newUser.setPetName(petName);
-                    newUser.setFavTeacherLastnamne(favTeacher);
+                    newUser.setTeacherLastname(favTeacher);
                     newUser.setFavTeam(favTeam);
                     newUser.setChildhoodNickName(childhoodNickname);
                     newUser.setFavPlace(favPlace);
@@ -162,50 +232,6 @@ public class Register implements Screen {
                 }
             }
         });
-
-        ImageButton btnColor1 = stage.getRoot().findActor("Color1");
-        btnColor1.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Color1");
-            }
-        });
-        ImageButton btnColor2 = stage.getRoot().findActor("Color2");
-        btnColor2.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Color2");
-            }
-        });
-        ImageButton btnColor3 = stage.getRoot().findActor("Color3");
-        btnColor3.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Color3");
-            }
-        });
-        ImageButton btnColor4 = stage.getRoot().findActor("Color4");
-        btnColor4.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Color4");
-            }
-        });
-        ImageButton btnColor5 = stage.getRoot().findActor("Color5");
-        btnColor5.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Color5");
-            }
-        });
-        ImageButton btnColor6 = stage.getRoot().findActor("Color6");
-        btnColor6.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                setSelectedColorPalette("Color6");
-            }
-        });
-
 
         TextButton btnQuestions = stage.getRoot().findActor("btnQuestions");
         btnQuestions.addListener(new ClickListener() {
@@ -245,12 +271,12 @@ public class Register implements Screen {
 
 
                             if (pfpImage != null) {
-                                Cell pfpCell = contentTable.getCell(pfpImage);
+                                Cell pfpCell = tablePfp.getCell(pfpImage);
                                 if (pfpCell != null) {
                                     pfpCell.setActor(newPfpImage);
                                 }
                             } else {
-                                contentTable.add(newPfpImage).size(180).left().padTop(5).row();
+                                tablePfp.add(newPfpImage).size(180).left().padTop(5).row();
                             }
 
                             pfpImage = newPfpImage;
@@ -342,21 +368,6 @@ public class Register implements Screen {
             });
         } else {
             this.validPassword = true;
-        }
-    }
-
-    private void isValidDateFormat(String date, String s) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        sdf.setLenient(false); // Deshabilitar el modo permisivo para un análisis estricto
-
-        try {
-            Date parsedDate = sdf.parse(date);
-            String formattedDate = sdf.format(parsedDate);
-
-            // Comprobar si la fecha analizada coincide exactamente con la fecha original
-            isValidDate = formattedDate.equals(date);
-        } catch (ParseException e) {
-            isValidDate = false;
         }
     }
 

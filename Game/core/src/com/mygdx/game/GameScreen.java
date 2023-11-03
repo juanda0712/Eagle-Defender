@@ -975,7 +975,7 @@ public class GameScreen implements Screen {
 
     private Color getColorFilterForPalette(String selectedPalette) {
         Color filter = new Color(1, 1, 1, 1); // Color inicial (sin filtro)
-        selectedPalette = "Palette 1";
+        //selectedPalette = "Palette 1";
         switch (selectedPalette) {
             case "Palette 1":
                 filter.set(0.839f, 0.725f, 0.553f, 1);
@@ -1010,12 +1010,12 @@ public class GameScreen implements Screen {
         }
         //System.out.println(attackerSongs);
 
-        String selectedPalette = user.getSelectedColorPalette();
+        String selectedColor = user.getSelectedColor();
         timer += Gdx.graphics.getDeltaTime();
 
         //Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
         //ScreenUtils.clear(backgroundColor);
-        ScreenUtils.clear(getColorFilterForPalette(selectedPalette));
+        ScreenUtils.clear(getColorFilterForPalette(selectedColor));
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
