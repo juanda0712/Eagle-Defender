@@ -22,8 +22,12 @@ import com.mygdx.utils.SpotifyAuthenticator;
 import com.ray3k.stripe.scenecomposer.SceneComposerStageBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+//import org.opencv.imgcodecs.Imgcodecs;
 
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,6 +63,8 @@ public class Register implements Screen {
     private FileHandle selectedFile;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
     private CameraPictureActor cameraPictureActor;
+    private Mat picture;
+    private String pictureSlug;
 
     public Register(final MainController game, final JSONDataManager<User2> user2Manager) {
         this.game = game;
@@ -70,8 +76,9 @@ public class Register implements Screen {
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         SceneComposerStageBuilder builder = new SceneComposerStageBuilder();
         builder.build(stage, skin, Gdx.files.internal("register.json"));
-        cameraPictureActor = new CameraPictureActor(game, user2Manager, null, null);
+        cameraPictureActor = new CameraPictureActor(game, user2Manager, this);
         createGUIElements();
+
     }
     private void createTextFields (){
         nameField = stage.getRoot().findActor("nameField");
@@ -82,6 +89,10 @@ public class Register implements Screen {
         songField1 = stage.getRoot().findActor("Song1");
         songField2 = stage.getRoot().findActor("Song2");
         songField3 = stage.getRoot().findActor("Song3");
+
+        picture = new Mat();
+        //setUPGUIElements();
+
     }
 
     private void createImageButtons (){
@@ -171,7 +182,7 @@ public class Register implements Screen {
                     for (String question : questionsArray) {
                         System.out.println(question);
                     }
-
+                    pictureSlug = generateUniqueFilename("imagen", "png");
                     String fullName = nameField.getText();
                     String username = usernameField.getText();
                     String password = passwordField.getText();
@@ -199,9 +210,15 @@ public class Register implements Screen {
                     newUser.setSong1(song1);
                     newUser.setSong2(song2);
                     newUser.setSong3(song3);
+
                     newUser.setSelectedColor(selectedColor);
                     newUser.setTexture(getSelectedTexture());
                     newUser.setImage(image);
+
+                    newUser.setSelectedColor(selectedColor);
+                    //newUser.setTexture();
+                    newUser.setImage(pictureSlug);
+
                     newUser.setPetName(petName);
                     newUser.setTeacherLastname(favTeacher);
                     newUser.setFavTeam(favTeam);
@@ -209,6 +226,7 @@ public class Register implements Screen {
                     newUser.setFavPlace(favPlace);
 
                     user2Manager.create(newUser);
+                    savePicture(pictureSlug);
 
                     if (selectedFile != null) {
                         String destinoPath = "data/imgs/" + selectedFile.name();
@@ -254,7 +272,6 @@ public class Register implements Screen {
             }
         });
         TextButton btnBrowse = stage.getRoot().findActor("btnBrowse");
-        System.out.println(btnBrowse);
         btnBrowse.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -268,7 +285,6 @@ public class Register implements Screen {
                             Texture pfpTexture = new Texture(selectedFile);
                             TextureRegion pfpRegion = new TextureRegion(pfpTexture);
                             Image newPfpImage = new Image(pfpRegion);
-
 
                             if (pfpImage != null) {
                                 Cell pfpCell = tablePfp.getCell(pfpImage);
@@ -289,6 +305,13 @@ public class Register implements Screen {
         });
 
         TextButton btnTakePic = stage.getRoot().findActor("btnTakePic");
+        btnTakePic.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                String name = generateUniqueFilename("imagen", "png");
+                cameraPictureActor.takePicture();
+            }
+        });
 
         Table table = stage.getRoot().findActor("TableFaceCam");
         table.add(cameraPictureActor);
@@ -296,6 +319,38 @@ public class Register implements Screen {
 
     private void getQuestions() {
         questionsArray = questionsForm.getQuestions();
+    }
+
+    public static String generateUniqueFilename(String baseName, String extension) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMddHHmmss");
+        String timestamp = dateFormat.format(new Date());
+        String uniqueFilename = baseName + "_" + timestamp + "." + extension;
+        return uniqueFilename;
+    }
+
+    public void setPicture(Mat picture) {
+        System.out.println(picture);
+        this.picture = picture;
+        System.out.println(this.picture);
+    }
+
+    private void savePicture(String name) {
+        String destinoPath = "data/imgs/" + name;
+        FileHandle fileHandle = Gdx.files.local(destinoPath);
+        if (!fileHandle.exists()) {
+            if (!picture.empty()) {
+                if (opencv_imgcodecs.imwrite(fileHandle.file().getAbsolutePath(), picture)) {
+                    Gdx.app.log("Register", "Imagen guardada con éxito en: " + fileHandle.file().getAbsolutePath());
+                } else {
+                    Gdx.app.error("Register", "Error al guardar la imagen");
+                }
+            } else {
+                Gdx.app.error("Register", "La foto es null" + picture);
+            }
+
+        } else {
+            Gdx.app.error("Register", "El archivo ya existe en: " + fileHandle.file().getAbsolutePath());
+        }
     }
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
