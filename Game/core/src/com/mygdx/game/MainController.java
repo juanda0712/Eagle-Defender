@@ -15,13 +15,14 @@ public class MainController extends Game {
     public JSONDataManager<User2> user2Manager;
     private Recognizer recognizer;
     private RealTimeFaceDetectionScreen faceScreen;
-
+    private PauseScreen pauseScreen;
     @Override
     public void create() {
         user2Manager = new JSONDataManager<>("data/users2.json", User2.class);
         VisUI.load();
         batch = new SpriteBatch();
         login = new LoginScreen(this, user2Manager, null, null);
+        pauseScreen = new PauseScreen(this, user2Manager, null);
         this.setScreen(login);
     }
 
