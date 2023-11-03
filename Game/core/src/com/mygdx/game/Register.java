@@ -160,6 +160,11 @@ public class Register implements Screen {
             }
         });
     }
+    private boolean isTextFieldEmpty(TextField textField){
+        String text = textField.getText().trim();
+        return text.isEmpty();
+    }
+
     private void createGUIElements() {
         Table tablePfp = stage.getRoot().findActor("TablePfp");
         createTextFields();
@@ -193,7 +198,7 @@ public class Register implements Screen {
                     String song3 = songField3.getText();
                     String selectedColor = getSelectedColor();
 
-                    String image = selectedFile.name();
+                    //String image = selectedFile.name();
                     String petName = questionsArray.get(0);
                     String favTeacher = questionsArray.get(1);
                     String favTeam = questionsArray.get(2);
@@ -213,7 +218,7 @@ public class Register implements Screen {
 
                     newUser.setSelectedColor(selectedColor);
                     newUser.setTexture(getSelectedTexture());
-                    newUser.setImage(image);
+                    //newUser.setImage(image);
 
                     newUser.setSelectedColor(selectedColor);
                     //newUser.setTexture();
@@ -269,38 +274,6 @@ public class Register implements Screen {
                     stage.addActor(cardDataForm);
                     cardDataForm.fadeIn();
                 }
-            }
-        });
-        TextButton btnBrowse = stage.getRoot().findActor("btnBrowse");
-        btnBrowse.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
-                fileChooser.setSelectionMode(FileChooser.SelectionMode.FILES);
-                fileChooser.setListener(new FileChooserAdapter() {
-                    @Override
-                    public void selected(Array<FileHandle> file) {
-                        if (file.size > 0) {
-                            selectedFile = file.first();
-                            Texture pfpTexture = new Texture(selectedFile);
-                            TextureRegion pfpRegion = new TextureRegion(pfpTexture);
-                            Image newPfpImage = new Image(pfpRegion);
-
-                            if (pfpImage != null) {
-                                Cell pfpCell = tablePfp.getCell(pfpImage);
-                                if (pfpCell != null) {
-                                    pfpCell.setActor(newPfpImage);
-                                }
-                            } else {
-                                tablePfp.add(newPfpImage).size(180).left().padTop(5).row();
-                            }
-
-                            pfpImage = newPfpImage;
-                        }
-                    }
-                });
-                stage.addActor(fileChooser.fadeIn());
-                fileChooser.setVisible(true);
             }
         });
 

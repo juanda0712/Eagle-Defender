@@ -1,7 +1,7 @@
 ## Usuarios Data
 /data/
 /Game/data/
-
+/Game/data/users2.json
 ## Java
 *.class
 *.war
