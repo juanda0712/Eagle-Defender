@@ -25,6 +25,12 @@
 		"g": 0.3254902,
 		"b": 0.3764706,
 		"a": 1
+	},
+	"RGBA_246_110_110_255": {
+		"r": 0.9647059,
+		"g": 0.43137255,
+		"b": 0.43137255,
+		"a": 1
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
@@ -90,7 +96,7 @@
 "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
 	"default": {
 		"font": "font1",
-		"fontColor": "blueColor"
+		"fontColor": "blackColor"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {

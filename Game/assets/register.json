@@ -156,7 +156,7 @@
 					"selectAll": false,
 					"focusTraversal": true,
 					"maxLength": 0,
-					"messageText": "Full name",
+					"messageText": "Your name",
 					"touchable": "enabled",
 					"visible": true
 				},
@@ -319,7 +319,7 @@
 			{
 				"child": {
 					"class": "TextField",
-					"name": null,
+					"name": "BirthDate",
 					"style": {
 						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextField",
 						"name": "default"
@@ -335,7 +335,7 @@
 					"selectAll": false,
 					"focusTraversal": true,
 					"maxLength": 0,
-					"messageText": "Your age",
+					"messageText": "Birth date",
 					"touchable": "enabled",
 					"visible": true
 				},
@@ -374,7 +374,51 @@
 						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.Label",
 						"name": "default"
 					},
-					"text": "(*, 0-9)",
+					"text": "(AA-MM-DD)",
+					"textAlignment": 8,
+					"ellipsis": false,
+					"ellipsisString": "...",
+					"wrap": false,
+					"color": null,
+					"touchable": "enabled",
+					"visible": true
+				},
+				"row": 1,
+				"column": 3,
+				"padLeft": 0,
+				"padRight": 0,
+				"padTop": 0,
+				"padBottom": 0,
+				"spaceLeft": 0,
+				"spaceRight": 0,
+				"spaceTop": 0,
+				"spaceBottom": 0,
+				"expandX": false,
+				"expandY": false,
+				"fillX": false,
+				"fillY": false,
+				"growX": false,
+				"growY": false,
+				"alignment": 1,
+				"minWidth": -1,
+				"minHeight": -1,
+				"maxWidth": -1,
+				"maxHeight": -1,
+				"preferredWidth": -1,
+				"preferredHeight": -1,
+				"uniformX": false,
+				"uniformY": false,
+				"colSpan": 1
+			},
+			{
+				"child": {
+					"class": "Label",
+					"name": null,
+					"style": {
+						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.Label",
+						"name": "default"
+					},
+					"text": "(*, 0-9, A-a)",
 					"textAlignment": 8,
 					"ellipsis": false,
 					"ellipsisString": "...",
@@ -461,7 +505,28 @@
 				"colSpan": 1
 			},
 			{
-				"child": null,
+				"child": {
+					"class": "TextField",
+					"name": "confirmField",
+					"style": {
+						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextField",
+						"name": "default"
+					},
+					"text": null,
+					"passwordCharacter": "*",
+					"passwordMode": true,
+					"alignment": 1,
+					"disabled": false,
+					"cursorPosition": 0,
+					"selectionStart": 0,
+					"selectionEnd": 0,
+					"selectAll": false,
+					"focusTraversal": true,
+					"maxLength": 0,
+					"messageText": "Confirm password",
+					"touchable": "enabled",
+					"visible": true
+				},
 				"row": 2,
 				"column": 2,
 				"padLeft": 0,
@@ -490,28 +555,7 @@
 				"colSpan": 1
 			},
 			{
-				"child": {
-					"class": "TextField",
-					"name": "confirmField",
-					"style": {
-						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextField",
-						"name": "default"
-					},
-					"text": null,
-					"passwordCharacter": "*",
-					"passwordMode": true,
-					"alignment": 1,
-					"disabled": false,
-					"cursorPosition": 0,
-					"selectionStart": 0,
-					"selectionEnd": 0,
-					"selectAll": false,
-					"focusTraversal": true,
-					"maxLength": 0,
-					"messageText": "Confirm password",
-					"touchable": "enabled",
-					"visible": true
-				},
+				"child": null,
 				"row": 2,
 				"column": 3,
 				"padLeft": 0,
@@ -1860,15 +1904,15 @@
 				"colSpan": 1
 			}
 		],
-		"name": "TableFaceCam",
+		"name": "TablePfp",
 		"background": null,
 		"color": null,
 		"padLeft": 0,
-		"padRight": 0,
-		"padTop": 150,
+		"padRight": 100,
+		"padTop": 50,
 		"padBottom": 0,
 		"paddingEnabled": true,
-		"alignment": 2,
+		"alignment": 18,
 		"fillParent": true,
 		"touchable": "childrenOnly",
 		"visible": true
@@ -1906,15 +1950,15 @@
 				"colSpan": 1
 			}
 		],
-		"name": "TablePfp",
+		"name": "faceCamTable",
 		"background": null,
 		"color": null,
-		"padLeft": 0,
-		"padRight": 100,
-		"padTop": 50,
+		"padLeft": 140,
+		"padRight": 0,
+		"padTop": 10,
 		"padBottom": 0,
 		"paddingEnabled": true,
-		"alignment": 18,
+		"alignment": 10,
 		"fillParent": true,
 		"touchable": "childrenOnly",
 		"visible": true
