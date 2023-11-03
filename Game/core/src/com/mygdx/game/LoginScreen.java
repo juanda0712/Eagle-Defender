@@ -64,7 +64,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
 
         Gdx.input.setInputProcessor(stage);
 
-        faceRecognitionActor = new FaceRecognitionActor(game, user2Manager, user1, user2);
+        faceRecognitionActor = new FaceRecognitionActor(this, game, user2Manager, user1, user2);
 
         setupUIElements();
     }
@@ -99,7 +99,11 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
         TextButton btnRegister = GraphicElements.createCustomButton("Create Account", checkBoxStyle, new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.changeScreen(new Register(game, user2Manager));
+                if (user1 == null) {
+                    game.changeScreen(new Register(game, user2Manager, null));
+                } else {
+                    game.changeScreen(new Register(game, user2Manager, user1));
+                }
                 dispose();
             }
         });

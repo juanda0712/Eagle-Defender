@@ -65,9 +65,11 @@ public class Register implements Screen {
     private CameraPictureActor cameraPictureActor;
     private Mat picture;
     private String pictureSlug;
+    private User2 user;
 
-    public Register(final MainController game, final JSONDataManager<User2> user2Manager) {
+    public Register(final MainController game, final JSONDataManager<User2> user2Manager, User2 user) {
         this.game = game;
+        this.user = user;
         this.user2Manager = user2Manager;
 
         camera = new OrthographicCamera();
@@ -256,7 +258,19 @@ public class Register implements Screen {
                         }
                         CountersBarriers counters = new CountersBarriers();
 
-                        game.changeScreen(new SelectMode(game, user2Manager, newUser));
+                        if (user == null) {
+                            game.changeScreen(new SelectMode(game, user2Manager, newUser));
+                        } else {
+                            CountersBarriers countersBarriers = new CountersBarriers();
+                            Thread spotifyAuthThread = new Thread(() -> {
+                                SpotifyAuthenticator spotify = new SpotifyAuthenticator();
+                                spotifyReference.set(spotify);
+                            });
+
+                            spotifyAuthThread.start();
+                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference));
+                        }
+
                         dispose();
 
                     } else {

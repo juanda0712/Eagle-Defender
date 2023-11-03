@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class FaceRecognitionActor extends Actor {
     private final MainController game;
+    private final LoginScreen login;
     private VideoCapture capture;
     private OrthographicCamera camera;
     private SpriteBatch spriteBatch;
@@ -38,8 +39,9 @@ public class FaceRecognitionActor extends Actor {
     private User2 user2;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
 
-    public FaceRecognitionActor(final MainController game, JSONDataManager<User2> user2Manager, User2 user1, User2 user2) {
+    public FaceRecognitionActor(final LoginScreen login, final MainController game, JSONDataManager<User2> user2Manager, User2 user1, User2 user2) {
         this.game = game;
+        this.login = login;
         this.user2Manager = user2Manager;
         this.user1 = user1;
         this.user2 = user2;
@@ -90,6 +92,7 @@ public class FaceRecognitionActor extends Actor {
 
             if (user1 == null) {
                 game.changeScreen(new SelectMode(game, user2Manager, currentUser));
+                login.dispose();
             } else {
                 //counter barriers
                 CountersBarriers countersBarriers = new CountersBarriers();
@@ -101,12 +104,12 @@ public class FaceRecognitionActor extends Actor {
 
                 spotifyAuthThread.start();
                 game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference));
+                login.dispose();
             }
 
             //game.changeScreen(new SelectMode(game, user2Manager, currentUser));
             detectFaces = false;
             capture.close();
-            game.dispose();
         }
 
         if (processedFrame != null) {
