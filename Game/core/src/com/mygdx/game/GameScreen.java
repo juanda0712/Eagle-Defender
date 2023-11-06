@@ -1007,24 +1007,27 @@ public class GameScreen implements Screen {
     }
 
 
-    private Color getColorFilterForPalette(String selectedPalette) {
+    private Color getColorFilterForPalette(String selectedColor) {
         Color filter = new Color(1, 1, 1, 1); // Color inicial (sin filtro)
         //selectedPalette = "Palette 1";
-        switch (selectedPalette) {
-            case "Palette 1":
+        switch (selectedColor) {
+            case "Color1":
                 filter.set(0.839f, 0.725f, 0.553f, 1);
                 break;
-            case "Palette 2":
-                filter.set(0.6157f, 0.6784f, 0.7412f, 1);
+            case "Color2":
+                filter.set(0.945f, 0.678f, 0.353f, 1);
                 break;
-            case "Palette 3":
-                filter.set(0.9451f, 0.6784f, 0.3529f, 1);
+            case "Color3":
+                filter.set(0.949f, 0.878f, 0.580f, 1);
                 break;
-            case "Palette 4":
-                filter.set(0.9490f, 0.8784f, 0.5804f, 1);
+            case "Color4":
+                filter.set(0.847f, 0.870f, 0.917f, 1);
                 break;
-            case "Palette 5":
-                filter.set(0.6039f, 0.6157f, 0.5412f, 1);
+            case "Color5":
+                filter.set(0.658f, 0.478f, 0.313f, 1);
+                break;
+            case "Color6":
+                filter.set(0.760f, 0.721f, 0.227f, 1);
                 break;
         }
 

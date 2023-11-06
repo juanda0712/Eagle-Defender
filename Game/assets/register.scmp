@@ -589,7 +589,7 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.Color
 						name: fontColor
 						optional: false
-						value: blueColor
+						value: blackColor
 					}
 					focusedFontColor: {
 						type: com.badlogic.gdx.graphics.Color
@@ -3199,7 +3199,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -3270,7 +3270,7 @@ sceneComposer: {
 						selectAll: false
 						focusTraversal: true
 						maxLength: 0
-						messageText: Full name
+						messageText: Your name
 						touchable: enabled
 						visible: true
 					}
@@ -3319,7 +3319,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -3468,7 +3468,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -3573,7 +3573,7 @@ sceneComposer: {
 				{
 					child: {
 						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTextField
-						name: null
+						name: BirthDate
 						style: {
 							name: default
 							clazz: com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -3588,7 +3588,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -3659,7 +3659,7 @@ sceneComposer: {
 						selectAll: false
 						focusTraversal: true
 						maxLength: 0
-						messageText: Your age
+						messageText: Birth date
 						touchable: enabled
 						visible: true
 					}
@@ -3720,7 +3720,73 @@ sceneComposer: {
 							deletable: false
 							parent: null
 						}
-						text: "(*, 0-9)"
+						text: (AA-MM-DD)
+						textAlignment: 8
+						ellipsis: false
+						ellipsisString: ...
+						wrap: false
+						color: null
+						touchable: enabled
+						visible: true
+					}
+					row: 1
+					column: 3
+					padLeft: 0
+					padRight: 0
+					padTop: 0
+					padBottom: 0
+					spaceLeft: 0
+					spaceRight: 0
+					spaceTop: 0
+					spaceBottom: 0
+					expandX: false
+					expandY: false
+					fillX: false
+					fillY: false
+					growX: false
+					growY: false
+					alignment: 1
+					minWidth: -1
+					minHeight: -1
+					maxWidth: -1
+					maxHeight: -1
+					preferredWidth: -1
+					preferredHeight: -1
+					uniformX: false
+					uniformY: false
+					colSpan: 1
+				}
+				{
+					child: {
+						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimLabel
+						name: null
+						style: {
+							name: default
+							clazz: com.badlogic.gdx.scenes.scene2d.ui.Label
+							properties: {
+								font: {
+									type: com.badlogic.gdx.graphics.g2d.BitmapFont
+									name: font
+									optional: false
+									value: font1
+								}
+								fontColor: {
+									type: com.badlogic.gdx.graphics.Color
+									name: fontColor
+									optional: true
+									value: blackColor
+								}
+								background: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: background
+									optional: true
+									value: null
+								}
+							}
+							deletable: false
+							parent: null
+						}
+						text: "(*, 0-9, A-a)"
 						textAlignment: 8
 						ellipsis: false
 						ellipsisString: ...
@@ -3782,7 +3848,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -3885,35 +3951,6 @@ sceneComposer: {
 					colSpan: 1
 				}
 				{
-					child: null
-					row: 2
-					column: 2
-					padLeft: 0
-					padRight: 0
-					padTop: 0
-					padBottom: 0
-					spaceLeft: 0
-					spaceRight: 0
-					spaceTop: 0
-					spaceBottom: 0
-					expandX: false
-					expandY: false
-					fillX: false
-					fillY: false
-					growX: false
-					growY: false
-					alignment: 1
-					minWidth: -1
-					minHeight: -1
-					maxWidth: -1
-					maxHeight: -1
-					preferredWidth: -1
-					preferredHeight: -1
-					uniformX: false
-					uniformY: false
-					colSpan: 1
-				}
-				{
 					child: {
 						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTextField
 						name: confirmField
@@ -3931,7 +3968,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -4006,6 +4043,35 @@ sceneComposer: {
 						touchable: enabled
 						visible: true
 					}
+					row: 2
+					column: 2
+					padLeft: 0
+					padRight: 0
+					padTop: 0
+					padBottom: 0
+					spaceLeft: 0
+					spaceRight: 0
+					spaceTop: 0
+					spaceBottom: 0
+					expandX: false
+					expandY: false
+					fillX: false
+					fillY: false
+					growX: false
+					growY: false
+					alignment: 1
+					minWidth: -1
+					minHeight: -1
+					maxWidth: -1
+					maxHeight: -1
+					preferredWidth: -1
+					preferredHeight: -1
+					uniformX: false
+					uniformY: false
+					colSpan: 1
+				}
+				{
+					child: null
 					row: 2
 					column: 3
 					padLeft: 0
@@ -6063,7 +6129,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -6792,7 +6858,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -7521,7 +7587,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.graphics.Color
 									name: fontColor
 									optional: false
-									value: blueColor
+									value: blackColor
 								}
 								focusedFontColor: {
 									type: com.badlogic.gdx.graphics.Color
@@ -7670,15 +7736,15 @@ sceneComposer: {
 					colSpan: 1
 				}
 			]
-			name: TableFaceCam
+			name: TablePfp
 			background: null
 			color: null
 			padLeft: 0
-			padRight: 0
-			padTop: 150
+			padRight: 100
+			padTop: 50
 			padBottom: 0
 			paddingEnabled: true
-			alignment: 2
+			alignment: 18
 			fillParent: true
 			touchable: childrenOnly
 			visible: true
@@ -7716,15 +7782,15 @@ sceneComposer: {
 					colSpan: 1
 				}
 			]
-			name: TablePfp
+			name: faceCamTable
 			background: null
 			color: null
-			padLeft: 0
-			padRight: 100
-			padTop: 50
+			padLeft: 140
+			padRight: 0
+			padTop: 10
 			padBottom: 0
 			paddingEnabled: true
-			alignment: 18
+			alignment: 10
 			fillParent: true
 			touchable: childrenOnly
 			visible: true

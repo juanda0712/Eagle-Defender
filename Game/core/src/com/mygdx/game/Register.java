@@ -4,12 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
@@ -17,6 +20,7 @@ import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
 import com.mygdx.models.CountersBarriers;
+import com.mygdx.utils.ImageConversion;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.utils.SpotifyAuthenticator;
 import com.ray3k.stripe.scenecomposer.SceneComposerStageBuilder;
@@ -39,12 +43,16 @@ public class Register implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
 
-    private Image pfpImage;
+    private org.opencv.core.Mat capturedMatImage;
+
+    public TextureRegion capturedImage;
     private TextField nameField;
     private TextField usernameField;
     private TextField emailField;
     private TextField passwordField;
+
     private TextField confirmPasswordField;
+    private TextField birthDateField;
     private TextField songField1;
     private TextField songField2;
     private TextField songField3;
@@ -61,6 +69,8 @@ public class Register implements Screen {
     private boolean validPassword = false;
     private boolean isValidDate = false;
     private FileHandle selectedFile;
+
+    Skin skin = VisUI.getSkin();
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
     private CameraPictureActor cameraPictureActor;
     private Mat picture;
@@ -89,6 +99,7 @@ public class Register implements Screen {
         emailField = stage.getRoot().findActor("emailField");
         passwordField = stage.getRoot().findActor("passwordField");
         confirmPasswordField = stage.getRoot().findActor("confirmField");
+        birthDateField = stage.getRoot().findActor("BirthDate");
         songField1 = stage.getRoot().findActor("Song1");
         songField2 = stage.getRoot().findActor("Song2");
         songField3 = stage.getRoot().findActor("Song3");
@@ -177,7 +188,7 @@ public class Register implements Screen {
 
 
     private void createGUIElements() {
-        Table tablePfp = stage.getRoot().findActor("TablePfp");
+
         createTextFields();
         createImageButtons();
 
@@ -192,7 +203,7 @@ public class Register implements Screen {
             public void clicked(InputEvent event, float x, float y) {
 
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
-                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, emailField, songField1, songField2, songField3)) {
+                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, confirmPasswordField, birthDateField, emailField, songField1, songField2, songField3)) {
                     if (validPassword) {
                         getQuestions();
                         for (String question : questionsArray) {
@@ -203,7 +214,7 @@ public class Register implements Screen {
                         String username = usernameField.getText();
                         String password = passwordField.getText();
                         String email = emailField.getText();
-                        //String birthDate = birthDateField.getText();
+                        String birthDate = birthDateField.getText();
                         String song1 = songField1.getText();
                         String song2 = songField2.getText();
                         String song3 = songField3.getText();
@@ -222,7 +233,7 @@ public class Register implements Screen {
                         newUser.setUsername(username);
                         newUser.setPassword(password);
                         newUser.setEmail(email);
-                        //newUser.setBirthDate(birthDate);
+                        newUser.setBirthDate(birthDate);
                         newUser.setSong1(song1);
                         newUser.setSong2(song2);
                         newUser.setSong3(song3);
@@ -232,7 +243,6 @@ public class Register implements Screen {
                         //newUser.setImage(image);
 
                         newUser.setSelectedColor(selectedColor);
-                        //newUser.setTexture();
                         newUser.setImage(pictureSlug);
 
                         newUser.setPetName(petName);
@@ -273,9 +283,18 @@ public class Register implements Screen {
 
                         dispose();
 
-                    } else {
-                        System.out.println("not valid");
                     }
+                }else {
+
+                    final Dialog dialog9 = new Dialog("Please fill all the info", skin);
+                    dialog9.show(stage);
+                    dialog9.setSize(280, 60);
+                    dialog9.button("Ok", new ClickListener() {
+                        public void clicked(InputEvent event, float x, float y) {
+                            dialog9.remove();
+
+                        }
+                    });
                 }
 
             }
@@ -307,11 +326,12 @@ public class Register implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 String name = generateUniqueFilename("imagen", "png");
                 cameraPictureActor.takePicture();
+                //updatePfpTable();
             }
         });
 
-        Table table = stage.getRoot().findActor("TableFaceCam");
-        table.add(cameraPictureActor);
+        Table faceCamTable = stage.getRoot().findActor("faceCamTable");
+        faceCamTable.add(cameraPictureActor);
     }
 
     private void getQuestions() {
@@ -349,6 +369,28 @@ public class Register implements Screen {
             Gdx.app.error("Register", "El archivo ya existe en: " + fileHandle.file().getAbsolutePath());
         }
     }
+/*
+    private void updatePfpTable() {
+        Table pfpTable = stage.getRoot().findActor("TablePfp");
+        if (pfpTable != null && picture != null) {
+            Pixmap pixmap = ImageConversion.matToPixmap(picture);
+
+
+            Texture texture = new Texture(pixmap);
+
+
+            Drawable imageDrawable = new TextureRegionDrawable(new TextureRegion(texture));
+
+
+            Image image = new Image(imageDrawable);
+
+
+            pfpTable.add(image).row();
+        }
+    }
+
+ */
+
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
         Skin skin = VisUI.getSkin();
@@ -372,7 +414,7 @@ public class Register implements Screen {
             this.validPassword = false;
             final Dialog dialog2 = new Dialog("Password length must have at least 8 characters", skin);
             dialog2.show(stage);
-            dialog2.setSize(280, 60);
+            dialog2.setSize(340, 60);
             dialog2.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog2.remove();
@@ -382,7 +424,7 @@ public class Register implements Screen {
             this.validPassword = false;
             final Dialog dialog3 = new Dialog("Password must have at least one special character", skin);
             dialog3.show(stage);
-            dialog3.setSize(280, 60);
+            dialog3.setSize(340, 60);
             dialog3.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog3.remove();
@@ -392,7 +434,7 @@ public class Register implements Screen {
             this.validPassword = false;
             final Dialog dialog4 = new Dialog("Password must have at least one uppercase character", skin);
             dialog4.show(stage);
-            dialog4.setSize(280, 60);
+            dialog4.setSize(340, 60);
             dialog4.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog4.remove();
@@ -402,7 +444,7 @@ public class Register implements Screen {
             this.validPassword = false;
             final Dialog dialog5 = new Dialog("Password must have at least one lowercase character", skin);
             dialog5.show(stage);
-            dialog5.setSize(280, 60);
+            dialog5.setSize(330, 60);
             dialog5.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog5.remove();
@@ -412,7 +454,7 @@ public class Register implements Screen {
             this.validPassword = false;
             final Dialog dialog6 = new Dialog("Password must have at least one digit character", skin);
             dialog6.show(stage);
-            dialog6.setSize(280, 60);
+            dialog6.setSize(330, 60);
             dialog6.button("Ok", new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     dialog6.remove();
