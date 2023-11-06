@@ -69,7 +69,7 @@ public class CameraPictureActor extends Actor {
         }
 
         capture.read(nativeFrame);
-        displayFrame = nativeFrame;
+        displayFrame = nativeFrame.clone();
         Size newSizeFrame = new Size(320, 240);
         opencv_imgproc.resize(displayFrame, displayFrame, newSizeFrame);
         if (takePicture) {

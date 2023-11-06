@@ -79,11 +79,13 @@ public class FaceRecognitionActor extends Actor {
         }
 
         capture.read(frame);
-        displayFrame = frame;
+        displayFrame = frame.clone();
         Size newSizeFrame = new Size(640, 360);
         opencv_imgproc.resize(displayFrame, displayFrame, newSizeFrame);
         if (detectFaces) {
+            System.out.println(frame);
             currentUser = recognizer.Predict(frame);
+
             if (user1 == null) {
                 game.changeScreen(new SelectMode(game, user2Manager, currentUser));
                 login.dispose();

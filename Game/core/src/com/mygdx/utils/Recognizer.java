@@ -48,9 +48,8 @@ public class Recognizer {
             for (User2 user : data) {
                 FileHandle fileHandle = Gdx.files.internal(directoryPath + user.getImage());
                 String filePath = fileHandle.file().getAbsolutePath();
-                Mat img = opencv_imgcodecs.imread(filePath, opencv_imgcodecs.IMREAD_GRAYSCALE);
-                Size newSize = new Size(640, 360);
-                opencv_imgproc.resize(img, img, newSize);
+                Mat img = opencv_imgcodecs.imread(filePath);
+                System.out.println(img);
                 images.push_back(img);
             }
 

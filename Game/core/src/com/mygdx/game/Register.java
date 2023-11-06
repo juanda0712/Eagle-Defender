@@ -26,6 +26,8 @@ import com.mygdx.utils.SpotifyAuthenticator;
 import com.ray3k.stripe.scenecomposer.SceneComposerStageBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 //import org.opencv.imgcodecs.Imgcodecs;
@@ -37,6 +39,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+
+import static org.bytedeco.javacv.Java2DFrameUtils.toBufferedImage;
 
 public class Register implements Screen {
     final MainController game;
@@ -70,6 +74,7 @@ public class Register implements Screen {
     private boolean isValidDate = false;
     private FileHandle selectedFile;
 
+    private Frame processedFrame;
     Skin skin = VisUI.getSkin();
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
     private CameraPictureActor cameraPictureActor;
@@ -105,6 +110,7 @@ public class Register implements Screen {
         songField3 = stage.getRoot().findActor("Song3");
 
         picture = new Mat();
+        processedFrame = new Frame();
         //setUPGUIElements();
 
     }
@@ -369,10 +375,11 @@ public class Register implements Screen {
             Gdx.app.error("Register", "El archivo ya existe en: " + fileHandle.file().getAbsolutePath());
         }
     }
-/*
+
     private void updatePfpTable() {
         Table pfpTable = stage.getRoot().findActor("TablePfp");
-        if (pfpTable != null && picture != null) {
+        if (pfpTable != null && processedFrame != null) {
+            processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(picture));
             Pixmap pixmap = ImageConversion.matToPixmap(picture);
 
 
@@ -389,7 +396,7 @@ public class Register implements Screen {
         }
     }
 
- */
+
 
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
