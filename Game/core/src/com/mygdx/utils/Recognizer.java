@@ -40,7 +40,7 @@ public class Recognizer {
         MatVector images = new MatVector();
 
         int rows = data.size;
-        if (rows > 0){
+        if (rows > 0) {
             System.out.println(rows);
             Mat labels = new Mat(rows, 1, opencv_core.CV_32SC1);
             IntBuffer labelsBuffer = labels.createBuffer();
@@ -48,8 +48,7 @@ public class Recognizer {
             for (User2 user : data) {
                 FileHandle fileHandle = Gdx.files.internal(directoryPath + user.getImage());
                 String filePath = fileHandle.file().getAbsolutePath();
-                Mat img = opencv_imgcodecs.imread(filePath);
-                System.out.println(img);
+                Mat img = opencv_imgcodecs.imread(filePath, opencv_imgcodecs.IMREAD_GRAYSCALE);
                 images.push_back(img);
             }
 
@@ -57,14 +56,16 @@ public class Recognizer {
                 labelsBuffer.put(i, i);
             }
             model.train(images, labels);
-            }
         }
+    }
 
 
     public User2 Predict(Mat newImg) {
-        //String filePath3 = Gdx.files.local("data/imgs/juan.png").path();
-        //Mat testImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
-
+        /*String filePath3 = Gdx.files.local("data/imgs/imagen_1105224337.png").path();
+        Mat test = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
+        System.out.println(test);
+        //Mat newImg = opencv_imgcodecs.imread(filePath3, opencv_imgcodecs.IMREAD_GRAYSCALE);
+*/
         IntPointer label = new IntPointer(1);
         DoublePointer confidence = new DoublePointer(1);
         model.predict(newImg, label, confidence);

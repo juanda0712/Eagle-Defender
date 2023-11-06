@@ -50,16 +50,6 @@ public class FaceRecognitionActor extends Actor {
 
         // Configura la resolución de captura deseada (320x240)
         capture = new VideoCapture(0); // Abre la cámara con índice 0 (cámara predeterminada)
-        /*int captureWidth = 640; // Ancho deseado
-        int captureHeight = 360; // Alto deseado
-
-        // Configura el formato de captura
-
-        // Configura la resolución de captura deseada
-        capture.set(Videoio.CAP_PROP_FRAME_WIDTH, captureWidth);
-        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, captureHeight);*/
-
-
         // Configura la resolución del OrthographicCamera y cameraTexture
         camera = new OrthographicCamera(desiredWidth, desiredHeight);
         cameraTexture = new Texture(desiredWidth, desiredHeight, Pixmap.Format.RGB888);
@@ -83,7 +73,7 @@ public class FaceRecognitionActor extends Actor {
         Size newSizeFrame = new Size(640, 360);
         opencv_imgproc.resize(displayFrame, displayFrame, newSizeFrame);
         if (detectFaces) {
-            System.out.println(frame);
+            opencv_imgproc.cvtColor(frame, frame, opencv_imgproc.COLOR_BGR2GRAY);
             currentUser = recognizer.Predict(frame);
 
             if (user1 == null) {
