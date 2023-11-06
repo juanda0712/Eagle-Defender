@@ -32,7 +32,7 @@ public class FaceRecognitionActor extends Actor {
     private JSONDataManager<User2> user2Manager;
     private boolean detectFaces = false;
     private Mat frame;
-    private Mat grayFrame;
+    private Mat displayFrame;
     private User2 currentUser;
     private Frame processedFrame;
     private User2 user1;
@@ -67,7 +67,7 @@ public class FaceRecognitionActor extends Actor {
         recognizer = new Recognizer(user2Manager);
 
         frame = new Mat();
-        grayFrame = new Mat();
+        displayFrame = new Mat();
         processedFrame = new Frame();
     }
 
@@ -79,6 +79,9 @@ public class FaceRecognitionActor extends Actor {
         }
 
         capture.read(frame);
+        displayFrame = frame;
+        Size newSizeFrame = new Size(640, 360);
+        opencv_imgproc.resize(displayFrame, displayFrame, newSizeFrame);
         if (detectFaces) {
             currentUser = recognizer.Predict(frame);
             if (user1 == null) {
@@ -104,10 +107,9 @@ public class FaceRecognitionActor extends Actor {
         if (processedFrame != null) {
             processedFrame.close();
         }
-        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(frame));
+        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(displayFrame));
         cameraTexture.draw(toPixmap(processedFrame), 0, 0);
         frame.release();
-        grayFrame.release();
     }
 
     @Override
