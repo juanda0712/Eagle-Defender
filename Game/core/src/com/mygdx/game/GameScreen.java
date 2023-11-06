@@ -184,6 +184,11 @@ public class GameScreen implements Screen {
     private List<Float> bombCounterDropsTimes = new ArrayList<>();
 
     private SongInfo songInfo;
+    private float elapsedTimeInSong = 0;
+    private Texture goTexture;
+    private boolean showingGoImage = true;
+    private float goImageTimer = 0;
+    private static final float GO_IMAGE_DURATION = 5.0f;
 
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
@@ -835,6 +840,7 @@ public class GameScreen implements Screen {
         setUpBackground();
         setUpLabels();
         setUpImages();
+        goTexture = new Texture("go.jpeg");
     }
 
     private void setUpLabels() {
@@ -1045,7 +1051,6 @@ public class GameScreen implements Screen {
 
             songInfoFlag = true;
         }
-        //System.out.println(attackerSongs);
 
         String selectedColor = user.getSelectedColor();
         timer += Gdx.graphics.getDeltaTime();
@@ -1067,6 +1072,7 @@ public class GameScreen implements Screen {
                 remainingTime--;
                 if (remainingTime <= 0) {
                     isTimerActivelabel = false; // El tiempo ha finalizado
+                    System.out.println(songInfo.getDuration());
                 }
                 if (timersong == 0){
                     timerLabel.setText("Time: " + remainingTime);
@@ -1079,9 +1085,8 @@ public class GameScreen implements Screen {
             }
         }
 
-
         if (isTimerActive) {
-
+            elapsedTimeInSong += delta;
             elapsedTimeWater += delta;
             elapsedTimeFire += delta;
             elapsedTimeBomb += delta;
@@ -1217,6 +1222,11 @@ public class GameScreen implements Screen {
             }
 
 
+        }
+
+        if (isTimerActive && elapsedTimeInSong >= songInfo.getDuration()) {
+            game.changeScreen(new SelectMode(game, user2Manager, user));
+            isTimerActive = false;
         }
 
         if (isCollide) {
