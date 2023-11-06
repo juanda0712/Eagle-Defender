@@ -81,6 +81,8 @@ public class Register implements Screen {
     private Mat picture;
     private String pictureSlug;
     private User2 user;
+    private Texture texture;
+    private Table pfpTable;
 
     public Register(final MainController game, final JSONDataManager<User2> user2Manager, User2 user) {
         this.game = game;
@@ -95,7 +97,7 @@ public class Register implements Screen {
         builder.build(stage, skin, Gdx.files.internal("register.json"));
         cameraPictureActor = new CameraPictureActor(game, user2Manager, this);
         createGUIElements();
-
+        texture = new Texture(320, 240, Pixmap.Format.RGB888);
     }
 
     private void createTextFields() {
@@ -290,7 +292,7 @@ public class Register implements Screen {
                         dispose();
 
                     }
-                }else {
+                } else {
 
                     final Dialog dialog9 = new Dialog("Please fill all the info", skin);
                     dialog9.show(stage);
@@ -319,10 +321,11 @@ public class Register implements Screen {
         btnCardInfo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (cardDataForm.isVisible()) {
+                /*if (cardDataForm.isVisible()) {
                     stage.addActor(cardDataForm);
                     cardDataForm.fadeIn();
-                }
+                }*/
+                updatePfpTable();
             }
         });
 
@@ -338,6 +341,9 @@ public class Register implements Screen {
 
         Table faceCamTable = stage.getRoot().findActor("faceCamTable");
         faceCamTable.add(cameraPictureActor);
+
+        pfpTable = stage.getRoot().findActor("TablePfp");
+
     }
 
     private void getQuestions() {
@@ -352,9 +358,7 @@ public class Register implements Screen {
     }
 
     public void setPicture(Mat picture) {
-        System.out.println(picture);
         this.picture = picture;
-        System.out.println(this.picture);
     }
 
     private void savePicture(String name) {
@@ -377,26 +381,13 @@ public class Register implements Screen {
     }
 
     private void updatePfpTable() {
-        Table pfpTable = stage.getRoot().findActor("TablePfp");
-        if (pfpTable != null && processedFrame != null) {
-            processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(picture));
-            Pixmap pixmap = ImageConversion.matToPixmap(picture);
-
-
-            Texture texture = new Texture(pixmap);
-
-
-            Drawable imageDrawable = new TextureRegionDrawable(new TextureRegion(texture));
-
-
-            Image image = new Image(imageDrawable);
-
-
-            pfpTable.add(image).row();
-        }
+        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(picture));
+        Pixmap pixmap = ImageConversion.toPixmap(processedFrame);
+        texture.draw(pixmap, 0, 0);
+        Drawable imageDrawable = new TextureRegionDrawable(new TextureRegion(texture));
+        Image image = new Image(imageDrawable);
+        pfpTable.add(image).row();
     }
-
-
 
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
@@ -481,6 +472,7 @@ public class Register implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
+
 
     }
 
