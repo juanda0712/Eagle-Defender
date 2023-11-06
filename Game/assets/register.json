@@ -652,7 +652,7 @@
 						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.Label",
 						"name": "default"
 					},
-					"text": "Questions",
+					"text": "Security questions",
 					"textAlignment": 8,
 					"ellipsis": false,
 					"ellipsisString": "...",
@@ -780,7 +780,7 @@
 				"child": {
 					"class": "TextButton",
 					"name": "btnQuestions",
-					"text": "Go to questions",
+					"text": "Go to security questions",
 					"style": {
 						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextButton",
 						"name": "default"
@@ -1921,7 +1921,22 @@
 		"class": "Table",
 		"cells": [
 			{
-				"child": null,
+				"child": {
+					"class": "Label",
+					"name": null,
+					"style": {
+						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.Label",
+						"name": "default"
+					},
+					"text": "This cam will be used to take your pic",
+					"textAlignment": 8,
+					"ellipsis": false,
+					"ellipsisString": "...",
+					"wrap": false,
+					"color": null,
+					"touchable": "enabled",
+					"visible": true
+				},
 				"row": 0,
 				"column": 0,
 				"padLeft": 0,
