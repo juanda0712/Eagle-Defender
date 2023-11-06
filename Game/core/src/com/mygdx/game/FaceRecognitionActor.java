@@ -79,17 +79,8 @@ public class FaceRecognitionActor extends Actor {
         }
 
         capture.read(frame);
-        Size newSizeFrame = new Size(640, 360);
-        opencv_imgproc.resize(frame, frame, newSizeFrame);
         if (detectFaces) {
-            opencv_imgproc.cvtColor(frame, grayFrame, opencv_imgproc.COLOR_RGBA2GRAY);
-
-            Size newSize = new Size(640, 360);
-            opencv_imgproc.resize(grayFrame, grayFrame, newSize);
-
-            currentUser = recognizer.Predict(grayFrame);
-            System.out.println(currentUser);
-
+            currentUser = recognizer.Predict(frame);
             if (user1 == null) {
                 game.changeScreen(new SelectMode(game, user2Manager, currentUser));
                 login.dispose();
@@ -106,8 +97,6 @@ public class FaceRecognitionActor extends Actor {
                 game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference));
                 login.dispose();
             }
-
-            //game.changeScreen(new SelectMode(game, user2Manager, currentUser));
             detectFaces = false;
             capture.close();
         }
