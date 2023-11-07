@@ -97,7 +97,7 @@ public class CameraPictureActor extends Actor {
         float leftTableHeight = screenHeight;
         float camerax = (leftTableWidth / 12);
 
-        float cameray = (float) (leftTableHeight / 1.5);
+        float cameray = (float) (leftTableHeight / 1.4);
 
         batch.draw(cameraTexture, camerax + 30, cameray, cameraTexture.getWidth(), cameraTexture.getHeight(), 0, 0, cameraTexture.getWidth(), cameraTexture.getHeight(), false, true);
     }

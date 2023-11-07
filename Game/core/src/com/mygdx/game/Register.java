@@ -31,7 +31,12 @@ import org.bytedeco.javacv.Java2DFrameUtils;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.Point2f;
+import org.bytedeco.opencv.opencv_core.Scalar;
 import org.bytedeco.opencv.opencv_core.Size;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Point;
 //import org.opencv.imgcodecs.Imgcodecs;
 
 
@@ -338,7 +343,8 @@ public class Register implements Screen {
                     stage.addActor(cardDataForm);
                     cardDataForm.fadeIn();
                 }
-                //updatePfpTable();
+
+
             }
         });
 
@@ -348,10 +354,17 @@ public class Register implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 String name = generateUniqueFilename("imagen", "png");
                 cameraPictureActor.takePicture();
-                updatePfpTable();
+                //updatePfpTable();
             }
         });
+        TextButton btnShowPic = stage.getRoot().findActor("btnShowPic");
+        btnShowPic.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                updatePfpTable();
+            }
 
+        });
         Table faceCamTable = stage.getRoot().findActor("faceCamTable");
         faceCamTable.add(cameraPictureActor);
 
@@ -397,6 +410,7 @@ public class Register implements Screen {
         Mat render = picture.clone();
         Size newSizeFrame = new Size(320, 240);
         opencv_imgproc.resize(render, render, newSizeFrame);
+        org.bytedeco.opencv.global.opencv_imgproc.warpAffine(render, render, org.bytedeco.opencv.global.opencv_imgproc.getRotationMatrix2D(new Point2f((float) render.cols() / 2, (float) render.rows() / 2), 180, 1), render.size());
         processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(render));
         Pixmap pixmap = ImageConversion.toPixmap(processedFrame);
         texture.draw(pixmap, 0, 0);
@@ -404,7 +418,23 @@ public class Register implements Screen {
         Image image = new Image(imageDrawable);
         pfpTable.add(image).row();
     }
+    /*
+    private Mat applyCircularMask(Mat inputImage) {
+        Mat mask = new Mat(inputImage.size(), CvType.CV_8UC1, new Scalar(0));
+        Size size = mask.size();
 
+        Point center = new Point(size.width / 2, size.height / 2);
+        int radius = Math.min(size.width, size.height) / 2;
+
+        opencv_imgproc.circle(mask, center, radius, new Scalar(255), -1, 8, 0);
+
+        Mat result = new Mat();
+        inputImage.copyTo(result, mask);
+
+        return result;
+    }
+
+     */
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
         Skin skin = VisUI.getSkin();
@@ -479,7 +509,7 @@ public class Register implements Screen {
         }
     }
     private boolean checkButtons() {
-        int totalButtons = 9; // Asegúrate de establecer el número correcto de botones
+        int totalButtons = 9;
         return clickedButtons.size() == totalButtons;
     }
 
@@ -495,7 +525,6 @@ public class Register implements Screen {
 
 
     }
-
 
     @Override
     public void resize(int width, int height) {
