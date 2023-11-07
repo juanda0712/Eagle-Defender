@@ -98,8 +98,9 @@
 		"font": "font1",
 		"fontColor": "blackColor",
 		"background": "textfield",
-		"cursor": "cursor",
-		"selection": "cursor",
+		"focusedBackground": "cursor2",
+		"cursor": "cursor2",
+		"selection": "cursor2",
 		"messageFontColor": "blueColor"
 	}
 },

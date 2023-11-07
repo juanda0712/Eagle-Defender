@@ -28,8 +28,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
+import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.Size;
 //import org.opencv.imgcodecs.Imgcodecs;
 
 
@@ -37,6 +39,8 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
@@ -73,7 +77,7 @@ public class Register implements Screen {
     private boolean validPassword = false;
     private boolean isValidDate = false;
     private FileHandle selectedFile;
-
+    private Set<ImageButton> clickedButtons = new HashSet<>();
     private Frame processedFrame;
     Skin skin = VisUI.getSkin();
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
@@ -123,6 +127,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Smooth");
+                clickedButtons.add(btnSmoothTexture);
             }
         });
         ImageButton btnRockyTexture = stage.getRoot().findActor("textureRocky");
@@ -130,6 +135,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Rocky");
+                clickedButtons.add(btnRockyTexture);
             }
         });
         ImageButton btnBrickedTexture = stage.getRoot().findActor("textureBricked");
@@ -137,6 +143,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Bricked");
+                clickedButtons.add(btnBrickedTexture);
             }
         });
         ImageButton btnColor1 = stage.getRoot().findActor("Color1");
@@ -144,6 +151,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color1");
+                clickedButtons.add(btnColor1);
             }
         });
         ImageButton btnColor2 = stage.getRoot().findActor("Color2");
@@ -151,6 +159,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color2");
+                clickedButtons.add(btnColor2);
             }
         });
         ImageButton btnColor3 = stage.getRoot().findActor("Color3");
@@ -158,6 +167,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color3");
+                clickedButtons.add(btnColor3);
             }
         });
         ImageButton btnColor4 = stage.getRoot().findActor("Color4");
@@ -165,6 +175,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color4");
+                clickedButtons.add(btnColor4);
             }
         });
         ImageButton btnColor5 = stage.getRoot().findActor("Color5");
@@ -172,6 +183,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color5");
+                clickedButtons.add(btnColor5);
             }
         });
         ImageButton btnColor6 = stage.getRoot().findActor("Color6");
@@ -179,6 +191,7 @@ public class Register implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color6");
+                clickedButtons.add(btnColor6);
             }
         });
     }
@@ -211,7 +224,7 @@ public class Register implements Screen {
             public void clicked(InputEvent event, float x, float y) {
 
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
-                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, confirmPasswordField, birthDateField, emailField, songField1, songField2, songField3)) {
+                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, confirmPasswordField, birthDateField, emailField, songField1, songField2, songField3) && checkButtons()) {
                     if (validPassword) {
                         getQuestions();
                         for (String question : questionsArray) {
@@ -321,11 +334,11 @@ public class Register implements Screen {
         btnCardInfo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                /*if (cardDataForm.isVisible()) {
+                if (cardDataForm.isVisible()) {
                     stage.addActor(cardDataForm);
                     cardDataForm.fadeIn();
-                }*/
-                updatePfpTable();
+                }
+                //updatePfpTable();
             }
         });
 
@@ -335,7 +348,7 @@ public class Register implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 String name = generateUniqueFilename("imagen", "png");
                 cameraPictureActor.takePicture();
-                //updatePfpTable();
+                updatePfpTable();
             }
         });
 
@@ -381,7 +394,10 @@ public class Register implements Screen {
     }
 
     private void updatePfpTable() {
-        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(picture));
+        Mat render = picture.clone();
+        Size newSizeFrame = new Size(320, 240);
+        opencv_imgproc.resize(render, render, newSizeFrame);
+        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(render));
         Pixmap pixmap = ImageConversion.toPixmap(processedFrame);
         texture.draw(pixmap, 0, 0);
         Drawable imageDrawable = new TextureRegionDrawable(new TextureRegion(texture));
@@ -461,6 +477,10 @@ public class Register implements Screen {
         } else {
             this.validPassword = true;
         }
+    }
+    private boolean checkButtons() {
+        int totalButtons = 9; // Asegúrate de establecer el número correcto de botones
+        return clickedButtons.size() == totalButtons;
     }
 
     @Override

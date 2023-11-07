@@ -13,23 +13,16 @@ font-export
   index: -1
 textfield
   rotate: false
-  xy: 515, 483
+  xy: 577, 598
   size: 13, 26
   split: 1, 1, 1, 1
   pad: 3, 3, 3, 3
   orig: 13, 26
   offset: 0, 0
   index: -1
-cursor2
-  rotate: false
-  xy: 577, 610
-  size: 18, 14
-  orig: 18, 14
-  offset: 0, 0
-  index: -1
 border
   rotate: false
-  xy: 199, 193
+  xy: 600, 645
   size: 3, 3
   split: 1, 1, 1, 1
   orig: 3, 3
@@ -103,6 +96,13 @@ cursor
   xy: 1, 198
   size: 512, 512
   orig: 512, 512
+  offset: 0, 0
+  index: -1
+cursor2
+  rotate: false
+  xy: 199, 186
+  size: 10, 10
+  orig: 10, 10
   offset: 0, 0
   index: -1
 underline2

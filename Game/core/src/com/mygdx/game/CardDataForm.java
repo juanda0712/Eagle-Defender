@@ -26,8 +26,6 @@ public class CardDataForm extends VisWindow {
         row();
 
         VisTextField cardNumberField = new VisTextField("");
-        cardNumberField.setPasswordMode(true);
-        cardNumberField.setPasswordCharacter('*');
         add(cardNumberField).left().pad(5);
         row();
 
@@ -47,7 +45,7 @@ public class CardDataForm extends VisWindow {
         add(cardExpirationField).left().pad(5);
         row();
 
-        Label cardCVS = new Label("CVS", skin);
+        Label cardCVS = new Label("CVC", skin);
         add(cardCVS).left().pad(5);
         row();
 

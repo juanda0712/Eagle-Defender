@@ -243,26 +243,6 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Octavio Sánchez/Downloads/gdx-skins-master/gdx-skins-master/terra-mother/raw/cursor2.png
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: cursor2
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: TEXTURE
-			hidden: false
-		}
-		{
 			file: D:/TEC/Principios/Eagle/Eagle-Defender/Game/assets/cursor.png
 			bgColor: {
 				r: 1
@@ -273,6 +253,26 @@ atlasData: {
 			tint: null
 			tintName: null
 			name: cursor
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: TEXTURE
+			hidden: false
+		}
+		{
+			file: D:/TEC/Principios/Eagle/Eagle-Defender/Game/assets/cursor2.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: cursor2
 			tiled: false
 			minWidth: -1
 			minHeight: -1
@@ -713,7 +713,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: focusedBackground
 						optional: true
-						value: null
+						value: cursor2
 					}
 					disabledBackground: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -725,13 +725,13 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: cursor
 						optional: true
-						value: cursor
+						value: cursor2
 					}
 					selection: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: selection
 						optional: true
-						value: cursor
+						value: cursor2
 					}
 					messageFont: {
 						type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -3323,7 +3323,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -3335,13 +3335,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -3443,7 +3443,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -3455,13 +3455,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -3592,7 +3592,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -3604,13 +3604,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -3712,7 +3712,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -3724,13 +3724,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -3820,7 +3820,7 @@ sceneComposer: {
 							deletable: false
 							parent: null
 						}
-						text: (AA-MM-DD)
+						text: (Format: year-month-day)
 						textAlignment: 8
 						ellipsis: false
 						ellipsisString: ...
@@ -3886,7 +3886,7 @@ sceneComposer: {
 							deletable: false
 							parent: null
 						}
-						text: "(*, 0-9, A-a)"
+						text: "(Format: *, 0-9, A-a)"
 						textAlignment: 8
 						ellipsis: false
 						ellipsisString: ...
@@ -3972,7 +3972,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -3984,13 +3984,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -4092,7 +4092,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -4104,13 +4104,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -4262,7 +4262,7 @@ sceneComposer: {
 					padTop: 0
 					padBottom: 0
 					spaceLeft: 0
-					spaceRight: 0
+					spaceRight: 6
 					spaceTop: 0
 					spaceBottom: 0
 					expandX: false
@@ -4312,7 +4312,7 @@ sceneComposer: {
 							deletable: false
 							parent: null
 						}
-						text: Security questions
+						text: Security questions (in case you forget your password)
 						textAlignment: 8
 						ellipsis: false
 						ellipsisString: ...
@@ -5633,7 +5633,7 @@ sceneComposer: {
 							parent: null
 						}
 						text: Smooth
-						textAlignment: 8
+						textAlignment: 16
 						ellipsis: false
 						ellipsisString: ...
 						wrap: false
@@ -5657,7 +5657,7 @@ sceneComposer: {
 					fillY: false
 					growX: false
 					growY: false
-					alignment: 8
+					alignment: 16
 					minWidth: -1
 					minHeight: -1
 					maxWidth: -1
@@ -6253,7 +6253,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -6265,13 +6265,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -6386,7 +6386,7 @@ sceneComposer: {
 					fillY: false
 					growX: false
 					growY: false
-					alignment: 8
+					alignment: 16
 					minWidth: -1
 					minHeight: -1
 					maxWidth: -1
@@ -6982,7 +6982,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -6994,13 +6994,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -7115,7 +7115,7 @@ sceneComposer: {
 					fillY: false
 					growX: false
 					growY: false
-					alignment: 8
+					alignment: 16
 					minWidth: -1
 					minHeight: -1
 					maxWidth: -1
@@ -7711,7 +7711,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: focusedBackground
 									optional: true
-									value: null
+									value: cursor2
 								}
 								disabledBackground: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -7723,13 +7723,13 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: cursor
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								selection: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: selection
 									optional: true
-									value: cursor
+									value: cursor2
 								}
 								messageFont: {
 									type: com.badlogic.gdx.graphics.g2d.BitmapFont
