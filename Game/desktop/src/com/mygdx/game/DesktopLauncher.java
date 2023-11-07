@@ -11,8 +11,8 @@ public class DesktopLauncher {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setForegroundFPS(60);
         config.setTitle("Eagle Defender");
-        config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode()); // Configurar pantalla completa
-        //config.setWindowedMode(1720, 1080);
+        //config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode()); // Configurar pantalla completa
+        config.setWindowedMode(1920, 1080);
         config.useVsync(true);
         new Lwjgl3Application(new MainController(), config);
     }

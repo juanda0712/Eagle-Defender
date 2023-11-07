@@ -31,6 +31,12 @@
 		"g": 0.43137255,
 		"b": 0.43137255,
 		"a": 1
+	},
+	"RGBA_254_35_35_255": {
+		"r": 0.99607843,
+		"g": 0.13725491,
+		"b": 0.13725491,
+		"a": 1
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
@@ -98,9 +104,10 @@
 		"font": "font1",
 		"fontColor": "blackColor",
 		"background": "textfield",
-		"cursor": "cursor",
-		"selection": "cursor",
-		"messageFontColor": "blueColor"
+		"focusedBackground": "cursor2",
+		"cursor": "cursor2",
+		"selection": "cursor2",
+		"messageFontColor": "blackColor"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
