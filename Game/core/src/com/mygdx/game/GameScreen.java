@@ -189,6 +189,11 @@ public class GameScreen implements Screen {
     private List<Float> bombCounterDropsTimes = new ArrayList<>();
 
     private SongInfo songInfo;
+    private float elapsedTimeInSong = 0;
+    private Texture goTexture;
+    private boolean showingGoImage = true;
+    private float goImageTimer = 0;
+    private static final float GO_IMAGE_DURATION = 5.0f;
 
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
@@ -840,6 +845,7 @@ public class GameScreen implements Screen {
         setUpBackground();
         setUpLabels();
         setUpImages();
+        goTexture = new Texture("go.jpeg");
     }
 
     private void setUpLabels() {
@@ -1055,7 +1061,9 @@ public class GameScreen implements Screen {
             songInfo = spotifyReference.get().getSongInfo(attackerSongs.get(songPosition));
             songInfoFlag = true;
         }
+
     }
+
 
     private void handleUIUpdates(float delta) {
         String selectedColor = user.getSelectedColor();
@@ -1077,7 +1085,9 @@ public class GameScreen implements Screen {
             if (elapsedTimeWater >= 1.0f) {
                 remainingTime--;
                 if (remainingTime <= 0) {
+
                     isTimerActivelabel = false;
+
                 }
                 timerLabel.setText("Time: " + remainingTime);
                 timerLabel.setPosition(900, 980);
@@ -1087,6 +1097,7 @@ public class GameScreen implements Screen {
         }
 
         if (isTimerActive) {
+
             elapsedTimeWater += delta;
             elapsedTimeFire += delta;
             elapsedTimeBomb += delta;
@@ -1170,6 +1181,7 @@ public class GameScreen implements Screen {
         return flagAux;
     }
 
+
     private float updateElapsedTime(float elapsedTime, List<Float> auxList, int powerCount) {
         if (auxList.isEmpty()) {
             elapsedTime = 0;
@@ -1179,6 +1191,7 @@ public class GameScreen implements Screen {
                 auxList.remove(0);
             } else {
                 auxList.clear();
+
             }
         }
         return elapsedTime;
