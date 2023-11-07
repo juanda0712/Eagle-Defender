@@ -34,6 +34,7 @@ import com.mygdx.utils.SpotifyAuthenticator;
 import lombok.Getter;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.math.MathUtils;
 
 import java.util.*;
 import java.util.List;
@@ -47,6 +48,10 @@ public class GameScreen implements Screen {
     boolean bulletCollidedSteel = false;
     //private List<Barrera> barreras = new ArrayList<>();
     private final MainController game;
+
+    private float targetX;
+    private float targetY;
+
     private List<Rectangle> placedRectangles = new ArrayList<>();
     Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
     Map<Rectangle, Integer> barrierCounterscement = new HashMap<>();  // Mapa para mantener los contadores de las barreras
@@ -762,7 +767,7 @@ public class GameScreen implements Screen {
     }
     private void minusEagleCounter() {
         if (countersBarriers.getEagleCounter() < 0) {
-            countersBarriers.setEagleCounter(countersBarriers.getSteelCounter() - 1);
+            countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
             //gameScreen.updateCounterLabel();
         }
     }
@@ -1043,263 +1048,223 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        //Ejemplo reproduccion de una cancion
-        if (this.spotifyReference.get() != null && !songInfoFlag) {
-            //songInfo = this.spotifyReference.get().getSongInfo("Billie+jean");
-            songInfo = this.spotifyReference.get().getSongInfo(attackerSongs.get(songPosition));
-            //System.out.println(songInfo);
+        handleSongInfo();
+        handleUIUpdates(delta);
+        handleTimer(delta);
+        handleCollisionAndBullet(delta);
+        handleInput();
+        stage.draw();
+    }
 
+    private void handleSongInfo() {
+        if (spotifyReference.get() != null && !songInfoFlag) {
+            songInfo = spotifyReference.get().getSongInfo(attackerSongs.get(songPosition));
             songInfoFlag = true;
         }
 
-        String selectedColor = user.getSelectedColor();
-        timer += Gdx.graphics.getDeltaTime();
+    }
 
-        //Color backgroundColor = new Color(0.96f, 0.96f, 0.86f, 1);
-        //ScreenUtils.clear(backgroundColor);
+
+    private void handleUIUpdates(float delta) {
+        String selectedColor = user.getSelectedColor();
+        timer += delta;
+
         ScreenUtils.clear(getColorFilterForPalette(selectedColor));
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.act(Math.min(delta, 1 / 30f));
+
         Array<User2> users = user2Manager.read();
         usernameLabel.setText(user.getUsername());
         updateCounterLabel();
+    }
 
-
+    private void handleTimer(float delta) {
         if (isTimerActivelabel) {
             elapsedTimeWater += delta;
-            if (elapsedTimeWater >= 1.0f) {  // Actualizar cada segundo
+            if (elapsedTimeWater >= 1.0f) {
                 remainingTime--;
                 if (remainingTime <= 0) {
-                    isTimerActivelabel = false; // El tiempo ha finalizado
-                    System.out.println(songInfo.getDuration());
+
+                    isTimerActivelabel = false;
+
                 }
-                if (timersong == 0){
-                    timerLabel.setText("Time: " + remainingTime);
-                    timerLabel.setPosition(900, 980);
-                    stage.addActor(timerLabel);
-                    elapsedTimeWater = 0; // Reiniciar el contador de tiempo transcurrido
-                }else {
-                    stage.getRoot().removeActor(timerLabel);
-                }
+                timerLabel.setText("Time: " + remainingTime);
+                timerLabel.setPosition(900, 980);
+                stage.addActor(timerLabel);
+                elapsedTimeWater = 0;
             }
         }
 
         if (isTimerActive) {
-            elapsedTimeInSong += delta;
+
             elapsedTimeWater += delta;
             elapsedTimeFire += delta;
             elapsedTimeBomb += delta;
+
             resetInterval = (float) (30 / songInfo.getDuration()) * 60;
 
-            // Verifica si ha pasado el tiempo necesario para aumentar el contador
-            if (waterCounterDrops > 0) {
-                if (Gdx.input.isKeyPressed(Input.Keys.R) && water) {
-                    flagAux = false;
-                    if (waterCounterDrops >= 2 && !flagAux && water) {
-                        auxList.add(elapsedTimeWater);
-                        flagAux = true;
-                    }
-                }
+            updatePowerCounters(delta, waterCounterDrops, waterPowerCount, waterPowerTimers, elapsedTimeWater, maxWaterPowerCount, auxList, flagAux, water);
+            updatePowerCounters(delta, fireCounterDrops, firePowerCount, firePowerTimers, elapsedTimeFire, maxFirePowerCount, fireauxList, fireflagAux, fire);
+            updatePowerCounters(delta, bombCounterDrops, bombPowerCount, bombPowerTimers, elapsedTimeBomb, maxBombPowerCount, bombauxList, bombflagAux, bomb);
 
-                if (elapsedTimeWater >= resetInterval && waterPowerCount < maxWaterPowerCount) {
-                    // Aumenta el contador en 1
+            // Lógica de regeneración de balas en función de resetInterval
+            if (resetInterval > 0) {
+                elapsedTimeWater += delta;
+                if (elapsedTimeWater >= resetInterval) {
+                    // Regenera la bala aquí
+                    resetBullet();
+                    elapsedTimeWater = 0;
+                }
+            }
+        }
+    }
+
+    private void resetBullet() {
+        if (water) {
+            if (waterCounterDrops > 0) {
+                if (waterPowerCount < maxWaterPowerCount) {
                     waterPowerCount++;
                     updateCounterLabel();
+                    waterPowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
 
-                    // Registra el tiempo actual en el temporizador de este Water Power
-                    waterPowerTimers.add(elapsedTimeWater);
-
-                    waterCounterDrops--; // Reduce la cantidad de caídas pendientes
-
-                    if (auxList.isEmpty()) {
-                        elapsedTimeWater = 0;
-                    } else {
-                        if (waterPowerCount < 3) {
-                            elapsedTimeWater = elapsedTimeWater - auxList.get(0);
-                            auxList.remove(0);
-                            flagAux = false;
-                        } else {
-                            auxList.clear();
-                        }
-
-                    }
-                }
-
-            }
-            // Registra el tiempo para cada Water Power independientemente
-            for (int i = 0; i < waterPowerTimers.size(); i++) {
-                waterPowerTimers.set(i, waterPowerTimers.get(i) + delta);
-                if (waterPowerTimers.get(i) >= 5.0f) {
-                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                    waterCounterDrops--;
                 }
             }
-
-            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+        } else if (fire) {
             if (fireCounterDrops > 0) {
-                if (Gdx.input.isKeyPressed(Input.Keys.R) && fire) {
-                    fireflagAux = false;
-                    if (fireCounterDrops >= 2 && !fireflagAux && fire) {
-                        fireauxList.add(elapsedTimeFire);
-                        fireflagAux = true;
-                    }
-                }
-
-                if (elapsedTimeFire >= resetInterval && firePowerCount < maxFirePowerCount) {
-                    // Aumenta el contador en 1
+                if (firePowerCount < maxFirePowerCount) {
                     firePowerCount++;
                     updateCounterLabel();
+                    firePowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
 
-                    // Registra el tiempo actual en el temporizador de este Water Power
-                    firePowerTimers.add(elapsedTimeFire);
-
-                    fireCounterDrops--; // Reduce la cantidad de caídas pendientes
-
-                    if (fireauxList.isEmpty()) {
-                        elapsedTimeFire = 0;
-                    } else {
-                        if (firePowerCount < 2) {
-                            elapsedTimeFire = elapsedTimeFire - fireauxList.get(0);
-                            fireauxList.remove(0);
-                            fireflagAux = false;
-                        } else {
-                            fireauxList.clear();
-                        }
-
-                    }
-                }
-
-            }
-            // Registra el tiempo para cada Water Power independientemente
-            for (int i = 0; i < firePowerTimers.size(); i++) {
-                firePowerTimers.set(i, firePowerTimers.get(i) + delta);
-                if (firePowerTimers.get(i) >= 5.0f) {
-                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                    fireCounterDrops--;
                 }
             }
-
-            // Verifica si ha pasado el tiempo necesario para aumentar el contador
+        } else if (bomb) {
             if (bombCounterDrops > 0) {
-                if (Gdx.input.isKeyPressed(Input.Keys.R) && bomb) {
-                    bombflagAux = false;
-                    if (bombCounterDrops >= 2 && !bombflagAux && bomb) {
-                        bombauxList.add(elapsedTimeBomb);
-                        bombflagAux = true;
-                    }
-                }
-
-                if (elapsedTimeBomb >= resetInterval && bombPowerCount < maxBombPowerCount) {
-                    // Aumenta el contador en 1
+                if (bombPowerCount < maxBombPowerCount) {
                     bombPowerCount++;
                     updateCounterLabel();
+                    bombPowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
 
-                    // Registra el tiempo actual en el temporizador de este Water Power
-                    bombPowerTimers.add(elapsedTimeBomb);
-
-                    bombCounterDrops--; // Reduce la cantidad de caídas pendientes
-
-                    if (bombauxList.isEmpty()) {
-                        elapsedTimeBomb = 0;
-                    } else {
-                        if (bombPowerCount < 4) {
-                            elapsedTimeBomb = elapsedTimeBomb - bombauxList.get(0);
-                            bombauxList.remove(0);
-                            bombflagAux = false;
-                        } else {
-                            bombauxList.clear();
-                        }
-
-                    }
-                }
-
-            }
-            // Registra el tiempo para cada Water Power independientemente
-            for (int i = 0; i < bombPowerTimers.size(); i++) {
-                bombPowerTimers.set(i, bombPowerTimers.get(i) + delta);
-                if (bombPowerTimers.get(i) >= 5.0f) {
-                    // Si ha pasado el tiempo necesario, puedes realizar alguna acción si es necesario
+                    bombCounterDrops--;
                 }
             }
-
-
         }
+    }
 
-        if (isTimerActive && elapsedTimeInSong >= songInfo.getDuration()) {
-            game.changeScreen(new SelectMode(game, user2Manager, user));
-            isTimerActive = false;
+    private void updatePowerCounters(float delta, int counterDrops, int powerCount, List<Float> powerTimers, float elapsedTime, int maxPowerCount, List<Float> auxList, boolean flagAux, boolean powerType) {
+        if (counterDrops > 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.R) && powerType) {
+                flagAux = updateFlagAux(flagAux, counterDrops, auxList, elapsedTime);
+            }
+
+            if (elapsedTime >= resetInterval && powerCount < maxPowerCount) {
+                powerCount++;
+                updateCounterLabel();
+                powerTimers.add(elapsedTime);
+                counterDrops--;
+
+                elapsedTime = updateElapsedTime(elapsedTime, auxList, powerCount);
+            }
+
+            updatePowerTimers(powerTimers, delta);
         }
+    }
 
-        if (isCollide) {
-            //collisionSprite.setPosition(bulletX-50, bulletY);
-            //collisionSprite.setPosition(bulletX-15, bulletY);
-            //collisionSprite.draw(batch);
-            //Actions.removeActor(bulletImage);
-            //isShooting = false;
-            // Si la bala salió de la pantalla la elimina
-            if (bulletX < -bulletSprite.getWidth()) {
-                isShooting = false;
+    private boolean updateFlagAux(boolean flagAux, int counterDrops, List<Float> auxList, float elapsedTime) {
+        if (counterDrops >= 2 && !flagAux) {
+            auxList.add(elapsedTime);
+            flagAux = true;
+        }
+        return flagAux;
+    }
+
+
+    private float updateElapsedTime(float elapsedTime, List<Float> auxList, int powerCount) {
+        if (auxList.isEmpty()) {
+            elapsedTime = 0;
+        } else {
+            if (powerCount < 3) {
+                elapsedTime -= auxList.get(0);
+                auxList.remove(0);
+            } else {
+                auxList.clear();
+
             }
         }
-/*
+        return elapsedTime;
+    }
+
+    private void updatePowerTimers(List<Float> powerTimers, float delta) {
+        for (int i = 0; i < powerTimers.size(); i++) {
+            powerTimers.set(i, powerTimers.get(i) + delta);
+            if (powerTimers.get(i) >= 5.0f) {
+                // Realizar alguna acción si es necesario
+            }
+        }
+    }
+
+    private void handleCollisionAndBullet(float delta) {
+        if (isCollide && bulletX < -bulletSprite.getWidth()) {
+            isShooting = false;
+        }
+
+
         if (isShooting) {
-            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();
+            float deltaX = targetX - bulletX;
+            float deltaY = targetY - bulletY;
+            float angle = MathUtils.atan2(deltaY, deltaX);
+            bulletX += bulletSpeed * MathUtils.cos(angle) * Gdx.graphics.getDeltaTime();    bulletY += bulletSpeed * MathUtils.sin(angle) * Gdx.graphics.getDeltaTime();
             bulletImage.setPosition(bulletX, bulletY);
-            float targetX = Gdx.input.getX();
-            float targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
-
-            if (targetX <= Gdx.graphics.getWidth() / 2) {
-                float deltaX = targetX - bulletX;
-                float deltaY = targetY - bulletY;
-                float length = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-                float directionX = deltaX / length;
-                float directionY = deltaY / length;
-                bulletX += directionX * bulletSpeed * Gdx.graphics.getDeltaTime();
-                bulletY += directionY * bulletSpeed * Gdx.graphics.getDeltaTime();
-                bulletImage.setPosition(bulletX, bulletY);
-
-                if (fireButton.isChecked()) {
-                    bulletSprite.setTexture(fireTexture);
-                    stage.addActor(bulletImage);
-                } else if (waterButton.isChecked()) {
-                    bulletSprite.setTexture(waterTexture);
-                    stage.addActor(bulletImage);
-                } else if (bombButton.isChecked()) {
-                    bulletSprite.setTexture(bombTexture);
-                    stage.addActor(bulletImage);
-                }
-
-                if (bulletX < -bulletSprite.getWidth()) {
-                    isShooting = false;
-                }
-            }
-        } else {
-            Actions.removeActor(bulletImage);
-        }
-
- */if (isShooting) {
-            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
-            bulletImage.setPosition(bulletX, bulletY);
-            if (fireButton.isChecked()) {
-                bulletSprite.setTexture(fireTexture);
-                stage.addActor(bulletImage);
-            } else if (waterButton.isChecked()) {
-                bulletSprite.setTexture(waterTexture);
-                stage.addActor(bulletImage);
-            } else if (bombButton.isChecked()) {
-                bulletSprite.setTexture(bombTexture);
-                stage.addActor(bulletImage);
-            }
-
-            if (bulletX < -bulletSprite.getWidth()) {
+            if (bulletX < -bulletSprite.getWidth() || bulletX > Gdx.graphics.getWidth() ||
+                    bulletY < 0 || bulletY > Gdx.graphics.getHeight() ||            (Math.abs(deltaX) <= bulletSpeed * Gdx.graphics.getDeltaTime() &&
+                    Math.abs(deltaY) <= bulletSpeed * Gdx.graphics.getDeltaTime())) {
                 isShooting = false;
+                bulletImage.remove();
             }
         } else {
             Actions.removeActor(bulletImage);
+
         }
 
 
-        handleInput();
-        stage.draw();
+    }
+
+    private void updateBulletPosition(float delta) {
+        /*
+        if (isShooting) {
+            float deltaX = targetX - bulletX;
+            float deltaY = targetY - bulletY;
+            float angle = MathUtils.atan2(deltaY, deltaX);
+            bulletX += bulletSpeed * MathUtils.cos(angle) * Gdx.graphics.getDeltaTime();    bulletY += bulletSpeed * MathUtils.sin(angle) * Gdx.graphics.getDeltaTime();
+            bulletImage.setPosition(bulletX, bulletY);
+            if (bulletX < -bulletSprite.getWidth() || bulletX > Gdx.graphics.getWidth() ||
+                    bulletY < 0 || bulletY > Gdx.graphics.getHeight() ||            (Math.abs(deltaX) <= bulletSpeed * Gdx.graphics.getDeltaTime() &&
+                    Math.abs(deltaY) <= bulletSpeed * Gdx.graphics.getDeltaTime())) {
+                isShooting = false;
+                bulletImage.remove();
+            }
+        } else {
+            Actions.removeActor(bulletImage);
+
+        }
+        */
+
+    }
+
+    private void updateBulletTexture() {
+        if (fireButton.isChecked()) {
+            bulletSprite.setTexture(fireTexture);
+            stage.addActor(bulletImage);
+        } else if (waterButton.isChecked()) {
+            bulletSprite.setTexture(waterTexture);
+            stage.addActor(bulletImage);
+        } else if (bombButton.isChecked()) {
+            bulletSprite.setTexture(bombTexture);
+            stage.addActor(bulletImage);
+        }
     }
 
 
@@ -1503,9 +1468,27 @@ public class GameScreen implements Screen {
 
         if (isTimerActive) {
             if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && !isShooting) {
+                targetX = Gdx.input.getX();
+                targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
                 bulletCollided = false;
                 bulletCollidedcement = false;
                 bulletCollidedSteel = false;
+                bulletX = playerX + playerSprite.getWidth();
+                bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2;
+                isShooting = true;
+                isCollide = false;
+
+                if (fireButton.isChecked()) {
+                    bulletSprite.setTexture(fireTexture);
+                    stage.addActor(bulletImage);
+                } else if (waterButton.isChecked()) {
+                    bulletSprite.setTexture(waterTexture);
+                    stage.addActor(bulletImage);
+                } else if (bombButton.isChecked()) {
+                    bulletSprite.setTexture(bombTexture);
+                    stage.addActor(bulletImage);
+                }
                 // Inicia el disparo de la bala desde la posición del player.
                 if (waterPowerCount > 0 && water) {
                     bulletX = playerX + playerSprite.getWidth();
