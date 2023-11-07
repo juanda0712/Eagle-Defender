@@ -762,7 +762,7 @@ public class GameScreen implements Screen {
     }
     private void minusEagleCounter() {
         if (countersBarriers.getEagleCounter() < 0) {
-            countersBarriers.setEagleCounter(countersBarriers.getSteelCounter() - 1);
+            countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
             //gameScreen.updateCounterLabel();
         }
     }
