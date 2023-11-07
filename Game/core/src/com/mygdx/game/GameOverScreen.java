@@ -85,7 +85,7 @@ public class GameOverScreen implements Screen {
 
 
     private void initButtons() {
-        retry = new TextButton("Retry", skin);
+        /*retry = new TextButton("Retry", skin);
         retry.setSize(200, 60);
         retry.setPosition(850, 300);
         retry.addListener(new ClickListener() {
@@ -94,6 +94,8 @@ public class GameOverScreen implements Screen {
             }
         });
         stage.addActor(retry);
+
+         */
 
 
         exit = new TextButton("Exit", skin);
@@ -107,7 +109,7 @@ public class GameOverScreen implements Screen {
         });
         stage.addActor(exit);
 
-        top10 = new TextButton("Top 10", skin);
+        /*top10 = new TextButton("Top 10", skin);
         top10.setSize(200, 60);
         top10.setPosition(850, 140);
         top10.addListener(new ClickListener() {
@@ -130,6 +132,8 @@ public class GameOverScreen implements Screen {
             }
         });
         stage.addActor(facebook);
+
+         */
 
     }
 
@@ -212,7 +216,4 @@ public class GameOverScreen implements Screen {
 
         stage.dispose();
         skin.dispose();
-    }
-
-
-}
+    }}
