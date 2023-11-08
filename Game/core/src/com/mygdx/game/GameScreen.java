@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class GameScreen implements Screen {
 
+
     boolean bulletCollided = false;
     boolean bulletCollidedcement = false;
     boolean bulletCollidedSteel = false;
@@ -194,6 +195,8 @@ public class GameScreen implements Screen {
     private boolean showingGoImage = true;
     private float goImageTimer = 0;
     private static final float GO_IMAGE_DURATION = 5.0f;
+
+
 
 
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
@@ -1097,7 +1100,7 @@ public class GameScreen implements Screen {
         }
 
         if (isTimerActive) {
-
+            elapsedTimeInSong += delta;
             elapsedTimeWater += delta;
             elapsedTimeFire += delta;
             elapsedTimeBomb += delta;
@@ -1582,8 +1585,13 @@ public class GameScreen implements Screen {
                 return true;
             }
         });
-
+        if (isTimerActive && elapsedTimeInSong >= songInfo.getDuration()) {
+            game.changeScreen(new GameOverScreen(game));
+            isTimerActive = false;
+        }
     }
+
+
 
 
     @Override
