@@ -105,6 +105,8 @@ public class GameScreen implements Screen {
     private User2 user2;
     private Label usernameLabel;
     private Label username2Label;
+    private Label user1PointsLabel;
+    private Label user2PointsLabel;
 
 
     private final Array<Actor> arrayGUIElements = new Array<>();
@@ -879,6 +881,10 @@ public class GameScreen implements Screen {
         username2Label.setColor(Color.BLACK);
         username2Label.setPosition(1610, 1000);
 
+        user2PointsLabel = new Label("Points user1: ", skin);
+        user2PointsLabel.setColor(Color.BLACK);
+        user2PointsLabel.setPosition(1530, 980);
+
         Label userInfo = new Label("User information:", skin);
         userInfo.setColor(Color.BLACK);
         userInfo.setPosition(200, 1020);
@@ -916,6 +922,7 @@ public class GameScreen implements Screen {
         stage.addActor(user2Info);
         stage.addActor(usernameLabel);
         stage.addActor(username2Label);
+        stage.addActor(user2PointsLabel);
 
 
         stage.addActor(this.usernameLabel);
@@ -1128,7 +1135,7 @@ public class GameScreen implements Screen {
     }
 
     private void resetBullet() {
-        if (water) {
+
             if (waterCounterDrops > 0) {
                 if (waterPowerCount < maxWaterPowerCount) {
                     waterPowerCount++;
@@ -1138,7 +1145,7 @@ public class GameScreen implements Screen {
                     waterCounterDrops--;
                 }
             }
-        } else if (fire) {
+
             if (fireCounterDrops > 0) {
                 if (firePowerCount < maxFirePowerCount) {
                     firePowerCount++;
@@ -1148,7 +1155,7 @@ public class GameScreen implements Screen {
                     fireCounterDrops--;
                 }
             }
-        } else if (bomb) {
+
             if (bombCounterDrops > 0) {
                 if (bombPowerCount < maxBombPowerCount) {
                     bombPowerCount++;
@@ -1158,7 +1165,7 @@ public class GameScreen implements Screen {
                     bombCounterDrops--;
                 }
             }
-        }
+
     }
 
     private void updatePowerCounters(float delta, int counterDrops, int powerCount, List<Float> powerTimers, float elapsedTime, int maxPowerCount, List<Float> auxList, boolean flagAux, boolean powerType) {
