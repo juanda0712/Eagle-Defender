@@ -16,8 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.file.FileChooser;
-import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
 import com.mygdx.models.CountersBarriers;
 import com.mygdx.utils.ImageConversion;
@@ -32,20 +30,12 @@ import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Point2f;
-import org.bytedeco.opencv.opencv_core.Scalar;
 import org.bytedeco.opencv.opencv_core.Size;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Point;
 //import org.opencv.imgcodecs.Imgcodecs;
 
 
-import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
@@ -93,6 +83,10 @@ public class Register implements Screen {
     private Texture texture;
     private Table pfpTable;
 
+    private Map<TextField, String> textFieldNames = new HashMap<>();
+
+    private TextButton btnQuestions;
+
     public Register(final MainController game, final JSONDataManager<User2> user2Manager, User2 user) {
         this.game = game;
         this.user = user;
@@ -111,14 +105,24 @@ public class Register implements Screen {
 
     private void createTextFields() {
         nameField = stage.getRoot().findActor("nameField");
+        textFieldNames.put(nameField, "Name");
         usernameField = stage.getRoot().findActor("usernameField");
+        textFieldNames.put(usernameField, "Username");
         emailField = stage.getRoot().findActor("emailField");
+        emailField.setName("Email");
         passwordField = stage.getRoot().findActor("passwordField");
+        passwordField.setName("Password");
         confirmPasswordField = stage.getRoot().findActor("confirmField");
+        confirmPasswordField.setName("Confirm password");
         birthDateField = stage.getRoot().findActor("BirthDate");
+        birthDateField.setName("Birth date");
         songField1 = stage.getRoot().findActor("Song1");
+        songField1.setName("Song 1");
         songField2 = stage.getRoot().findActor("Song2");
+        songField2.setName("Song 2");
+        System.out.println(songField2.getName());
         songField3 = stage.getRoot().findActor("Song3");
+        songField3.setName("Song 3");
 
         picture = new Mat();
         processedFrame = new Frame();
@@ -202,15 +206,20 @@ public class Register implements Screen {
     }
 
 
-    public boolean areTextFieldsEmpty(TextField... textFields) {
+    private ArrayList<String> getEmptyFieldNames(TextField... textFields) {
+        ArrayList<String> emptyFieldNames = new ArrayList<>();
         for (TextField textField : textFields) {
             String text = textField.getText().trim();
             if (text.isEmpty()) {
-                return true;
+                String fieldName = textFieldNames.get(textField);
+                if (fieldName != null) {
+                    emptyFieldNames.add(fieldName);
+                }
             }
         }
-        return false;
+        return emptyFieldNames;
     }
+
 
 
     private void createGUIElements() {
@@ -227,9 +236,9 @@ public class Register implements Screen {
         btnCreateAccount.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                ArrayList<String> emptyFields = getEmptyFieldNames();
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
-                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, confirmPasswordField, birthDateField, emailField, songField1, songField2, songField3) && checkButtons()) {
+                if (emptyFields.isEmpty() && questionsBtnChecked()) {
                     if (validPassword) {
                         getQuestions();
                         for (String question : questionsArray) {
@@ -311,10 +320,9 @@ public class Register implements Screen {
 
                     }
                 } else {
-
-                    final Dialog dialog9 = new Dialog("Please fill all the info", skin);
+                    final Dialog dialog9 = new Dialog("Some info is missing", skin);
                     dialog9.show(stage);
-                    dialog9.setSize(280, 60);
+                    dialog9.setSize(210,80 );
                     dialog9.button("Ok", new ClickListener() {
                         public void clicked(InputEvent event, float x, float y) {
                             dialog9.remove();
@@ -325,7 +333,7 @@ public class Register implements Screen {
 
             }
         });
-        TextButton btnQuestions = stage.getRoot().findActor("btnQuestions");
+        btnQuestions = stage.getRoot().findActor("btnQuestions");
         btnQuestions.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -370,6 +378,9 @@ public class Register implements Screen {
 
         pfpTable = stage.getRoot().findActor("TablePfp");
 
+    }
+    private boolean questionsBtnChecked(){
+        return btnQuestions.isChecked();
     }
 
     private void getQuestions() {
@@ -416,6 +427,7 @@ public class Register implements Screen {
         texture.draw(pixmap, 0, 0);
         Drawable imageDrawable = new TextureRegionDrawable(new TextureRegion(texture));
         Image image = new Image(imageDrawable);
+        pfpTable.clear();
         pfpTable.add(image).row();
     }
     /*
@@ -508,10 +520,13 @@ public class Register implements Screen {
             this.validPassword = true;
         }
     }
+    /*
     private boolean checkButtons() {
         int totalButtons = 9;
         return clickedButtons.size() == totalButtons;
     }
+
+     */
 
     @Override
     public void render(float delta) {
