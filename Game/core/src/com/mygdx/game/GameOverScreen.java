@@ -22,7 +22,9 @@ public class GameOverScreen implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
+
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+
 
         Image gameover1 = new Image(new Texture("GameOver/Game Over P1.png"));
         gameover1.setPosition(0, 0);
@@ -37,7 +39,9 @@ public class GameOverScreen implements Screen {
                 Gdx.app.exit();
             }
         });
+
         stage.addActor(exitButton);
+
     }
 
     @Override
@@ -72,5 +76,7 @@ public class GameOverScreen implements Screen {
     public void dispose() {
         stage.dispose();
         skin.dispose();
+
     }
 }
+
