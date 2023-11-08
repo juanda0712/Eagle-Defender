@@ -53,6 +53,8 @@ public class GameScreen implements Screen {
     private float targetX;
     private float targetY;
 
+    private int contadorTurn;
+
     private List<Rectangle> placedRectangles = new ArrayList<>();
     Map<Rectangle, Integer> barrierCounters = new HashMap<>();  // Mapa para mantener los contadores de las barreras
     Map<Rectangle, Integer> barrierCounterscement = new HashMap<>();  // Mapa para mantener los contadores de las barreras
@@ -143,6 +145,7 @@ public class GameScreen implements Screen {
     private IAMode iaMode;
     private boolean songInfoFlag = false;
 
+
     @Getter
     private boolean placingEnabled = false;
     private boolean aguilaGodPlaced = false;
@@ -199,7 +202,7 @@ public class GameScreen implements Screen {
 
 
 
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference) {
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference,int contadorTurnos) {
         System.out.println(user);
         System.out.println(user2);
         this.game = game;
@@ -214,6 +217,7 @@ public class GameScreen implements Screen {
         this.attackerSongs.add(user2.getSong1().replace(" ", "+"));
         this.attackerSongs.add(user2.getSong2().replace(" ", "+"));
         this.attackerSongs.add(user2.getSong3().replace(" ", "+"));
+        contadorTurn = contadorTurnos;
         songPosition = random.nextInt(3);
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
@@ -1586,8 +1590,24 @@ public class GameScreen implements Screen {
             }
         });
         if (isTimerActive && elapsedTimeInSong >= songInfo.getDuration()) {
-            game.changeScreen(new GameOverScreen(game));
+            //game.changeScreen(new GameOverScreen(game));
+            //contadorPuntos++;
+            //System.out.println(contadorPuntos);
+            //game.changeScreen(new GameScreen(game, user2Manager, user, user2, countersBarriers, spotifyReference));
             isTimerActive = false;
+            restart();
+
+        }
+    }
+
+    public void restart(){
+        if (contadorTurn <= 1) {
+            contadorTurn++;
+            System.out.println(contadorTurn);
+            game.changeScreen(new GameScreen(game, user2Manager, user2, user, countersBarriers, spotifyReference, contadorTurn));
+        }
+        if(contadorTurn == 2){
+            game.changeScreen(new GameOverScreen(game));
         }
     }
 
