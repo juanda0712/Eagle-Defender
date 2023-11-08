@@ -434,7 +434,7 @@ public class GameScreen implements Screen {
 
                 if (canPlace) {
                     Image newImage = new Image(newImageTexture);
-                    newImage.setPosition(x, y);
+                    newImage.setPosition(x - (newImage.getWidth() / 2), y - (newImage.getHeight() / 2));
 
                     newImage.addListener(new InputListener() {
                         @Override
@@ -545,7 +545,7 @@ public class GameScreen implements Screen {
 
                 if (canPlace) {
                     Image newImage = new Image(newImageTexture);
-                    newImage.setPosition(x, y);
+                    newImage.setPosition(x - (newImage.getWidth() / 2), y - (newImage.getHeight() / 2));
 
                     newImage.addListener(new InputListener() {
                         @Override
@@ -655,7 +655,7 @@ public class GameScreen implements Screen {
 
                 if (canPlace) {
                     Image newImage = new Image(newImageTexture);
-                    newImage.setPosition(x, y);
+                    newImage.setPosition(x - (newImage.getWidth() / 2), y - (newImage.getHeight() / 2));
 
                     newImage.addListener(new InputListener() {
                         @Override

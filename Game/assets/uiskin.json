@@ -42,46 +42,55 @@
 "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
 	"default": {
 		"imageUp": "cement",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"rocky": {
 		"imageUp": "cementST",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 5
 	},
 	"bricked": {
 		"imageUp": "cementBR",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 5
 	},
 	"color1": {
 		"imageUp": "Color 1",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color2": {
 		"imageUp": "Color 2",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color3": {
 		"imageUp": "Color 3",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color4": {
 		"imageUp": "Color 4",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color5": {
 		"imageUp": "Color 5",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color6": {
 		"imageUp": "Color 6",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	}

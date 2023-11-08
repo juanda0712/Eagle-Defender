@@ -26,11 +26,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
+import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Point2f;
+import org.bytedeco.opencv.opencv_core.Scalar;
 import org.bytedeco.opencv.opencv_core.Size;
+import org.opencv.core.CvType;
+import org.opencv.core.Point;
 //import org.opencv.imgcodecs.Imgcodecs;
 
 
@@ -40,6 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import static org.bytedeco.javacv.Java2DFrameUtils.toBufferedImage;
+import static org.opencv.imgproc.Imgproc.ellipse;
 
 public class Register implements Screen {
     final MainController game;
@@ -132,14 +137,18 @@ public class Register implements Screen {
 
     private void createImageButtons() {
         ImageButton btnSmoothTexture = stage.getRoot().findActor("textureSmooth");
+        btnSmoothTexture.setChecked(false);
+
         btnSmoothTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Smooth");
                 clickedButtons.add(btnSmoothTexture);
+
             }
         });
         ImageButton btnRockyTexture = stage.getRoot().findActor("textureRocky");
+        btnRockyTexture.setChecked(false);
         btnRockyTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -148,6 +157,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnBrickedTexture = stage.getRoot().findActor("textureBricked");
+        btnBrickedTexture.setChecked(false);
         btnBrickedTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -156,6 +166,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor1 = stage.getRoot().findActor("Color1");
+        btnColor1.setChecked(false);
         btnColor1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -164,6 +175,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor2 = stage.getRoot().findActor("Color2");
+        btnColor2.setChecked(false);
         btnColor2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -172,6 +184,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor3 = stage.getRoot().findActor("Color3");
+        btnColor3.setChecked(false);
         btnColor3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -180,6 +193,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor4 = stage.getRoot().findActor("Color4");
+        btnColor4.setChecked(false);
         btnColor4.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -188,6 +202,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor5 = stage.getRoot().findActor("Color5");
+        btnColor5.setChecked(false);
         btnColor5.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -196,6 +211,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor6 = stage.getRoot().findActor("Color6");
+        btnColor6.setChecked(false);
         btnColor6.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -430,23 +446,26 @@ public class Register implements Screen {
         pfpTable.clear();
         pfpTable.add(image).row();
     }
-    /*
-    private Mat applyCircularMask(Mat inputImage) {
-        Mat mask = new Mat(inputImage.size(), CvType.CV_8UC1, new Scalar(0));
-        Size size = mask.size();
+/*
+    private Mat applyCircularMask(Mat input) {
+        org.bytedeco.opencv.opencv_core.Mat mask = new org.bytedeco.opencv.opencv_core.Mat(input.size(), org.bytedeco.opencv.opencv_core.C);
+        org.bytedeco.opencv.opencv_core.Size size = new org.bytedeco.opencv.opencv_core.Size(input.cols() / 2, input.rows() / 2);
+        org.bytedeco.opencv.opencv_core.Point center = new org.bytedeco.opencv.opencv_core.Point(input.cols() / 2, input.rows() / 2);
 
-        Point center = new Point(size.width / 2, size.height / 2);
-        int radius = Math.min(size.width, size.height) / 2;
+        int thickness = org.bytedeco.opencv.global.opencv_imgproc.CV_FILLED;
+        int lineType = org.bytedeco.opencv.global.opencv_imgproc.CV_AA;
 
-        opencv_imgproc.circle(mask, center, radius, new Scalar(255), -1, 8, 0);
+        org.bytedeco.opencv.global.opencv_imgproc.ellipse(mask, center, size, 0, 0, 360, Scalar.WHITE, thickness, lineType, 0);
 
-        Mat result = new Mat();
-        inputImage.copyTo(result, mask);
+        org.bytedeco.opencv.opencv_core.Mat result = new org.bytedeco.opencv.opencv_core.Mat();
+        input.copyTo(result, mask);
 
         return result;
     }
 
-     */
+ */
+
+
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
         Skin skin = VisUI.getSkin();
