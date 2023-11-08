@@ -132,14 +132,18 @@ public class Register implements Screen {
 
     private void createImageButtons() {
         ImageButton btnSmoothTexture = stage.getRoot().findActor("textureSmooth");
+        btnSmoothTexture.setChecked(false);
+
         btnSmoothTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Smooth");
                 clickedButtons.add(btnSmoothTexture);
+
             }
         });
         ImageButton btnRockyTexture = stage.getRoot().findActor("textureRocky");
+        btnRockyTexture.setChecked(false);
         btnRockyTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -148,6 +152,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnBrickedTexture = stage.getRoot().findActor("textureBricked");
+        btnBrickedTexture.setChecked(false);
         btnBrickedTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -156,6 +161,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor1 = stage.getRoot().findActor("Color1");
+        btnColor1.setChecked(false);
         btnColor1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -164,6 +170,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor2 = stage.getRoot().findActor("Color2");
+        btnColor2.setChecked(false);
         btnColor2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -172,6 +179,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor3 = stage.getRoot().findActor("Color3");
+        btnColor3.setChecked(false);
         btnColor3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -180,6 +188,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor4 = stage.getRoot().findActor("Color4");
+        btnColor4.setChecked(false);
         btnColor4.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -188,6 +197,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor5 = stage.getRoot().findActor("Color5");
+        btnColor5.setChecked(false);
         btnColor5.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -196,6 +206,7 @@ public class Register implements Screen {
             }
         });
         ImageButton btnColor6 = stage.getRoot().findActor("Color6");
+        btnColor6.setChecked(false);
         btnColor6.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

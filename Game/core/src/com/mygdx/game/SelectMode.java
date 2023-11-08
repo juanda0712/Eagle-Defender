@@ -53,29 +53,51 @@ public class SelectMode implements Screen {
         stage.addActor(button2);
 
 
-        Image image = new Image(new Texture(Gdx.files.internal("helpp.png")));image.setVisible(false);
-        Label label = new Label("Press any key to escape", skin);label.setVisible(false);
+        Image image = new Image(new Texture(Gdx.files.internal("helpp.png")));
+        image.setVisible(false);
+        Label label = new Label("Press any key to escape", skin);
+        label.setVisible(false);
         button3 = new TextButton("HOW TO PLAY", skin);
-        button3.setPosition((stage.getWidth() - button3.getWidth()) / 2, stage.getHeight() / 2 - 100);button3.addListener(new ClickListener() {
-            @Override    public void clicked(InputEvent event, float x, float y) {
-                image.setVisible(true);        button3.setVisible(false);
-                button2.setVisible(false);        float imageX = (stage.getWidth() - image.getWidth()) / 2;
-                float imageY = (stage.getHeight() - image.getHeight()) / 2;        image.setPosition(imageX, imageY);
-                label.setVisible(true);        float labelX = (stage.getWidth() - label.getWidth()) / 2;
-                float labelY = imageY - label.getHeight() - 10;        label.setPosition(labelX, labelY);
-                label.setColor(Color.BLACK);        stage.addListener(new InputListener() {
-                    @Override            public boolean keyDown(InputEvent event, int keycode) {
-                        image.setVisible(false);                label.setVisible(false);
-                        button3.setVisible(true);                button2.setVisible(true);
-                        return true;            }
+        button3.setPosition((stage.getWidth() - button3.getWidth()) / 2, stage.getHeight() / 2 - 100);
+        button3.setSize(200, 60);
+        button3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                image.setVisible(true);
+                button3.setVisible(false);
+                button2.setVisible(false);
+                float imageX = (stage.getWidth() - image.getWidth()) / 2;
+                float imageY = (stage.getHeight() - image.getHeight()) / 2;
+                image.setPosition(imageX, imageY);
+                label.setVisible(true);
+                float labelX = (stage.getWidth() - label.getWidth()) / 2;
+                float labelY = imageY - label.getHeight() - 10;
+                label.setPosition(labelX, labelY);
+                label.setColor(Color.BLACK);
+                stage.addListener(new InputListener() {
                     @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {                image.setVisible(false);
-                        label.setVisible(false);                button3.setVisible(true);
-                        button2.setVisible(true);                return true;
-                    }        });
-            }});
+                    public boolean keyDown(InputEvent event, int keycode) {
+                        image.setVisible(false);
+                        label.setVisible(false);
+                        button3.setVisible(true);
+                        button2.setVisible(true);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        image.setVisible(false);
+                        label.setVisible(false);
+                        button3.setVisible(true);
+                        button2.setVisible(true);
+                        return true;
+                    }
+                });
+            }
+        });
         stage.addActor(image);
-        stage.addActor(label);stage.addActor(button3);
+        stage.addActor(label);
+        stage.addActor(button3);
         /*
         button4 = new TextButton("Button 4", skin);
         button4.setPosition((stage.getWidth() - button4.getWidth()) / 2, stage.getHeight() / 2 - 200);
