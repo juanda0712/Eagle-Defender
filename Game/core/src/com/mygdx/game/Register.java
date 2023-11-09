@@ -34,8 +34,7 @@ import org.bytedeco.opencv.opencv_core.Point2f;
 import org.bytedeco.opencv.opencv_core.Scalar;
 import org.bytedeco.opencv.opencv_core.Size;
 import org.opencv.core.CvType;
-import org.opencv.core.Point;
-//import org.opencv.imgcodecs.Imgcodecs;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 import java.text.SimpleDateFormat;
@@ -264,6 +263,7 @@ public class Register implements Screen {
                         String fullName = nameField.getText();
                         String username = usernameField.getText();
                         String password = passwordField.getText();
+                        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
                         String email = emailField.getText();
                         String birthDate = birthDateField.getText();
                         String song1 = songField1.getText();
@@ -282,7 +282,7 @@ public class Register implements Screen {
                         User2 newUser = new User2();
                         newUser.setFullName(fullName);
                         newUser.setUsername(username);
-                        newUser.setPassword(password);
+                        newUser.setPassword(hashedPassword);
                         newUser.setEmail(email);
                         newUser.setBirthDate(birthDate);
                         newUser.setSong1(song1);
@@ -372,7 +372,7 @@ public class Register implements Screen {
             }
         });
 
-        TextButton btnTakePic = stage.getRoot().findActor("btnTakePic");
+        ImageButton btnTakePic = stage.getRoot().findActor("btnTakePic");
         btnTakePic.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -438,6 +438,7 @@ public class Register implements Screen {
         Size newSizeFrame = new Size(320, 240);
         opencv_imgproc.resize(render, render, newSizeFrame);
         org.bytedeco.opencv.global.opencv_imgproc.warpAffine(render, render, org.bytedeco.opencv.global.opencv_imgproc.getRotationMatrix2D(new Point2f((float) render.cols() / 2, (float) render.rows() / 2), 180, 1), render.size());
+        render = applyCircularMask(render);
         processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(render));
         Pixmap pixmap = ImageConversion.toPixmap(processedFrame);
         texture.draw(pixmap, 0, 0);
@@ -446,9 +447,9 @@ public class Register implements Screen {
         pfpTable.clear();
         pfpTable.add(image).row();
     }
-/*
+
     private Mat applyCircularMask(Mat input) {
-        org.bytedeco.opencv.opencv_core.Mat mask = new org.bytedeco.opencv.opencv_core.Mat(input.size(), org.bytedeco.opencv.opencv_core.C);
+        org.bytedeco.opencv.opencv_core.Mat mask = new org.bytedeco.opencv.opencv_core.Mat(input.size(), CvType.CV_8U, Scalar.BLACK);
         org.bytedeco.opencv.opencv_core.Size size = new org.bytedeco.opencv.opencv_core.Size(input.cols() / 2, input.rows() / 2);
         org.bytedeco.opencv.opencv_core.Point center = new org.bytedeco.opencv.opencv_core.Point(input.cols() / 2, input.rows() / 2);
 
@@ -460,10 +461,15 @@ public class Register implements Screen {
         org.bytedeco.opencv.opencv_core.Mat result = new org.bytedeco.opencv.opencv_core.Mat();
         input.copyTo(result, mask);
 
-        return result;
+        // Encuentra el rectángulo que delimita la región no negra en la imagen resultante
+        org.bytedeco.opencv.opencv_core.Rect resultRoi = org.bytedeco.opencv.global.opencv_imgproc.boundingRect(mask);
+
+        // Recorta la región de interés (ROI) de la imagen resultante
+
+        return new Mat(result, resultRoi);
     }
 
- */
+
 
 
 

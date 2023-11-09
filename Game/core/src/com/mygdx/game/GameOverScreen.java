@@ -23,7 +23,7 @@ public class GameOverScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin = new Skin(Gdx.files.internal("Skin/uiskin.json"));
 
 
         Image gameover1 = new Image(new Texture("GameOver/Game Over P1.png"));
@@ -42,7 +42,21 @@ public class GameOverScreen implements Screen {
 
         stage.addActor(exitButton);
 
+        TextButton top10= new TextButton("Top 10", skin);
+        top10.setSize (200,60);
+        top10.setPosition(850, 140);
+        top10.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                game.changeScreen(new Top10Screen(game));
+                dispose();
+            }
+        });
+
+        stage.addActor(top10);
     }
+
+
 
     @Override
     public void show() {

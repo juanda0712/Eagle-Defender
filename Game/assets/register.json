@@ -284,7 +284,7 @@
 			{
 				"child": {
 					"class": "TextField",
-					"name": "emailField",
+					"name": "BirthDate",
 					"style": {
 						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextField",
 						"name": "default"
@@ -334,7 +334,7 @@
 			{
 				"child": {
 					"class": "TextField",
-					"name": "BirthDate",
+					"name": "emailField",
 					"style": {
 						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextField",
 						"name": "default"
@@ -1920,16 +1920,15 @@
 			},
 			{
 				"child": {
-					"class": "TextButton",
+					"class": "ImageButton",
 					"name": "btnTakePic",
-					"text": "Take pic",
 					"style": {
-						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.TextButton",
-						"name": "default"
+						"clazz": "com.badlogic.gdx.scenes.scene2d.ui.ImageButton",
+						"name": "camIcon"
 					},
 					"checked": false,
 					"disabled": false,
-					"color": "blackColor",
+					"color": null,
 					"padLeft": 0,
 					"padRight": 0,
 					"padTop": 0,
