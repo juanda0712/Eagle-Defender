@@ -471,8 +471,6 @@ public class Register implements Screen {
 
 
 
-
-
     private void passwordIsValid(String passwordhere, String confirmhere) {
         Skin skin = VisUI.getSkin();
         Pattern specialCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
