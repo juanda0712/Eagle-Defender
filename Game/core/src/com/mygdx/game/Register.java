@@ -329,7 +329,7 @@ public class Register implements Screen {
                             });
 
                             spotifyAuthThread.start();
-                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference));
+                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference,0,0,0));
                         }
 
                         dispose();
