@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.mygdx.models.User2;
+import com.mygdx.utils.JSONDataManager;
 
 
 import static com.badlogic.gdx.Gdx.app;
@@ -22,7 +24,7 @@ public class Top10Screen implements Screen {
     private MainController game;
     private Skin skin;
 
-    public Top10Screen (MainController game) {
+    public Top10Screen (MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2) {
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
@@ -126,7 +128,7 @@ var top10 = data.sort(function(a,b) { return a.Variable1 > b.Variable1 ? 1 : -1;
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameOverScreen(game));
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameOverScreen(game,user2Manager,user2,user,0,0));
             }
         });
         stage.addActor(backButton);
