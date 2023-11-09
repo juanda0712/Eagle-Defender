@@ -237,7 +237,7 @@ public class GameScreen implements Screen {
     private int woodDownTimmer = 0;
     private int steelDownTimmer =0;
     private int concreteDownTimmer = 0;
-
+    private Skin skin = VisUI.getSkin();
     private SongInfo songInfo;
     private float elapsedTimeInSong = 0;
     private Texture goTexture;
@@ -325,6 +325,7 @@ public class GameScreen implements Screen {
         }, 60); // 60 segundos (1 minuto)
 
         setupUIElements();
+
 
     }
 
@@ -1137,6 +1138,7 @@ public class GameScreen implements Screen {
         handleTimer(delta);
         handleCollisionAndBullet(delta);
         handleInput();
+        //warning();
         stage.draw();
     }
 
@@ -1875,7 +1877,22 @@ public class GameScreen implements Screen {
             game.changeScreen(new GameOverScreen(game,user2Manager, user2, user,user2Points,user1Points));
         }
     }
+/*
+    private void warning (){
+        int songMidTime = (int) (songInfo.getDuration() / 2);
+        if (songInfo.getDuration() - elapsedTimeInSong <= songMidTime && songInfo.getDuration() - elapsedTimeInSong > 0){
+            final Dialog dialog9 = new Dialog("Queda la mitad del tiempo!", skin);
+            dialog9.show(stage);
+            dialog9.setSize(210,80 );
+            dialog9.button("Ok", new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    dialog9.remove();
+                }
+            });
+        }
+    }
 
+ */
 
 
 

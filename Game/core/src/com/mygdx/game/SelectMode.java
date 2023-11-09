@@ -59,7 +59,7 @@ public class SelectMode implements Screen {
         label.setVisible(false);
         button3 = new TextButton("HOW TO PLAY", skin);
         button3.setPosition((stage.getWidth() - button3.getWidth()) / 2, stage.getHeight() / 2 - 100);
-        button3.setSize(200, 60);
+        button3.setSize(150, 80);
         button3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
