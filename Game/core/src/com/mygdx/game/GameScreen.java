@@ -840,7 +840,6 @@ public class GameScreen implements Screen {
     private void minusEagleCounter() {
         if (countersBarriers.getEagleCounter() < 0) {
             countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
-            //gameScreen.updateCounterLabel();
         }
     }
 
@@ -1681,49 +1680,64 @@ public class GameScreen implements Screen {
 
         if (isTimerActive) {
             if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && !isShooting) {
-                targetX = Gdx.input.getX();
-                targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-                bulletCollided = false;
-                bulletCollidedcement = false;
-                bulletCollidedSteel = false;
-                bulletX = playerX + playerSprite.getWidth();
-                bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2;
-                isShooting = true;
-                isCollide = false;
 
                 if (fireButton.isChecked()) {
                     bulletSprite.setTexture(fireTexture);
-                    stage.addActor(bulletImage);
+                    //stage.addActor(bulletImage);
                 } else if (waterButton.isChecked()) {
                     bulletSprite.setTexture(waterTexture);
-                    stage.addActor(bulletImage);
+                    //stage.addActor(bulletImage);
                 } else if (bombButton.isChecked()) {
                     bulletSprite.setTexture(bombTexture);
-                    stage.addActor(bulletImage);
+                    //stage.addActor(bulletImage);
                 }
                 // Inicia el disparo de la bala desde la posición del player.
                 if (waterPowerCount > 0 && water) {
+
+                    targetX = Gdx.input.getX();
+                    targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+                    bulletCollided = false;
+                    bulletCollidedcement = false;
+                    bulletCollidedSteel = false;
+                    bulletX = playerX + playerSprite.getWidth();
+                    bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2;
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                     waterPowerCount--;
                     waterCounterDrops++;
+                    stage.addActor(bulletImage);
                     waterCounterDropsTimes.add(elapsedTimeWater);
                     isShooting = true;
                     isCollide = false;
                 } else if (firePowerCount > 0 && fire) {
+                    targetX = Gdx.input.getX();
+                    targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+                    bulletCollided = false;
+                    bulletCollidedcement = false;
+                    bulletCollidedSteel = false;
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                     firePowerCount--;
                     fireCounterDrops++;
+                    stage.addActor(bulletImage);
                     fireCounterDropsTimes.add(elapsedTimeFire);
                     isShooting = true;
                     isCollide = false;
                 } else if (bombPowerCount > 0 && bomb) {
+                    targetX = Gdx.input.getX();
+                    targetY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+                    bulletCollided = false;
+                    bulletCollidedcement = false;
+                    bulletCollidedSteel = false;
                     bulletX = playerX + playerSprite.getWidth();
                     bulletY = playerY + playerSprite.getHeight() / 2 - bulletSprite.getHeight() / 2; //
                     bombPowerCount--;
                     bombCounterDrops++;
+                    stage.addActor(bulletImage);
                     bombCounterDropsTimes.add(elapsedTimeFire);
                     isShooting = true;
                     isCollide = false;
@@ -1822,8 +1836,8 @@ public class GameScreen implements Screen {
             barrierDefend = (float)((10-woodCantidad)*0.6+(10-steelCantidad)*0.8+(10-cementCantidad)*1.0);
 
 
-            System.out.println(1.0 / (((1.0 / barrierDown) * 0.5) + (1.0 / (elapsedTimeInSong / songInfo.getDuration())* 0.5)));
-            user2Points = (float) (1.0 / (((1.0 / barrierDown) * 0.5) + (1.0 / (elapsedTimeInSong / songInfo.getDuration())) * 0.5));
+            System.out.println(1.0 / ((1.0 / (barrierDown * 0.5)) + (1.0 / (elapsedTimeInSong / songInfo.getDuration()))* 0.5));
+            user2Points = (float) (1.0 / ((1.0 / (barrierDown * 0.5)) + (1.0 / (elapsedTimeInSong / songInfo.getDuration())) * 0.5));
             user1Points = (float) (1.0/(((1/barrierDefend)*0.5)+(1/(1/elapsedTimeInSong))*0.5));
 
             //user2Points = Math.round(user2Points);
