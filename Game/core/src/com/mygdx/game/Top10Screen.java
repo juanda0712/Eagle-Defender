@@ -1,60 +1,47 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 
 import static com.badlogic.gdx.Gdx.app;
 
 public class Top10Screen implements Screen {
-    //private Game game;
     private Stage stage;
+    private MainController game;
     private Skin skin;
 
-
-    private AssetManager manager;
-
-    private MainController game;
-    private GameOverScreen gameOverScreen;
-    //private GameScreen gameScreen;
-    private Image top10;
-
-    private TextButton retry, exit, back;
-
-
-
-
-    //int score,highscore, secondscore, thirdscore, fourthscore, fifthscore, sixthscore, seventhscore, eighthscore, ninthscore, tenthscore;
-
-    //BitmapFont scoreFont;
-
-
-
-    public Top10Screen(final MainController game) { //agregar int, score
-        super ();
+    public Top10Screen (MainController game) {
+        this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        skin= new Skin(Gdx.files.internal("Skin/uiskin.json"));
-        top10 = new Image (getManager().get("GameOver/Top10.png", Texture.class));
 
+        skin = new Skin(Gdx.files.internal("Skin/uiskin.json"));
 
-        top10.setPosition(0, -50);
-
-
-
+        Image top10 = new Image(new Texture("GameOver/Top10.png"));
+        top10.setPosition(0, 0);
         stage.addActor(top10);
 
-        initButtons();
+
+
+
+
+
+        //int score,highscore, secondscore, thirdscore, fourthscore, fifthscore, sixthscore, seventhscore, eighthscore, ninthscore, tenthscore;
+
+        //BitmapFont scoreFont;
+
 
 
         //this.score=score;
@@ -120,60 +107,35 @@ var top10 = data.sort(function(a,b) { return a.Variable1 > b.Variable1 ? 1 : -1;
         }
         */
 
-        //Load textures and Fonts
-        //gameOverBanner= new Texture("GameOver/Game Over P1.png");
-        //scoreFont=new BitmapFont(Gdx.files.internal("skin/default.fnt"));
+        TextButton exitButton = new TextButton("Exit", skin);
+        exitButton.setSize(200, 60);
+        exitButton.setPosition(850, 50);
 
-    }
-
-    public void create() {
-        manager= new AssetManager();
-        manager.load("GameOver/Top10.png", Texture.class);
-        manager.finishLoading();
-    }
-
-    public AssetManager getManager(){
-        return manager;
-    }
-
-
-    private void initButtons() {
-        retry= new TextButton("Retry", skin);
-        retry.setSize (200,60);
-        retry.setPosition(850, 300);
-        retry.addListener(new ClickListener(){
+        exitButton.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y){
-                //setScreen(new GameScreen());;
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
             }
         });
-        stage.addActor(retry);
+        stage.addActor(exitButton);
 
 
-        exit= new TextButton("Exit", skin);
-        exit.setSize (200,60);
-        exit.setPosition(850, 220);
-        exit.addListener(new ClickListener(){
+        TextButton backButton= new TextButton("Back", skin);
+        backButton.setSize (400, 100);
+        backButton.setPosition(850, 140);
+        backButton.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y){
-                app.exit();
-            }
-        });
-        stage.addActor(exit);
-
-
-        back= new TextButton("Back", skin);
-        back.setSize (200,60);
-        back.setPosition(850, 140);
-        back.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new GameOverScreen(game));
             }
         });
-        stage.addActor(top10);
+        stage.addActor(backButton);
 
 
     }
+
+
+
 
     @Override
     public void show() {
@@ -181,50 +143,31 @@ var top10 = data.sort(function(a,b) { return a.Variable1 > b.Variable1 ? 1 : -1;
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1f,1f,1f,0.0f);
+        Gdx.gl.glClearColor(0.6f, 0.4f, 0.1f, 0.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
         stage.draw();
-
-       /* //Draw banner
-        game.batch.draw(gameOverBanner, Gdx.graphics.getWidth()/2- BANNER_WIDTH/2, Gdx.graphics.getHeight()-BANNER_HEIGHT-15,BANNER_WIDTH, BANNER_HEIGHT);
-        GlyphLayout scoreLayout=new GlyphLayout(scoreFont, "Score: /n", Color.WHITE,0, Align.left, false);
-        scoreFont.draw (game.batch, scoreLayout,Gdx.graphics.getWidth()/2- scoreLayout.width/2, Gdx.graphics.getHeight()-BANNER_HEIGHT-15*2);
-        //PARA SALÓN DE LA FAMA scoreFont.draw (game.batch, scoreLayout,Gdx.graphics.getWidth()/2- scoreLayout.width/2, Gdx.graphics.getHeight()-BANNER_HEIGHT-15*2);
-        //scoreFont.draw (game.batch, scoreLayout,Gdx.graphics.getWidth()/2- scoreLayout.width/2, Gdx.graphics.getHeight()-BANNER_HEIGHT-15*2);
-
-        game.batch.end();
-        */
-
     }
 
     @Override
     public void resize(int width, int height) {
-
     }
-
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-
         stage.dispose();
         skin.dispose();
     }
-
 }
-

@@ -37,6 +37,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://jitpack.io" }
+        maven { url "https://mvnrepository.com/artifact/org.mindrot/jbcrypt"}
     }
 }
 
@@ -73,5 +74,6 @@ project(":core") {
         implementation 'com.github.scribejava:scribejava-apis:8.3.3'
         implementation 'com.github.raeleus:stripe:master-SNAPSHOT'
         implementation 'com.github.raeleus.TenPatch:tenpatch:5.0.0'
+        implementation 'org.mindrot:jbcrypt:0.4'
     }
 }

@@ -93,6 +93,10 @@
 		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
+	},
+	"camIcon": {
+		"imageUp": "cam icon",
+		"down": "button-blue-over"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {

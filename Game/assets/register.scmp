@@ -302,6 +302,26 @@ atlasData: {
 			type: NINE_PATCH
 			hidden: false
 		}
+		{
+			file: D:/TEC/Principios/Eagle/Eagle-Defender/Game/assets/cam icon.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: cam icon
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: TEXTURE
+			hidden: false
+		}
 	]
 	fontDrawables: [
 		{
@@ -3024,6 +3044,147 @@ jsonData: {
 				deletable: true
 				parent: null
 			}
+			{
+				class: com.ray3k.skincomposer.data.StyleData
+				name: camIcon
+				clazz: com.badlogic.gdx.scenes.scene2d.ui.ImageButton
+				properties: {
+					imageUp: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageUp
+						optional: true
+						value: cam icon
+					}
+					imageDown: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageDown
+						optional: true
+						value: null
+					}
+					imageOver: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageOver
+						optional: true
+						value: null
+					}
+					imageDisabled: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageDisabled
+						optional: true
+						value: null
+					}
+					imageChecked: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageChecked
+						optional: true
+						value: null
+					}
+					imageCheckedDown: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageCheckedDown
+						optional: true
+						value: null
+					}
+					imageCheckedOver: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: imageCheckedOver
+						optional: true
+						value: null
+					}
+					up: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: up
+						optional: true
+						value: null
+					}
+					down: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: down
+						optional: true
+						value: button-blue-over
+					}
+					over: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: over
+						optional: true
+						value: null
+					}
+					focused: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: focused
+						optional: true
+						value: null
+					}
+					disabled: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: disabled
+						optional: true
+						value: null
+					}
+					checked: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: checked
+						optional: true
+						value: null
+					}
+					checkedOver: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: checkedOver
+						optional: true
+						value: null
+					}
+					checkedDown: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: checkedDown
+						optional: true
+						value: null
+					}
+					checkedFocused: {
+						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+						name: checkedFocused
+						optional: true
+						value: null
+					}
+					pressedOffsetX: {
+						type: float
+						name: pressedOffsetX
+						optional: true
+						value: 0
+					}
+					pressedOffsetY: {
+						type: float
+						name: pressedOffsetY
+						optional: true
+						value: 0
+					}
+					unpressedOffsetX: {
+						type: float
+						name: unpressedOffsetX
+						optional: true
+						value: 0
+					}
+					unpressedOffsetY: {
+						type: float
+						name: unpressedOffsetY
+						optional: true
+						value: 0
+					}
+					checkedOffsetX: {
+						type: float
+						name: checkedOffsetX
+						optional: true
+						value: 0
+					}
+					checkedOffsetY: {
+						type: float
+						name: checkedOffsetY
+						optional: true
+						value: 0
+					}
+				}
+				deletable: true
+				parent: null
+			}
 		]
 		com.badlogic.gdx.scenes.scene2d.ui.Label: [
 			{
@@ -3620,7 +3781,7 @@ sceneComposer: {
 				{
 					child: {
 						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTextField
-						name: emailField
+						name: BirthDate
 						style: {
 							name: default
 							clazz: com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -3740,7 +3901,7 @@ sceneComposer: {
 				{
 					child: {
 						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTextField
-						name: BirthDate
+						name: emailField
 						style: {
 							name: default
 							clazz: com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -4885,7 +5046,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -5066,7 +5227,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -5247,7 +5408,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -5614,7 +5775,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -5795,7 +5956,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -5976,7 +6137,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -6343,7 +6504,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -6524,7 +6685,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -6705,7 +6866,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: checked
 									optional: true
-									value: null
+									value: border
 								}
 								checkedOver: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -7758,70 +7919,51 @@ sceneComposer: {
 				}
 				{
 					child: {
-						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimTextButton
+						class: com.ray3k.skincomposer.dialog.scenecomposer.DialogSceneComposerModel$SimImageButton
 						name: btnTakePic
-						text: Take pic
 						style: {
-							name: default
-							clazz: com.badlogic.gdx.scenes.scene2d.ui.TextButton
+							name: camIcon
+							clazz: com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 							properties: {
-								font: {
-									type: com.badlogic.gdx.graphics.g2d.BitmapFont
-									name: font
-									optional: false
-									value: font1
-								}
-								fontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: fontColor
+								imageUp: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageUp
 									optional: true
-									value: blueColor
+									value: cam icon
 								}
-								downFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: downFontColor
-									optional: true
-									value: RGBA_222_199_199_255
-								}
-								overFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: overFontColor
+								imageDown: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageDown
 									optional: true
 									value: null
 								}
-								focusedFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: focusedFontColor
+								imageOver: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageOver
 									optional: true
 									value: null
 								}
-								disabledFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: disabledFontColor
+								imageDisabled: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageDisabled
 									optional: true
 									value: null
 								}
-								checkedFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: checkedFontColor
+								imageChecked: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageChecked
 									optional: true
 									value: null
 								}
-								checkedDownFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: checkedDownFontColor
+								imageCheckedDown: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageCheckedDown
 									optional: true
 									value: null
 								}
-								checkedOverFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: checkedOverFontColor
-									optional: true
-									value: null
-								}
-								checkedFocusedFontColor: {
-									type: com.badlogic.gdx.graphics.Color
-									name: checkedFocusedFontColor
+								imageCheckedOver: {
+									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
+									name: imageCheckedOver
 									optional: true
 									value: null
 								}
@@ -7835,7 +7977,7 @@ sceneComposer: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 									name: down
 									optional: true
-									value: null
+									value: button-blue-over
 								}
 								over: {
 									type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -7916,20 +8058,12 @@ sceneComposer: {
 									value: 0
 								}
 							}
-							deletable: false
+							deletable: true
 							parent: null
 						}
 						checked: false
 						disabled: false
-						color: {
-							color: {
-								r: 0.15686275
-								g: 0.003921569
-								b: 0.003921569
-								a: 1
-							}
-							name: blackColor
-						}
+						color: null
 						padLeft: 0
 						padRight: 0
 						padTop: 0

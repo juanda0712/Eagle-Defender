@@ -74,9 +74,16 @@ Color 5
   index: -1
 Color 6
   rotate: false
-  xy: 117, 130
+  xy: 515, 458
   size: 48, 51
   orig: 48, 51
+  offset: 0, 0
+  index: -1
+cam icon
+  rotate: false
+  xy: 117, 131
+  size: 50, 50
+  orig: 50, 50
   offset: 0, 0
   index: -1
 cement
