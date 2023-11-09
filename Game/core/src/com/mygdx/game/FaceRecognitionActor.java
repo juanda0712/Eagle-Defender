@@ -89,7 +89,7 @@ public class FaceRecognitionActor extends Actor {
                 });
 
                 spotifyAuthThread.start();
-                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference,0));
+                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference,0,0,0));
                 login.dispose();
             }
             detectFaces = false;
