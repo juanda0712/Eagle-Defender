@@ -48,6 +48,9 @@ public class GameScreen implements Screen {
     boolean bulletCollided = false;
     boolean bulletCollidedcement = false;
     boolean bulletCollidedSteel = false;
+
+    boolean aguilaDestroy = false;
+
     //private List<Barrera> barreras = new ArrayList<>();
     private final MainController game;
 
@@ -1460,7 +1463,7 @@ public class GameScreen implements Screen {
                     eaglePVP.removeValue(barrierImage, true);
                     barrierImage.remove();
                     //barrierDown++;
-                    System.out.println("Adios aguila");
+                    aguilaDestroy = true;
                     restart();
                 }
 
@@ -1826,6 +1829,7 @@ public class GameScreen implements Screen {
             System.out.println(barrierDown);
             System.out.println(elapsedTimeInSong);
             System.out.println(songInfo.getDuration());
+            System.out.println(barrierDefend);
 
 
             int woodCantidad = woodPVP.size;
@@ -1835,19 +1839,40 @@ public class GameScreen implements Screen {
             barrierDown = (float) ((woodDown*0.6)+(steelDown*0.8)+(concreteDown*1.0));
             barrierDefend = (float)((10-woodCantidad)*0.6+(10-steelCantidad)*0.8+(10-cementCantidad)*1.0);
 
+            System.out.println("Parametros");
+            System.out.println(barrierDown);
+            System.out.println(elapsedTimeInSong);
+            System.out.println(songInfo.getDuration());
+            System.out.println(barrierDefend);
 
-            System.out.println(1.0 / ((1.0 / (barrierDown * 0.5)) + (1.0 / (elapsedTimeInSong / songInfo.getDuration()))* 0.5));
-            user2Points = (float) (1.0 / ((1.0 / (barrierDown * 0.5)) + (1.0 / (elapsedTimeInSong / songInfo.getDuration())) * 0.5));
-            user1Points = (float) (1.0/(((1/barrierDefend)*0.5)+(1/(1/elapsedTimeInSong))*0.5));
 
-            //user2Points = Math.round(user2Points);
-            //user1Points = Math.round(user1Points);
+
+            if(aguilaDestroy) {
+                user2Points = (float) (user2Points + (1 / ((1 / barrierDown) * 0.5) + (1 / ((elapsedTimeInSong / songInfo.getDuration()) * 0.5))));
+            }else{
+                user2Points = 0+user2Points;
+            }
+
+            if(barrierDefend == 0) {
+                user1Points = (float) (user1Points+ (1/(1/((1/elapsedTimeInSong)*0.5))));
+            }else{
+                user1Points = (float) (1/((1/barrierDefend)*0.5)+(1/((1/elapsedTimeInSong)*0.5)));
+            }
+
+            System.out.println(user1Points);
+            System.out.println(user2Points);
+
+            user2Points = Math.round(user2Points);
+            user1Points = Math.round(user1Points);
+
 
 
             game.changeScreen(new GameScreen(game, user2Manager, user2, user, countersBarriers, spotifyReference, contadorTurn,user2Points,user1Points));
         }
         if(contadorTurn == 2){
-            game.changeScreen(new GameOverScreen(game));
+            System.out.println(user1Points);
+            System.out.println(user2Points);
+            game.changeScreen(new GameOverScreen(game,user2Manager, user2, user,user2Points,user1Points));
         }
     }
 
