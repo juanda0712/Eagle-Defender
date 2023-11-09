@@ -16,8 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.file.FileChooser;
-import com.kotcrab.vis.ui.widget.file.FileChooserAdapter;
 import com.mygdx.models.User2;
 import com.mygdx.models.CountersBarriers;
 import com.mygdx.utils.ImageConversion;
@@ -28,19 +26,24 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameUtils;
+import org.bytedeco.opencv.global.opencv_core;
+import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
-//import org.opencv.imgcodecs.Imgcodecs;
+import org.bytedeco.opencv.opencv_core.Point2f;
+import org.bytedeco.opencv.opencv_core.Scalar;
+import org.bytedeco.opencv.opencv_core.Size;
+import org.opencv.core.CvType;
+import org.mindrot.jbcrypt.BCrypt;
 
 
-import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import static org.bytedeco.javacv.Java2DFrameUtils.toBufferedImage;
+import static org.opencv.imgproc.Imgproc.ellipse;
 
 public class Register implements Screen {
     final MainController game;
@@ -73,7 +76,7 @@ public class Register implements Screen {
     private boolean validPassword = false;
     private boolean isValidDate = false;
     private FileHandle selectedFile;
-
+    private Set<ImageButton> clickedButtons = new HashSet<>();
     private Frame processedFrame;
     Skin skin = VisUI.getSkin();
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
@@ -83,6 +86,10 @@ public class Register implements Screen {
     private User2 user;
     private Texture texture;
     private Table pfpTable;
+
+    private Map<TextField, String> textFieldNames = new HashMap<>();
+
+    private TextButton btnQuestions;
 
     public Register(final MainController game, final JSONDataManager<User2> user2Manager, User2 user) {
         this.game = game;
@@ -102,14 +109,24 @@ public class Register implements Screen {
 
     private void createTextFields() {
         nameField = stage.getRoot().findActor("nameField");
+        textFieldNames.put(nameField, "Name");
         usernameField = stage.getRoot().findActor("usernameField");
+        textFieldNames.put(usernameField, "Username");
         emailField = stage.getRoot().findActor("emailField");
+        emailField.setName("Email");
         passwordField = stage.getRoot().findActor("passwordField");
+        passwordField.setName("Password");
         confirmPasswordField = stage.getRoot().findActor("confirmField");
+        confirmPasswordField.setName("Confirm password");
         birthDateField = stage.getRoot().findActor("BirthDate");
+        birthDateField.setName("Birth date");
         songField1 = stage.getRoot().findActor("Song1");
+        songField1.setName("Song 1");
         songField2 = stage.getRoot().findActor("Song2");
+        songField2.setName("Song 2");
+        System.out.println(songField2.getName());
         songField3 = stage.getRoot().findActor("Song3");
+        songField3.setName("Song 3");
 
         picture = new Mat();
         processedFrame = new Frame();
@@ -119,80 +136,105 @@ public class Register implements Screen {
 
     private void createImageButtons() {
         ImageButton btnSmoothTexture = stage.getRoot().findActor("textureSmooth");
+        btnSmoothTexture.setChecked(false);
+
         btnSmoothTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Smooth");
+                clickedButtons.add(btnSmoothTexture);
+
             }
         });
         ImageButton btnRockyTexture = stage.getRoot().findActor("textureRocky");
+        btnRockyTexture.setChecked(false);
         btnRockyTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Rocky");
+                clickedButtons.add(btnRockyTexture);
             }
         });
         ImageButton btnBrickedTexture = stage.getRoot().findActor("textureBricked");
+        btnBrickedTexture.setChecked(false);
         btnBrickedTexture.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedTexture("Bricked");
+                clickedButtons.add(btnBrickedTexture);
             }
         });
         ImageButton btnColor1 = stage.getRoot().findActor("Color1");
+        btnColor1.setChecked(false);
         btnColor1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color1");
+                clickedButtons.add(btnColor1);
             }
         });
         ImageButton btnColor2 = stage.getRoot().findActor("Color2");
+        btnColor2.setChecked(false);
         btnColor2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color2");
+                clickedButtons.add(btnColor2);
             }
         });
         ImageButton btnColor3 = stage.getRoot().findActor("Color3");
+        btnColor3.setChecked(false);
         btnColor3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color3");
+                clickedButtons.add(btnColor3);
             }
         });
         ImageButton btnColor4 = stage.getRoot().findActor("Color4");
+        btnColor4.setChecked(false);
         btnColor4.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color4");
+                clickedButtons.add(btnColor4);
             }
         });
         ImageButton btnColor5 = stage.getRoot().findActor("Color5");
+        btnColor5.setChecked(false);
         btnColor5.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color5");
+                clickedButtons.add(btnColor5);
             }
         });
         ImageButton btnColor6 = stage.getRoot().findActor("Color6");
+        btnColor6.setChecked(false);
         btnColor6.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 setSelectedColor("Color6");
+                clickedButtons.add(btnColor6);
             }
         });
     }
 
 
-    public boolean areTextFieldsEmpty(TextField... textFields) {
+    private ArrayList<String> getEmptyFieldNames(TextField... textFields) {
+        ArrayList<String> emptyFieldNames = new ArrayList<>();
         for (TextField textField : textFields) {
             String text = textField.getText().trim();
             if (text.isEmpty()) {
-                return true;
+                String fieldName = textFieldNames.get(textField);
+                if (fieldName != null) {
+                    emptyFieldNames.add(fieldName);
+                }
             }
         }
-        return false;
+        return emptyFieldNames;
     }
+
 
 
     private void createGUIElements() {
@@ -209,9 +251,9 @@ public class Register implements Screen {
         btnCreateAccount.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                ArrayList<String> emptyFields = getEmptyFieldNames();
                 passwordIsValid(passwordField.getText(), confirmPasswordField.getText());
-                if (!areTextFieldsEmpty(nameField, usernameField, passwordField, confirmPasswordField, birthDateField, emailField, songField1, songField2, songField3)) {
+                if (emptyFields.isEmpty() && questionsBtnChecked()) {
                     if (validPassword) {
                         getQuestions();
                         for (String question : questionsArray) {
@@ -221,6 +263,7 @@ public class Register implements Screen {
                         String fullName = nameField.getText();
                         String username = usernameField.getText();
                         String password = passwordField.getText();
+                        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
                         String email = emailField.getText();
                         String birthDate = birthDateField.getText();
                         String song1 = songField1.getText();
@@ -239,7 +282,7 @@ public class Register implements Screen {
                         User2 newUser = new User2();
                         newUser.setFullName(fullName);
                         newUser.setUsername(username);
-                        newUser.setPassword(password);
+                        newUser.setPassword(hashedPassword);
                         newUser.setEmail(email);
                         newUser.setBirthDate(birthDate);
                         newUser.setSong1(song1);
@@ -286,17 +329,16 @@ public class Register implements Screen {
                             });
 
                             spotifyAuthThread.start();
-                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference));
+                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference,0,0,0));
                         }
 
                         dispose();
 
                     }
                 } else {
-
-                    final Dialog dialog9 = new Dialog("Please fill all the info", skin);
+                    final Dialog dialog9 = new Dialog("Some info is missing", skin);
                     dialog9.show(stage);
-                    dialog9.setSize(280, 60);
+                    dialog9.setSize(210,80 );
                     dialog9.button("Ok", new ClickListener() {
                         public void clicked(InputEvent event, float x, float y) {
                             dialog9.remove();
@@ -307,7 +349,7 @@ public class Register implements Screen {
 
             }
         });
-        TextButton btnQuestions = stage.getRoot().findActor("btnQuestions");
+        btnQuestions = stage.getRoot().findActor("btnQuestions");
         btnQuestions.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -321,15 +363,16 @@ public class Register implements Screen {
         btnCardInfo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                /*if (cardDataForm.isVisible()) {
+                if (cardDataForm.isVisible()) {
                     stage.addActor(cardDataForm);
                     cardDataForm.fadeIn();
-                }*/
-                updatePfpTable();
+                }
+
+
             }
         });
 
-        TextButton btnTakePic = stage.getRoot().findActor("btnTakePic");
+        ImageButton btnTakePic = stage.getRoot().findActor("btnTakePic");
         btnTakePic.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -338,12 +381,22 @@ public class Register implements Screen {
                 //updatePfpTable();
             }
         });
+        TextButton btnShowPic = stage.getRoot().findActor("btnShowPic");
+        btnShowPic.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                updatePfpTable();
+            }
 
+        });
         Table faceCamTable = stage.getRoot().findActor("faceCamTable");
         faceCamTable.add(cameraPictureActor);
 
         pfpTable = stage.getRoot().findActor("TablePfp");
 
+    }
+    private boolean questionsBtnChecked(){
+        return btnQuestions.isChecked();
     }
 
     private void getQuestions() {
@@ -381,13 +434,41 @@ public class Register implements Screen {
     }
 
     private void updatePfpTable() {
-        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(picture));
+        Mat render = picture.clone();
+        Size newSizeFrame = new Size(320, 240);
+        opencv_imgproc.resize(render, render, newSizeFrame);
+        org.bytedeco.opencv.global.opencv_imgproc.warpAffine(render, render, org.bytedeco.opencv.global.opencv_imgproc.getRotationMatrix2D(new Point2f((float) render.cols() / 2, (float) render.rows() / 2), 180, 1), render.size());
+        render = applyCircularMask(render);
+        processedFrame = Java2DFrameUtils.toFrame(toBufferedImage(render));
         Pixmap pixmap = ImageConversion.toPixmap(processedFrame);
         texture.draw(pixmap, 0, 0);
         Drawable imageDrawable = new TextureRegionDrawable(new TextureRegion(texture));
         Image image = new Image(imageDrawable);
+        pfpTable.clear();
         pfpTable.add(image).row();
     }
+
+    private Mat applyCircularMask(Mat input) {
+        org.bytedeco.opencv.opencv_core.Mat mask = new org.bytedeco.opencv.opencv_core.Mat(input.size(), CvType.CV_8U, Scalar.BLACK);
+        org.bytedeco.opencv.opencv_core.Size size = new org.bytedeco.opencv.opencv_core.Size(input.cols() / 2, input.rows() / 2);
+        org.bytedeco.opencv.opencv_core.Point center = new org.bytedeco.opencv.opencv_core.Point(input.cols() / 2, input.rows() / 2);
+
+        int thickness = org.bytedeco.opencv.global.opencv_imgproc.CV_FILLED;
+        int lineType = org.bytedeco.opencv.global.opencv_imgproc.CV_AA;
+
+        org.bytedeco.opencv.global.opencv_imgproc.ellipse(mask, center, size, 0, 0, 360, Scalar.WHITE, thickness, lineType, 0);
+
+        org.bytedeco.opencv.opencv_core.Mat result = new org.bytedeco.opencv.opencv_core.Mat();
+        input.copyTo(result, mask);
+
+        // Encuentra el rectángulo que delimita la región no negra en la imagen resultante
+        org.bytedeco.opencv.opencv_core.Rect resultRoi = org.bytedeco.opencv.global.opencv_imgproc.boundingRect(mask);
+
+        // Recorta la región de interés (ROI) de la imagen resultante
+
+        return new Mat(result, resultRoi);
+    }
+
 
 
     private void passwordIsValid(String passwordhere, String confirmhere) {
@@ -462,6 +543,13 @@ public class Register implements Screen {
             this.validPassword = true;
         }
     }
+    /*
+    private boolean checkButtons() {
+        int totalButtons = 9;
+        return clickedButtons.size() == totalButtons;
+    }
+
+     */
 
     @Override
     public void render(float delta) {
@@ -475,7 +563,6 @@ public class Register implements Screen {
 
 
     }
-
 
     @Override
     public void resize(int width, int height) {

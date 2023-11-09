@@ -21,6 +21,7 @@ import com.mygdx.models.CountersBarriers;
 import com.mygdx.models.User2;
 import com.mygdx.utils.*;
 import com.badlogic.gdx.utils.Array;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -174,12 +175,15 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
 
         stage.addActor(mainTable);
     }
+    private boolean checkPassword(String plainPassword, String hashedPassword) {
+        return BCrypt.checkpw(plainPassword, hashedPassword);
+    }
 
     private boolean loginValidation(String username, String password) {
         boolean validUser = false;
 
         for (User2 user : data) {
-            if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+            if (username.equals(user.getUsername()) && checkPassword(password, user.getPassword())) {
                 validUser = true;
                 CountersBarriers countersBarriers = new CountersBarriers();
 
@@ -192,7 +196,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
                     });
 
                     spotifyAuthThread.start();
-                    game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference));
+                    game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference,0,0,0));
                 }
 
                 //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));

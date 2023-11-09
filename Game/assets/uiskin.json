@@ -2,7 +2,7 @@
 "com.badlogic.gdx.graphics.g2d.BitmapFont": {
 	"font1": {
 		"file": "font-export.fnt",
-		"scaledSize": -1,
+		"scaledSize": 10,
 		"markupEnabled": false,
 		"flip": false
 	}
@@ -31,53 +31,72 @@
 		"g": 0.43137255,
 		"b": 0.43137255,
 		"a": 1
+	},
+	"RGBA_254_35_35_255": {
+		"r": 0.99607843,
+		"g": 0.13725491,
+		"b": 0.13725491,
+		"a": 1
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
 	"default": {
 		"imageUp": "cement",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"rocky": {
 		"imageUp": "cementST",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 5
 	},
 	"bricked": {
 		"imageUp": "cementBR",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 5
 	},
 	"color1": {
 		"imageUp": "Color 1",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color2": {
 		"imageUp": "Color 2",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color3": {
 		"imageUp": "Color 3",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color4": {
 		"imageUp": "Color 4",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color5": {
 		"imageUp": "Color 5",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
 	},
 	"color6": {
 		"imageUp": "Color 6",
+		"checked": "border",
 		"pressedOffsetX": 1,
 		"pressedOffsetY": 10
+	},
+	"camIcon": {
+		"imageUp": "cam icon",
+		"down": "button-blue-over"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
@@ -96,7 +115,12 @@
 "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
 	"default": {
 		"font": "font1",
-		"fontColor": "blackColor"
+		"fontColor": "blackColor",
+		"background": "textfield",
+		"focusedBackground": "cursor2",
+		"cursor": "cursor2",
+		"selection": "cursor2",
+		"messageFontColor": "blackColor"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
