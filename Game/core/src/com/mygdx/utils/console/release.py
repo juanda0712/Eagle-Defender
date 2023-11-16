@@ -57,36 +57,44 @@ try:
         valor_urx = (valor_urx - 32768) / 32768.0
         valor_ury = (valor_ury - 32768) / 32768.0
 
-        # Determinar la dirección principal del joystick
         if abs(valor_urx) < umbral_centro and abs(valor_ury) < umbral_centro:
-            mensaje_joystick = "0"
+            mensaje_joystick = "eje:0"
         elif abs(valor_urx) > abs(valor_ury):
             if valor_urx > 0:
-                mensaje_joystick = "top"
+                mensaje_joystick = "eje:top"
             else:
-                mensaje_joystick = "down"
+                mensaje_joystick = "eje:down"
         else:
             if valor_ury > 0:
-                mensaje_joystick = "right"
+                mensaje_joystick = "eje:right"
             else:
-                mensaje_joystick = "left"
-        mensaje_joystick += f"\n eje:"
+                mensaje_joystick = "eje:left"
 
-        # Escaneo de botones
+        mensaje_botones = "boton:0"
+        button_found = False
+
         for i, row in enumerate(rows):
             row.value(0)
             for j, column in enumerate(columns):
                 if not column.value():
-                    mensaje_botones = f"\nboton:{i+1}{j+1}"
+                    mensaje_botones = f"boton:{i+1}{j+1}"
                     print(mensaje_botones)
-
-                    # Enviar datos al cliente (computadora)
-                    conn.sendall(mensaje_botones.encode('utf-8'))
+                    button_found = True
+                    break  # Exit the inner loop
 
             row.value(1)
 
-        # Enviar también información del joystick
-        conn.sendall(mensaje_joystick.encode('utf-8'))
+            if button_found:
+                break  # Exit the outer loop if a button is found
+
+
+            row.value(1)
+
+        # Combine joystick and button messages
+        response = f"{mensaje_joystick}\n{mensaje_botones}"
+
+        # Send data to the client (computadora)
+        conn.send(response.encode('utf-8'))
 
         # Esperar un breve período antes de la siguiente lectura
         utime.sleep_ms(100)

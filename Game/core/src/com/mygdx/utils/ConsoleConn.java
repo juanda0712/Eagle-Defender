@@ -4,8 +4,25 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class ClientSocket {
-    public static void main(String[] args) {
+public class ConsoleConn {
+    private String status;
+
+    public ConsoleConn() {
+        status = "No actualizado";
+        startConnectionThread();
+    }
+
+    private void startConnectionThread() {
+        Thread connectionThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                connection();
+            }
+        });
+        connectionThread.start();
+    }
+
+    private void connection() {
         try {
             String serverAddress = "192.168.0.15";
             int serverPort = 8080;
@@ -20,13 +37,16 @@ public class ClientSocket {
                     System.out.println("Conexión cerrada por el servidor");
                     break;
                 }
-
-                System.out.println(response);
+                this.status = response;
             }
 
             socket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getStatus() {
+        return this.status;
     }
 }
