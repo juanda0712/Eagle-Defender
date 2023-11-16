@@ -52,7 +52,6 @@ public class SelectMode implements Screen {
         initButtons();
         stage.addActor(button2);
 
-
         Image image = new Image(new Texture(Gdx.files.internal("helpp.png")));
         image.setVisible(false);
         Label label = new Label("Press any key to escape", skin);

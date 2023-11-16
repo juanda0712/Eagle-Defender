@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
+import java.util.List;
 
 import java.awt.*;
 
@@ -28,8 +29,6 @@ public class GameOverScreen implements Screen {
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-
-
         skin = new Skin(Gdx.files.internal("Skin/uiskin.json"));
 
 
@@ -73,8 +72,8 @@ public class GameOverScreen implements Screen {
         top10.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
-                game.changeScreen(new Top10Screen(game,user2Manager, user,user2));
                 dispose();
+                game.changeScreen(new Top10Screen(game,user2Manager, user,user2));
             }
         });
 

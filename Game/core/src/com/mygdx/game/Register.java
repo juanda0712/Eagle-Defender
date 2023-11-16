@@ -282,6 +282,7 @@ public class Register implements Screen {
                         User2 newUser = new User2();
                         newUser.setFullName(fullName);
                         newUser.setUsername(username);
+                        newUser.setPoints(0.0f);
                         newUser.setPassword(hashedPassword);
                         newUser.setEmail(email);
                         newUser.setBirthDate(birthDate);

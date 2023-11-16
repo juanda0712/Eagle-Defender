@@ -249,7 +249,6 @@ public class GameScreen implements Screen {
 
 
 
-
     public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference,int contadorTurnos,float pointsU1,float pointsU2) {
         System.out.println(user);
         System.out.println(user2);
@@ -273,6 +272,8 @@ public class GameScreen implements Screen {
         this.defenderSongs.add(user.getSong3().replace(" ", "+"));
         user2Points = pointsU2;
         user1Points = pointsU1;
+        user.setPoints(user1Points);
+        user2.setPoints(user2Points);
         contadorTurn = contadorTurnos;
         songPosition = random.nextInt(3);
         screenWidth = Gdx.graphics.getWidth();
@@ -1868,13 +1869,16 @@ public class GameScreen implements Screen {
             user1Points = Math.round(user1Points);
 
 
-
             game.changeScreen(new GameScreen(game, user2Manager, user2, user, countersBarriers, spotifyReference, contadorTurn,user2Points,user1Points));
         }
         if(contadorTurn == 2){
             System.out.println(user1Points);
             System.out.println(user2Points);
-            game.changeScreen(new GameOverScreen(game,user2Manager, user2, user,user2Points,user1Points));
+            game.changeScreen(new GameOverScreen(game,user2Manager, user2, user, user2Points, user1Points));
+            user.setPoints(user1Points);
+            user2.setPoints(user2Points);
+            user2Manager.update(user);
+            user2Manager.update(user2);
         }
     }
 /*
