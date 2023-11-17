@@ -175,6 +175,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
 
         stage.addActor(mainTable);
     }
+
     private boolean checkPassword(String plainPassword, String hashedPassword) {
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
@@ -194,9 +195,9 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
                         SpotifyAuthenticator spotify = new SpotifyAuthenticator();
                         spotifyReference.set(spotify);
                     });
-
                     spotifyAuthThread.start();
-                    game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference,0,0,0));
+                    game.changeScreen(new GameScreen(game, user2Manager, user1, user, countersBarriers, spotifyReference, 0, 0, 0));
+
                 }
 
                 //game.changeScreen(new GameScreen(game, user2Manager, user, countersBarriers, spotifyReference));

@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import java.util.TimerTask;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -28,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.models.SongInfo;
 import com.mygdx.models.CountersBarriers;
+import com.mygdx.utils.ConsoleConn;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.models.User2;
 import com.badlogic.gdx.utils.Array;
@@ -214,6 +216,7 @@ public class GameScreen implements Screen {
     private int cementCounterDrops = 0; // Contador de caídas del WaterCounter
     private int steelCounterDrops = 0; // Contador de caídas del WaterCounter
     private AtomicReference<SpotifyAuthenticator> spotifyReference;
+    private ConsoleConn consoleConn;
 
     private Boolean fire = false;
     private Boolean water = false;
@@ -231,11 +234,11 @@ public class GameScreen implements Screen {
     private List<Float> bombCounterDropsTimes = new ArrayList<>();
 
     private int woodDown = 0;
-    private int steelDown =0;
+    private int steelDown = 0;
     private int concreteDown = 0;
 
     private int woodDownTimmer = 0;
-    private int steelDownTimmer =0;
+    private int steelDownTimmer = 0;
     private int concreteDownTimmer = 0;
     private Skin skin = VisUI.getSkin();
     private SongInfo songInfo;
@@ -246,14 +249,10 @@ public class GameScreen implements Screen {
     private static final float GO_IMAGE_DURATION = 5.0f;
 
 
-
-
-
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference,int contadorTurnos,float pointsU1,float pointsU2) {
-        System.out.println(user);
-        System.out.println(user2);
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference, int contadorTurnos, float pointsU1, float pointsU2) {
         this.game = game;
         this.spotifyReference = spotifyReference;
+        consoleConn = new ConsoleConn();
         this.elapsedTimeWater = 0;
         this.elapsedTimeFire = 0;
         this.elapsedTimeBomb = 0;
@@ -292,7 +291,6 @@ public class GameScreen implements Screen {
         explosionSound = Gdx.audio.newSound(Gdx.files.internal("audExplosion.mp3"));
         setupButtonsDefender();
         setupButtonsAttacker();
-        System.out.println(spotifyReference);
         //gameScreenFeatures = new GameScreenFeatures(stage, woodPVP, steelPVP, cementPVP, user, countersBarriers, woodenButton, cementButton, steelButton, eagleButton);
         batch = new SpriteBatch();
         // Crea la etiqueta (Label) para mostrar el tiempo restante
@@ -308,14 +306,14 @@ public class GameScreen implements Screen {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                    spotifyReference.get().playSong(defenderSongs.get(songPosition));
+                spotifyReference.get().playSong(defenderSongs.get(songPosition));
             }
         }, 8); // 60 segundos (1 minuto)
 
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                if(timersong ==0) {
+                if (timersong == 0) {
                     isTimerActive = true;
                     spotifyReference.get().playSong(attackerSongs.get(songPosition));
                     stage.getRoot().removeActor(empezarButton);
@@ -842,6 +840,7 @@ public class GameScreen implements Screen {
             }
         }
     }
+
     private void minusEagleCounter() {
         if (countersBarriers.getEagleCounter() < 0) {
             countersBarriers.setEagleCounter(countersBarriers.getEagleCounter() - 1);
@@ -936,7 +935,7 @@ public class GameScreen implements Screen {
                 spotifyReference.get().playSong(attackerSongs.get(songPosition));
                 stage.getRoot().removeActor(empezarButton);
                 stage.getRoot().removeActor(timerLabel);
-                timersong ++;
+                timersong++;
             }
         });
 
@@ -948,11 +947,11 @@ public class GameScreen implements Screen {
         username2Label.setColor(Color.BLACK);
         username2Label.setPosition(1610, 1000);
 
-        user2PointsLabel = new Label("Points "+user2.getUsername()+": "+user2Points, skin);
+        user2PointsLabel = new Label("Points " + user2.getUsername() + ": " + user2Points, skin);
         user2PointsLabel.setColor(Color.BLACK);
         user2PointsLabel.setPosition(1530, 980);
 
-        user1PointsLabel = new Label("Points "+user.getUsername()+": "+user1Points, skin);
+        user1PointsLabel = new Label("Points " + user.getUsername() + ": " + user1Points, skin);
         user1PointsLabel.setColor(Color.BLACK);
         user1PointsLabel.setPosition(200, 980);
 
@@ -963,7 +962,6 @@ public class GameScreen implements Screen {
         Label user2Info = new Label("User information:", skin);
         user2Info.setColor(Color.BLACK);
         user2Info.setPosition(1530, 1020);
-
 
 
         Label usernameLabel = new Label("Username: ", skin);
@@ -1069,7 +1067,6 @@ public class GameScreen implements Screen {
         stage.addActor(lineaHorizontal);
 
 
-
         stage.addActor(lineaHorizontalboton);
         stage.addActor(playerImage);
     }
@@ -1134,6 +1131,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (consoleConn != null && consoleConn.getStatus() != null) {
+            System.out.println(consoleConn.getStatus());
+        }
         handleSongInfo();
         handleUIUpdates(delta);
         handleTimer(delta);
@@ -1142,7 +1142,6 @@ public class GameScreen implements Screen {
         //warning();
         stage.draw();
     }
-
 
 
     private void handleSongInfo() {
@@ -1203,7 +1202,6 @@ public class GameScreen implements Screen {
             updatePowerCounters(delta, bombCounterDrops, bombPowerCount, bombPowerTimers, elapsedTimeBomb, maxBombPowerCount, bombauxList, bombflagAux, bomb);
 
             updateBarrierCounters(delta, woodCounterDrops, countersBarriers.getWoodCounter(), woodBarrierTimers, elapsedTimeWood, maxWoodBarrierCount, woodauxList, woodflagAux, wood);
-            System.out.println(countersBarriers.getWoodCounter());
             // Lógica de regeneración de balas en función de resetInterval
             if (resetInterval > 0) {
                 elapsedTimeWater += delta;
@@ -1218,39 +1216,38 @@ public class GameScreen implements Screen {
     }
 
 
-
     private void resetBullet() {
 
-            if (waterCounterDrops > 0) {
-                if (waterPowerCount < maxWaterPowerCount) {
-                    waterPowerCount++;
-                    //countersBarriers.setWoodCounter(countersBarriers.getWoodCounter() + 1);
-                    updateCounterLabel();
-                    waterPowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
+        if (waterCounterDrops > 0) {
+            if (waterPowerCount < maxWaterPowerCount) {
+                waterPowerCount++;
+                //countersBarriers.setWoodCounter(countersBarriers.getWoodCounter() + 1);
+                updateCounterLabel();
+                waterPowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
 
-                    waterCounterDrops--;
-                }
+                waterCounterDrops--;
             }
+        }
 
-            if (fireCounterDrops > 0) {
-                if (firePowerCount < maxFirePowerCount) {
-                    firePowerCount++;
-                    updateCounterLabel();
-                    firePowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
+        if (fireCounterDrops > 0) {
+            if (firePowerCount < maxFirePowerCount) {
+                firePowerCount++;
+                updateCounterLabel();
+                firePowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
 
-                    fireCounterDrops--;
-                }
+                fireCounterDrops--;
             }
+        }
 
-            if (bombCounterDrops > 0) {
-                if (bombPowerCount < maxBombPowerCount) {
-                    bombPowerCount++;
-                    updateCounterLabel();
-                    bombPowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
+        if (bombCounterDrops > 0) {
+            if (bombPowerCount < maxBombPowerCount) {
+                bombPowerCount++;
+                updateCounterLabel();
+                bombPowerTimers.add(0f); // Puedes iniciar el temporizador a 0 segundos
 
-                    bombCounterDrops--;
-                }
+                bombCounterDrops--;
             }
+        }
 
     }
 
@@ -1363,20 +1360,24 @@ public class GameScreen implements Screen {
 
 
         if (isShooting) {
-            float deltaX = targetX - bulletX;
-            float deltaY = targetY - bulletY;
-            float angle = MathUtils.atan2(deltaY, deltaX);
-            bulletX += bulletSpeed * MathUtils.cos(angle) * Gdx.graphics.getDeltaTime();    bulletY += bulletSpeed * MathUtils.sin(angle) * Gdx.graphics.getDeltaTime();
+            bulletX -= bulletSpeed * Gdx.graphics.getDeltaTime();//Donde la bala va a ser lanzada
             bulletImage.setPosition(bulletX, bulletY);
-            if (bulletX < -bulletSprite.getWidth() || bulletX > Gdx.graphics.getWidth() ||
-                    bulletY < 0 || bulletY > Gdx.graphics.getHeight() ||            (Math.abs(deltaX) <= bulletSpeed * Gdx.graphics.getDeltaTime() &&
-                    Math.abs(deltaY) <= bulletSpeed * Gdx.graphics.getDeltaTime())) {
+            if (fireButton.isChecked()) {
+                bulletSprite.setTexture(fireTexture);
+                stage.addActor(bulletImage);
+            } else if (waterButton.isChecked()) {
+                bulletSprite.setTexture(waterTexture);
+                stage.addActor(bulletImage);
+            } else if (bombButton.isChecked()) {
+                bulletSprite.setTexture(bombTexture);
+                stage.addActor(bulletImage);
+            }
+
+            if (bulletX < -bulletSprite.getWidth()) {
                 isShooting = false;
-                bulletImage.remove();
             }
         } else {
             Actions.removeActor(bulletImage);
-
         }
 
 
@@ -1471,7 +1472,6 @@ public class GameScreen implements Screen {
                 }
 
             }
-            System.out.println(barrierCounters);
 
         }
 
@@ -1521,11 +1521,9 @@ public class GameScreen implements Screen {
                     barrierImage.remove();
                     woodDown++;
                     woodCounterDrops++;
-                    System.out.println(currentCounter);
                 }
 
             }
-            System.out.println(barrierCounters);
 
         }
 
@@ -1570,7 +1568,6 @@ public class GameScreen implements Screen {
                 if (currentCountercement != null && currentCountercement > 0) {
                     if (bomb) {
                         barrierCounterscement.put(barrierBounds, currentCountercement - 3);
-                        System.out.println(currentCountercement);
                         cementPVP.removeValue(barrierImage, true);
                         barrierImage.remove();
                         concreteDown++;
@@ -1605,7 +1602,6 @@ public class GameScreen implements Screen {
                 }
 
             }
-            System.out.println(barrierCounterscement);
 
         }
 
@@ -1650,7 +1646,6 @@ public class GameScreen implements Screen {
                 if (currentCounterSteel != null && currentCounterSteel > 0) {
                     if (bomb) {
                         barrierCountersSteel.put(barrierBounds, currentCounterSteel - 2);
-                        System.out.println(currentCounterSteel);
                         steelPVP.removeValue(barrierImage, true);
                         barrierImage.remove();
                         steelDown++;
@@ -1680,24 +1675,54 @@ public class GameScreen implements Screen {
                 }
 
             }
-            System.out.println(barrierCountersSteel);
 
         }
 
         if (isTimerActive) {
-            if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && !isShooting) {
+            //top down right lef
+            String joystick = getJoystickValue(consoleConn.getStatus());
+            //
+            String button = getButtonValue(consoleConn.getStatus());
+            if (!button.equals("0") && !isShooting) {
 
-
-                if (fireButton.isChecked()) {
+                if (button.equals("21")) {
+                    waterButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    fireButton.setChecked(true);
+                    bomb = false;
+                    water = false;
+                    fire = true;
                     bulletSprite.setTexture(fireTexture);
-                    //stage.addActor(bulletImage);
-                } else if (waterButton.isChecked()) {
+
+                } else if (button.equals("22")) {
+                    water = true;
+                    waterButton.setChecked(true);
+                    fireButton.setChecked(false);
+                    bombButton.setChecked(false);
+                    bomb = false;
+                    water = true;
+                    fire = false;
                     bulletSprite.setTexture(waterTexture);
-                    //stage.addActor(bulletImage);
-                } else if (bombButton.isChecked()) {
+                } else if (button.equals("12")) {
+                    waterButton.setChecked(false);
+                    fireButton.setChecked(false);
+                    bombButton.setChecked(true);
+                    water = false;
+                    bomb = true;
+                    fire = false;
                     bulletSprite.setTexture(bombTexture);
-                    //stage.addActor(bulletImage);
                 }
+
+                    /*if (fireButton.isChecked()) {
+                        bulletSprite.setTexture(fireTexture);
+                        //stage.addActor(bulletImage);
+                    } else if (waterButton.isChecked()) {
+                        bulletSprite.setTexture(waterTexture);
+                        //stage.addActor(bulletImage);
+                    } else if (bombButton.isChecked()) {
+                        bulletSprite.setTexture(bombTexture);
+                        //stage.addActor(bulletImage);
+                    }*/
                 // Inicia el disparo de la bala desde la posición del player.
                 if (waterPowerCount > 0 && water) {
 
@@ -1750,9 +1775,7 @@ public class GameScreen implements Screen {
                 }
             }
 
-
-            if (Gdx.input.isKeyPressed(Input.Keys.UP) && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
-                System.out.println("W");
+            if (joystick.equals("top") && playerY < Gdx.graphics.getHeight() - playerSprite.getHeight()) {
                 if (playerY + playerSprite.getHeight() + speed * Gdx.graphics.getDeltaTime() <= 920) {
                     playerY += speed * Gdx.graphics.getDeltaTime();
                     player = new Texture("Back1.png");
@@ -1762,8 +1785,7 @@ public class GameScreen implements Screen {
             }
 
 
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && playerY >= 110) {
-                System.out.println("S");
+            if (joystick.equals("down") && playerY >= 110) {
                 playerY -= speed * Gdx.graphics.getDeltaTime();
                 player = new Texture("Front2.png");
                 playerSprite.setTexture(new Texture("Front2.png"));
@@ -1771,8 +1793,7 @@ public class GameScreen implements Screen {
             }
 
 
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && playerX > 0) {
-                System.out.println("A");
+            if (joystick.equals("left") && playerX > 0) {
                 float centerX = Gdx.graphics.getWidth() / 2.0f;
                 if (playerX - speed * Gdx.graphics.getDeltaTime() >= centerX) {
                     playerX -= speed * Gdx.graphics.getDeltaTime();
@@ -1782,8 +1803,7 @@ public class GameScreen implements Screen {
                 }
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
-                System.out.println("D");
+            if (joystick.equals("right") && playerX < Gdx.graphics.getWidth() - playerSprite.getWidth()) {
                 playerX += speed * Gdx.graphics.getDeltaTime();
 
                 player = new Texture("WalkR3.png");
@@ -1792,7 +1812,7 @@ public class GameScreen implements Screen {
 
             }
 
-            if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
+            if (joystick.equals("0")) {
                 player = new Texture("Idle.png");
                 playerSprite.setTexture(new Texture("Idle.png"));
             }
@@ -1826,47 +1846,35 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void restart(){
+    public void restart() {
         if (contadorTurn <= 1) {
             contadorTurn++;
-            System.out.println(barrierDown);
-            System.out.println(elapsedTimeInSong);
-            System.out.println(songInfo.getDuration());
-            System.out.println(barrierDefend);
 
 
             int woodCantidad = woodPVP.size;
             int cementCantidad = cementPVP.size;
             int steelCantidad = steelPVP.size;
 
-            barrierDown = (float) ((woodDown*0.6)+(steelDown*0.8)+(concreteDown*1.0));
-            barrierDefend = (float)((10-woodCantidad)*0.6+(10-steelCantidad)*0.8+(10-cementCantidad)*1.0);
-
-            System.out.println("Parametros");
-            System.out.println(barrierDown);
-            System.out.println(elapsedTimeInSong);
-            System.out.println(songInfo.getDuration());
-            System.out.println(barrierDefend);
+            barrierDown = (float) ((woodDown * 0.6) + (steelDown * 0.8) + (concreteDown * 1.0));
+            barrierDefend = (float) ((10 - woodCantidad) * 0.6 + (10 - steelCantidad) * 0.8 + (10 - cementCantidad) * 1.0);
 
 
-
-            if(aguilaDestroy) {
+            if (aguilaDestroy) {
                 user2Points = (float) (user2Points + (1 / ((1 / barrierDown) * 0.5) + (1 / ((elapsedTimeInSong / songInfo.getDuration()) * 0.5))));
-            }else{
-                user2Points = 0+user2Points;
+            } else {
+                user2Points = 0 + user2Points;
             }
 
-            if(barrierDefend == 0) {
-                user1Points = (float) (user1Points+ (1/(1/((1/elapsedTimeInSong)*0.5))));
-            }else{
-                user1Points = (float) (1/((1/barrierDefend)*0.5)+(1/((1/elapsedTimeInSong)*0.5)));
+            if (barrierDefend == 0) {
+                user1Points = (float) (user1Points + (1 / (1 / ((1 / elapsedTimeInSong) * 0.5))));
+            } else {
+                user1Points = (float) (1 / ((1 / barrierDefend) * 0.5) + (1 / ((1 / elapsedTimeInSong) * 0.5)));
             }
 
-            System.out.println(user1Points);
-            System.out.println(user2Points);
 
             user2Points = Math.round(user2Points);
             user1Points = Math.round(user1Points);
+
 
 
             game.changeScreen(new GameScreen(game, user2Manager, user2, user, countersBarriers, spotifyReference, contadorTurn,user2Points,user1Points));
@@ -1879,25 +1887,50 @@ public class GameScreen implements Screen {
             user2.setPoints(user2Points);
             user2Manager.update(user);
             user2Manager.update(user2);
-        }
-    }
-/*
-    private void warning (){
-        int songMidTime = (int) (songInfo.getDuration() / 2);
-        if (songInfo.getDuration() - elapsedTimeInSong <= songMidTime && songInfo.getDuration() - elapsedTimeInSong > 0){
-            final Dialog dialog9 = new Dialog("Queda la mitad del tiempo!", skin);
-            dialog9.show(stage);
-            dialog9.setSize(210,80 );
-            dialog9.button("Ok", new ClickListener() {
-                public void clicked(InputEvent event, float x, float y) {
-                    dialog9.remove();
-                }
-            });
+
         }
     }
 
- */
+    /*
+        private void warning (){
+            int songMidTime = (int) (songInfo.getDuration() / 2);
+            if (songInfo.getDuration() - elapsedTimeInSong <= songMidTime && songInfo.getDuration() - elapsedTimeInSong > 0){
+                final Dialog dialog9 = new Dialog("Queda la mitad del tiempo!", skin);
+                dialog9.show(stage);
+                dialog9.setSize(210,80 );
+                dialog9.button("Ok", new ClickListener() {
+                    public void clicked(InputEvent event, float x, float y) {
+                        dialog9.remove();
+                    }
+                });
+            }
+        }
 
+     */
+    public static String getButtonValue(String input) {
+        // Example input: "boton:22eje:0"
+        // Extract the substring starting from "boton:" until "eje:"
+        int startIndex = input.indexOf("boton:") + 6;
+        int endIndex = input.indexOf("eje:");
+
+        if (startIndex != -1 && endIndex != -1) {
+            return input.substring(startIndex, endIndex);
+        } else {
+            return "Button not found";
+        }
+    }
+
+    public static String getJoystickValue(String input) {
+        // Example input: "boton:22eje:0"
+        // Extract the substring starting from "eje:" until the end
+        int startIndex = input.indexOf("eje:") + 4;
+
+        if (startIndex != -1) {
+            return input.substring(startIndex);
+        } else {
+            return "Joystick not found";
+        }
+    }
 
 
     @Override
