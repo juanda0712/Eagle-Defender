@@ -2,116 +2,45 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.models.User2;
 import com.mygdx.utils.JSONDataManager;
-
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import static com.badlogic.gdx.Gdx.app;
 
 public class Top10Screen implements Screen {
     private Stage stage;
     private MainController game;
     private Skin skin;
+    private JSONDataManager<User2> user2Manager;
 
-    public Top10Screen (MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2) {
+    public Top10Screen(MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2) {
         this.game = game;
+        this.user2Manager = user2Manager;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-
         skin = new Skin(Gdx.files.internal("Skin/uiskin.json"));
 
         Image top10 = new Image(new Texture("GameOver/Top10.png"));
         top10.setPosition(0, 0);
         stage.addActor(top10);
 
-
-
-
-
-
-        //int score,highscore, secondscore, thirdscore, fourthscore, fifthscore, sixthscore, seventhscore, eighthscore, ninthscore, tenthscore;
-
-        //BitmapFont scoreFont;
-
-
-
-        //this.score=score;
-
-        //Get highscore from save file
-       /* Preferences prefs= Gdx.app.getPreferences("eagledefender");
-        this.highscore= prefs.getInteger("Highscore", 0);
-        this.secondscore= prefs.getInteger("Secondscore", 0);
-        this.thirdscore= prefs.getInteger("Thirdcore", 0);
-        this.fourthscore= prefs.getInteger("fourthscore", 0);
-        this.fifthscore= prefs.getInteger("fifthscore", 0);
-        this.sixthscore= prefs.getInteger("sixthscore", 0);
-        this.seventhscore= prefs.getInteger("seventhscore", 0);
-        this.eighthscore= prefs.getInteger("eighthscore", 0);
-        this.ninthscore= prefs.getInteger("ninthscore", 0);
-        this.tenthscore= prefs.getInteger("tenthscore", 0);
-
-var data = JSON.parse(json);
-var top10 = data.sort(function(a,b) { return a.Variable1 > b.Variable1 ? 1 : -1; })
-                .slice(0, 10);
-
-
-        //Check if score beats 10 highscores
-        if (score>highscore) {
-            prefs.putInteger("highscore",score);
-              prefs.flush();
-            if (score>secondscore) {
-                prefs.putInteger("secondscore",score);
-                  prefs.flush();
-                if (score>thirdscore) {
-                    prefs.putInteger("thirdscore",score);
-                      prefs.flush();
-                    if (score>fourthscore) {
-                        prefs.putInteger("fourthscore",score);
-                          prefs.flush();
-                        if (score>fifthscore) {
-                            prefs.putInteger("fifthscore",score);
-                              prefs.flush();
-                            if (score>sixthscore) {
-                                prefs.putInteger("sixthscore",score);
-                                  prefs.flush();
-                                if (score>seventhscore) {
-                                    prefs.putInteger("seventhscore",score);
-                                      prefs.flush();
-                                    if (score>eighthscore) {
-                                        prefs.putInteger("eighthscore",score);
-                                          prefs.flush();
-                                        if (score>ninthscore) {
-                                            prefs.putInteger("ninethscore",score);
-                                              prefs.flush();
-                                            if (score>tenthscore) {
-                                                prefs.putInteger("tenthscore",score);
-                                                  prefs.flush();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
-
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setSize(200, 60);
-        exitButton.setPosition(850, 50);
+        exitButton.setPosition(1000, 50);
 
         exitButton.addListener(new ClickListener() {
             @Override
@@ -121,26 +50,79 @@ var top10 = data.sort(function(a,b) { return a.Variable1 > b.Variable1 ? 1 : -1;
         });
         stage.addActor(exitButton);
 
-
-        TextButton backButton= new TextButton("Back", skin);
-        backButton.setSize (400, 100);
-        backButton.setPosition(850, 140);
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.setSize(400, 100);
+        backButton.setPosition(850, 50);
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameOverScreen(game,user2Manager,user2,user,0,0));
+                ((Game) Gdx.app.getApplicationListener()).setScreen(new GameOverScreen(game, user2Manager, user2, user, 0, 0));
             }
         });
         stage.addActor(backButton);
 
+        Array<User2> userArray = user2Manager.read();
+        List<User2> userList = new ArrayList<>();
+        for (User2 currentUser : userArray) {
+            userList.add(currentUser);
+        }
 
-    }
+        Collections.sort(userList, Comparator.comparing(User2::getPoints).reversed());
 
+        for (int i = 0; i < Math.min(10, userList.size()); i++) {
+            User2 currentUser = userList.get(i);
+            System.out.println("Posición " + (i + 1) + ": " + currentUser.getUsername() + " - Puntos: " + currentUser.getPoints());
+        }
 
+        Table table = new Table();
+        table.setFillParent(true);
+        table.add(new Label("Posición", skin)).pad(10);
+        table.add(new Label("Usuario", skin)).pad(10);
+        table.add(new Label("Puntos", skin)).pad(10);
+        table.row();
 
+        boolean userEnteredTop10 = false;
+        boolean user2EnteredTop10 = false;
 
-    @Override
-    public void show() {
+        for (int i = 0; i < Math.min(10, userList.size()); i++) {
+            User2 currentUser = userList.get(i);
+
+            Label positionLabel = new Label(String.valueOf(i + 1), skin);
+            Label usernameLabel = new Label(currentUser.getUsername(), skin);
+            Label pointsLabel = new Label(String.valueOf(currentUser.getPoints()), skin);
+            Label topLabel = new Label("", skin);
+
+            if (user.getPoints() > currentUser.getPoints()) {
+                userEnteredTop10 = true;
+            }
+
+            if (user2.getPoints() > currentUser.getPoints()) {
+                user2EnteredTop10 = true;
+            }
+
+            table.add(positionLabel).pad(10);
+            table.add(usernameLabel).pad(10);
+            table.add(pointsLabel).pad(10);
+            table.add(topLabel).pad(10);
+            table.row();
+        }
+
+        Label messageLabel = new Label("", skin);
+
+        if (userEnteredTop10 && user2EnteredTop10) {
+            messageLabel.setText(user.getUsername() + " y " + user2.getUsername() + " han entrado al Top 10");
+        } else if (userEnteredTop10) {
+            messageLabel.setText(user.getUsername() + " ha entrado al Top 10");
+        } else if (user2EnteredTop10) {
+            messageLabel.setText(user2.getUsername() + " ha entrado al Top 10");
+        } else {
+            messageLabel.setText("Ninguno de los dos jugadores ha entrado al Top 10");
+        }
+
+        table.row();
+        table.add(messageLabel).colspan(4).padTop(20);
+
+        stage.addActor(table);
     }
 
     @Override
@@ -149,6 +131,11 @@ var top10 = data.sort(function(a,b) { return a.Variable1 > b.Variable1 ? 1 : -1;
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
         stage.draw();
+    }
+
+
+    @Override
+    public void show() {
     }
 
     @Override
