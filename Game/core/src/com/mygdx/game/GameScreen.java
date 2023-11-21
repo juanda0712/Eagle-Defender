@@ -67,6 +67,8 @@ public class GameScreen implements Screen {
     Map<Rectangle, Integer> barrierCounterscement = new HashMap<>();  // Mapa para mantener los contadores de las barreras
 
     Map<Rectangle, Integer> barrierCountersSteel = new HashMap<>();  // Mapa para mantener los contadores de las barreras
+
+    Map<Rectangle, Integer> barrierCountersEagle = new HashMap<>();
     List<Rectangle> barrierRectangles = new ArrayList<>();
     List<Rectangle> barrierRectanglescement = new ArrayList<>();
 
@@ -211,7 +213,7 @@ public class GameScreen implements Screen {
     private int waterCounterDrops = 0; // Contador de caídas del WaterCounter
     private int fireCounterDrops = 0; // Contador de caídas del WaterCounter
     private int bombCounterDrops = 0; // Contador de caídas del WaterCounter
-
+    private int eagleCounterDrops = 0;
     private int woodCounterDrops = 0; // Contador de caídas del WaterCounter
     private int cementCounterDrops = 0; // Contador de caídas del WaterCounter
     private int steelCounterDrops = 0; // Contador de caídas del WaterCounter
@@ -232,7 +234,7 @@ public class GameScreen implements Screen {
     private List<Float> waterCounterDropsTimes = new ArrayList<>();
     private List<Float> fireCounterDropsTimes = new ArrayList<>();
     private List<Float> bombCounterDropsTimes = new ArrayList<>();
-
+    private int eagleDown = 0;
     private int woodDown = 0;
     private int steelDown = 0;
     private int concreteDown = 0;
@@ -1447,10 +1449,11 @@ public class GameScreen implements Screen {
             if (!containsBarrier) {
                 // Agregar el rectángulo de la barrera a la lista y establecer el contador inicial en el mapa
                 barrierRectangles.add(barrierBounds);
-                barrierCounters.put(barrierBounds, 1);  // Puedes establecer el valor inicial que desees
+                barrierCounters.put(barrierBounds, 3);  // Puedes establecer el valor inicial que desees
             }
 
             if (Intersector.overlaps(bulletBounds, barrierBounds)) {
+                System.out.println("hola");
                 // Colisión detectada, aquí puedes hacer lo que necesites, por ejemplo, imprimir un mensaje
 
                 isShooting = false; // Desactivar la bala
@@ -1459,21 +1462,43 @@ public class GameScreen implements Screen {
                 explosionSound.play();
                 stage.getRoot().removeActor(bulletImage);
 
-                Integer currentCounter = barrierCounters.get(barrierBounds);
+                Integer currentCounterEagle = barrierCounters.get(barrierBounds);
 
-                if (currentCounter != null && currentCounter > 0) {
-                    barrierCounters.put(barrierBounds, currentCounter - 1);
-                    barrierCounters.remove(barrierBounds);
-                    eaglePVP.removeValue(barrierImage, true);
-                    barrierImage.remove();
-                    //barrierDown++;
-                    aguilaDestroy = true;
-                    restart();
+                if (currentCounterEagle!= null && currentCounterEagle > 0) {
+                    if (bomb) {
+                        barrierCounters.put(barrierBounds, currentCounterEagle - 3);
+                        eaglePVP.removeValue(barrierImage, true);
+                        barrierImage.remove();
+                        restart();
+                        barrierCounters.remove(barrierBounds);
+                    } else if (fire) {
+                        if (currentCounterEagle == 3) {
+                            barrierCounters.put(barrierBounds, currentCounterEagle- 2);
+                        } else if (currentCounterEagle < 3) {
+                            barrierCounters.put(barrierBounds, currentCounterEagle - 2);
+                            eaglePVP.removeValue(barrierImage, true);
+                            barrierImage.remove();
+                            barrierCounters.remove(barrierBounds);
+                            restart();
+                        }
+
+                    } else if (water) {
+                        if (currentCounterEagle == 3 || currentCounterEagle == 2) {
+                            barrierCounters.put(barrierBounds, currentCounterEagle - 1);
+                        } else if (currentCounterEagle == 1) {
+                            barrierCounters.put(barrierBounds, currentCounterEagle - 1);
+                            eaglePVP.removeValue(barrierImage, true);
+                            barrierImage.remove();
+                            barrierCounterscement.remove(barrierBounds);
+                            restart();
+                        }
+
+                    }
                 }
 
             }
-
         }
+
 
 
         for (Image barrierImage : woodPVP) {
@@ -1668,7 +1693,6 @@ public class GameScreen implements Screen {
                             steelDown++;
                             steelCounterDrops++;
                             barrierCountersSteel.remove(barrierBounds);
-
                         }
 
                     }

@@ -142,7 +142,7 @@ public class LoginScreen implements Screen {//QuestionsForm2.DialogCallback
         float leftTableHeight = screenHeight;
         float padBottomValue = screenHeight * 0.05f;
 
-        Texture backgroundTexture = new Texture(Gdx.files.internal("loginBGpng.png")); // Reemplaza con la ubicación de tu imagen de fondo
+        Texture backgroundTexture = new Texture(Gdx.files.internal("loginBG.png")); // Reemplaza con la ubicación de tu imagen de fondo
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
 

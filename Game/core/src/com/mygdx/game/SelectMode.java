@@ -27,7 +27,7 @@ public class SelectMode implements Screen {
     private TextButton button1;
     private TextButton button2;
     private TextButton button3;
-    private TextButton button4;
+    private Image eagleLogo;
     private JSONDataManager<User2> user2Manager;
     private User2 user;
     private final AtomicReference<SpotifyAuthenticator> spotifyReference = new AtomicReference<>(null);
@@ -51,6 +51,8 @@ public class SelectMode implements Screen {
         CountersBarriers countersBarriers = new CountersBarriers();
         initButtons();
         stage.addActor(button2);
+        //eagleLogo = new Image(new Texture(Gdx.files.internal("EagleLogo.png")));
+        //eagleLogo.setPosition((stage.getWidth() - eagleLogo.getImageWidth()) / 2, 600);
 
         Image image = new Image(new Texture(Gdx.files.internal("helpp.png")));
         image.setVisible(false);
@@ -95,6 +97,7 @@ public class SelectMode implements Screen {
             }
         });
         stage.addActor(image);
+        //stage.addActor(eagleLogo);
         stage.addActor(label);
         stage.addActor(button3);
         /*

@@ -67,7 +67,7 @@ public class Top10Screen implements Screen {
             userList.add(currentUser);
         }
 
-        Collections.sort(userList, Comparator.comparing(User2::getPoints).reversed());
+        userList.sort(Comparator.comparing(User2::getPoints).reversed());
 
         for (int i = 0; i < Math.min(10, userList.size()); i++) {
             User2 currentUser = userList.get(i);
