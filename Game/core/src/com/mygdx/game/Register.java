@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.mygdx.models.User2;
 import com.mygdx.models.CountersBarriers;
+import com.mygdx.utils.ConsoleConn;
 import com.mygdx.utils.ImageConversion;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.utils.SpotifyAuthenticator;
@@ -236,7 +237,6 @@ public class Register implements Screen {
     }
 
 
-
     private void createGUIElements() {
 
         createTextFields();
@@ -330,7 +330,7 @@ public class Register implements Screen {
                             });
 
                             spotifyAuthThread.start();
-                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference,0,0,0));
+                            game.changeScreen(new GameScreen(game, user2Manager, user, newUser, countersBarriers, spotifyReference, 0, 0, 0, new ConsoleConn()));
                         }
 
                         dispose();
@@ -339,7 +339,7 @@ public class Register implements Screen {
                 } else {
                     final Dialog dialog9 = new Dialog("Some info is missing", skin);
                     dialog9.show(stage);
-                    dialog9.setSize(210,80 );
+                    dialog9.setSize(210, 80);
                     dialog9.button("Ok", new ClickListener() {
                         public void clicked(InputEvent event, float x, float y) {
                             dialog9.remove();
@@ -383,7 +383,7 @@ public class Register implements Screen {
             }
         });
         TextButton btnShowPic = stage.getRoot().findActor("btnShowPic");
-        btnShowPic.addListener(new ClickListener(){
+        btnShowPic.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 updatePfpTable();
@@ -396,7 +396,8 @@ public class Register implements Screen {
         pfpTable = stage.getRoot().findActor("TablePfp");
 
     }
-    private boolean questionsBtnChecked(){
+
+    private boolean questionsBtnChecked() {
         return btnQuestions.isChecked();
     }
 
@@ -469,7 +470,6 @@ public class Register implements Screen {
 
         return new Mat(result, resultRoi);
     }
-
 
 
     private void passwordIsValid(String passwordhere, String confirmhere) {

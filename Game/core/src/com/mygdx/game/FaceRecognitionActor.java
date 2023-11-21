@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.models.User2;
 import com.mygdx.models.CountersBarriers;
+import com.mygdx.utils.ConsoleConn;
 import com.mygdx.utils.JSONDataManager;
 import com.mygdx.utils.Recognizer;
 import com.mygdx.utils.SpotifyAuthenticator;
@@ -89,7 +90,7 @@ public class FaceRecognitionActor extends Actor {
                 });
 
                 spotifyAuthThread.start();
-                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference,0,0,0));
+                game.changeScreen(new GameScreen(game, user2Manager, user1, currentUser, countersBarriers, spotifyReference, 0, 0, 0, new ConsoleConn()));
                 login.dispose();
             }
             detectFaces = false;

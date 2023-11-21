@@ -249,10 +249,10 @@ public class GameScreen implements Screen {
     private static final float GO_IMAGE_DURATION = 5.0f;
 
 
-    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference, int contadorTurnos, float pointsU1, float pointsU2) {
+    public GameScreen(final MainController game, JSONDataManager<User2> user2Manager, User2 user, User2 user2, CountersBarriers countersBarriers, AtomicReference<SpotifyAuthenticator> spotifyReference, int contadorTurnos, float pointsU1, float pointsU2, ConsoleConn console) {
         this.game = game;
         this.spotifyReference = spotifyReference;
-        consoleConn = new ConsoleConn();
+        consoleConn = console;
         this.elapsedTimeWater = 0;
         this.elapsedTimeFire = 0;
         this.elapsedTimeBomb = 0;
@@ -1876,13 +1876,12 @@ public class GameScreen implements Screen {
             user1Points = Math.round(user1Points);
 
 
-
-            game.changeScreen(new GameScreen(game, user2Manager, user2, user, countersBarriers, spotifyReference, contadorTurn,user2Points,user1Points));
+            game.changeScreen(new GameScreen(game, user2Manager, user2, user, countersBarriers, spotifyReference, contadorTurn, user2Points, user1Points, consoleConn));
         }
-        if(contadorTurn == 2){
+        if (contadorTurn == 2) {
             System.out.println(user1Points);
             System.out.println(user2Points);
-            game.changeScreen(new GameOverScreen(game,user2Manager, user2, user, user2Points, user1Points));
+            game.changeScreen(new GameOverScreen(game, user2Manager, user2, user, user2Points, user1Points));
             user.setPoints(user1Points);
             user2.setPoints(user2Points);
             user2Manager.update(user);
